@@ -8,14 +8,10 @@
 # include <utility>
 # include "iterator.hpp"
 
-//# define DEBUG
-
 namespace ft
 {
 	template <class T=int, class Compare = std::less<T> >
 	class avl_tree {
-
-	//todo: cambiar las rotaciones a privadas, en vez de devolver r modificar r (interno)
 
 	private:
 
@@ -50,112 +46,33 @@ namespace ft
 			return b_factor;
 		}
 
-		/*
-		*	Right rotation:
-		*		- Left child (subtree) as root
-		*		- Root as right child of new root (previously right child)
-		*		- Righ child of new root as left child of new right child
-		*/
-
-		/*
-		*	grandparent -> x
-		*	parent -> y
-		*	child -> z
-		*/
 		avl *rr_rotat(avl *parent) {
 			avl *t;
-			/*
-
-		    p                                               
-          /  \                              
-		 /    \                              
-       p->l   p->r                         t                 
-               /\                          /\             
-              /  \                        /  \            
-            t->l t->r                   t->l t->r    
-                 
-		    p                t                                
-          /  \              / \              
-		 /    \            /   \              
-       p->l   t->l        p   t->r
-
-                              
-               t               
-              / \               
-             /   \              
-		    p    t->r                                           
-          /  \                           
-		 /    \                    
-       p->l   t->l          
-
-	   //changes in pointer to parents                                  
-		t->l.p = p
-		t.p = p.p
-		p.p = t
-                                                      
-			*/
 			
 			t = parent->r;
 			parent->r = t->l;
 			t->l = parent;
-			//changes in pointer to parents
+
 			t->p = parent->p;
 			parent->p = t;
 			avl *old_tl = parent->r;
 			if (old_tl)
 				old_tl->p = parent;
-			#ifdef DEBUG
-			std::cout<<"Right-Right Rotation";
-			#endif
 			return t;
 		}
 
 		avl *ll_rotat(avl *parent) {
 			avl *t;
-			/*
-
-		    p                                               
-          /  \                              
-		 /    \                              
-       p->l   p->r                   t                 
-        /\                          /\             
-       /  \                        /  \            
-     t->l t->r                   t->l t->r    
-                 
-		    p                t                                
-          /  \              / \              
-		 /    \            /   \              
-       t->r   p->r       t->l   p
-
-                              
-               t               
-              / \               
-             /   \              
-		   t->l   p                                              
-                /  \                           
-		       /    \                    
-             t->r   p->r          
-
-	   //changes in pointer to parents                                  
-		t->r.p = p
-		t.p = p.p
-		p.p = t
-                                                      
-			*/
 
 			t = parent->l;
 			parent->l = t->r;
 			t->r = parent;
 
-			//changes in pointer to parents
 			t->p = parent->p;
 			parent->p = t;
 			avl *old_tr = parent->l;
 			if (old_tr)
 				old_tr->p = parent;
-			#ifdef DEBUG
-			std::cout<<"Left-Left Rotation";
-			#endif
 			return t;
 		}
 
@@ -163,9 +80,6 @@ namespace ft
 			avl *t;
 			t = parent->l;
 			parent->l = rr_rotat(t);
-			#ifdef DEBUG
-			std::cout<<"Left-Right Rotation";
-			#endif
 			return ll_rotat(parent);
 		}
 
@@ -173,121 +87,47 @@ namespace ft
 			avl *t;
 			t = parent->r;
 			parent->r = ll_rotat(t);
-			#ifdef DEBUG
-			std::cout<<"Right-Left Rotation";
-			#endif
 			return rr_rotat(parent);
 		}
 
-		//esto solo balancea un nodo
-		//TODO: hacer que además vaya subiendo hasta root balanceando todos los nodos
-		/*
-		avl * balance(avl *t) {
-			int bal_factor = difference(t);
-			if (bal_factor > 1) {
-				if (difference(t->l) > 0)
-					t = ll_rotat(t);
-				else
-					t = lr_rotat(t);
-			} else if (bal_factor < -1) {
-				if (difference(t->r) > 0)
-					t = rl_rotat(t);
-				else
-					t = rr_rotat(t);
-			}
-			return t;
-		}*/
-/*
-	avl *insert_rec(avl *r, int v) {
-   if (r == NULL) {
-      r = new avl;
-      r->d = v;
-      r->l = NULL;
-      r->r = NULL;
-      return r;
-   } else if (v< r->d) {
-      r->l = insert_rec(r->l, v);
-      r = balance_rec(r);
-   } else if (v >= r->d) {
-      r->r = insert_rec(r->r, v);
-      r = balance_rec(r);
-   } return r;
-}*/
-
 	avl *balance_rec(avl *t) {
-		T nodeVal;
-		if (t) {
-			nodeVal = t->d;
-			std::cout << "Balancing: " << t->d << "; " << t;
-		} else {
-			std::cout << "Balancing NULL???";
-		}
 		int bal_factor = difference(t);
-		bool didChanges = false;
 		if (bal_factor > 1) {
-			didChanges = true;
-			if (difference(t->l) > 0) {
-				std::cout << " llrotat feo aqui " << t << std::endl;
+			if (difference(t->l) > 0)
 				t = ll_rotat(t);
-			}
 			else
 				t = lr_rotat(t);
 		} else if (bal_factor < -1) {
-			didChanges = true;
 			if (difference(t->r) > 0)
 				t = rl_rotat(t);
 			else
 				t = rr_rotat(t);
 		}
-		if (didChanges) {
-			std::cout << "  >>>with changes<<<" << std::endl;
-
-			std::string nodeSig = "balancedNode(" + std::to_string(nodeVal) + ")";
-			printBT(nodeSig, t, true);
-		}
-		else
-			std::cout << "  >>>no changes<<<" << std::endl;
 		return t;
 	}
 
 	avl *balance_iter(avl *t) {
-		std::cout << "iter balancing ";
-
-		if (t)
-			std::cout << t->d;
-		else
-			std::cout << "NULL";
-
-		std::cout << std::endl;
 		avl *aux = t;
 		while (t) {
-			//std::string nodeSig = "balancedNode(" + std::to_string(t->d) + ")";
 			avl *parent = t->p;
 			bool isLeft = false;
 			if (parent)
 				isLeft = parent->l == t;
-			t = balance_rec(t); //a lo mejor esto no funciona y tenemos que usar dobles punteros o algo
-			//t es el nodo balanceado
-			//lo seteamos como hijo de su padre (guardado previamente)
+			t = balance_rec(t);
 			if (parent) {
 				if (isLeft)
 					parent->l = t;
 				else
 					parent->r = t;
-				std::cout << "set new node as " << (isLeft ? "left" : "right") << "child of " << parent->d << std::endl;
 			}
-			printBT("outOfRec", t, true);
 			aux = t;
 			t = t->p;
 		}
-		//t = aux;
 
 		return aux;
 	}
 
 	void printBT(const std::string& prefix, const avl* node, bool isLeft) {
-    //std::cout << "printBT" << std::endl;
-	//getchar();
 	if( node != nullptr )
     {
         std::cout << prefix;
@@ -300,11 +140,9 @@ namespace ft
 			std::cout << "* -> " << parentMsg;
 		}
 
-        // print the value of the node
         std::cout << "v(" <<node->d << ')';
 
-		//if (difference(node) < -1 || difference(node) > 1)
-			std::cout << " [diff (" << difference(node) << ")]";
+		std::cout << " [diff (" << difference(node) << ")]";
 
 		std::cout << std::endl;
 
@@ -314,50 +152,8 @@ namespace ft
     }
 }
 
-		void balance(avl *t) {
-			std::cout << "===========================================" << std::endl;
-			std::cout << "===========================================" << std::endl;
-			std::cout << "===========================================" << std::endl;
-			std::cout << "rebalancing (" << t->d << ")" <<std::endl;
-			std::cout << "before rebalancing" << std::endl;
-			this->printBT("", r, false);
-			avl *lastNode = NULL;
-			while (t) {
-				std::cout << "node: " << t->d << "; ";
-				int bal_factor = difference(t);
-				if (bal_factor > 1) {
-					if (difference(t->l) > 0)
-						t = ll_rotat(t);
-					else
-						t = lr_rotat(t);
-				} else if (bal_factor < -1) {
-					if (difference(t->r) > 0)
-						t = rl_rotat(t);
-					else
-						t = rr_rotat(t);
-				} else {
-					std::cout << "no rebalancing needed" << std::endl;
-				}
-
-				lastNode = t;
-				t = t->p;
-			}
-			if (lastNode && r)
-				std::cout << "lastNode: " << lastNode->d << "; root: " << r->d << std::endl;
-			else if (lastNode && !r)
-				std::cout << "lastNode: " << lastNode->d << "; root: NULL" << std::endl;
-			else
-				std::cout << "lastNode: " << lastNode << "; root: " << r << std::endl;
-			getchar();
-			r = lastNode;
-			this->printBT("", r, false);
-		}
-
-		//TODO: cambiar inserción recursiva a iterativa
-		//- cambiar balancing a iterative balancing
 		avl * insert_rec(avl *r, T v, avl *parent) {
 			if (r == NULL) {
-				std::cout << "---------> inserted " << v << std::endl;
 				r = new avl; //todo replace using allocator instead
 				r->d = v;
 				r->l = NULL;
@@ -365,60 +161,28 @@ namespace ft
 				r->p = parent;
 				_size++;
 				return r;
-			//} else if (v < r->d) {
 			} else if (_cmp(v, r->d)) {
 				r->l = insert_rec(r->l, v, r);
-				//printBT("preBalance", this->r, true);
-				std::cout << "would balance " << r->d << std::endl;
-				//r = balance_rec(r);
-			//} else if (v >= r->d) {
 			} else if (v != r->d) {
-				//Si son iguales no hacemos nada porq ya está insertado el elemento
 				r->r = insert_rec(r->r, v, r);
-				//printBT("preBalance", this->r, true);
-				std::cout << "would balance " << r->d << std::endl;
-				//r = balance_rec(r);
-			} else {
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
-				std::cout << "IGUALES!!!!!!" << std::endl;
 			}
 			return r;
 		}
 
-// pass the root node of your binary tree
-//printBT(root);
-
 		T get(T target, struct avl *node, std::string msg) {
 			if (!node) {
-				#ifdef DEBUG
-				std::cout << "not found, returning null" << std::endl;
-				#endif
-				return (T)NULL; // revisar como manda esto, seguramente mejor con una excepción
+				return (T)NULL;
 			}
-			#ifdef DEBUG
-			std::cout << "    " << msg << ": comparing >" << target << "< with node value>" << node->d << "<" << std::endl;
-			#endif
 			if (_cmp(target, node->d)){
 				return get(target, node->l, "searching in left child");
 			}
 			if (target == node->d) {
-				#ifdef DEBUG
-				std::cout << "found node with value " << target << std::endl;
-				#endif
 				return node->d;
 			}
 			return get(target, node->r, "searching in right child");
 		}
-		//TODO: los métodos públicos de imprimir los borrareos
-		public:
 
+		public:
 		/*
 		*	Elemental access
 		*/
@@ -464,7 +228,6 @@ namespace ft
 			std::cout << t->d << " ";
 		}
 
-		//TODO: ver si hace falta (probablemente si) y añadir copy constructor etc
 		avl_tree(Compare cmp) {
 			r = NULL;
 			_cmp = cmp;
@@ -519,83 +282,9 @@ namespace ft
 		}
 
 		void insert(T v) {
-			
-			if (true) {
-				r = insert_rec(r, v, NULL);
-				printBT("beforeBalancing ", r, true);
-				//buscar nodo con valor v
-				avl *aux = getNode(v);
-				if (!aux) panic("aux es null");
-				r = balance_iter(aux);
-				printBT("afterBalancing ", r, true);
-				return ;
-			}
-
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-			std::cout << "!!!!!!!!!!!" << std::endl;
-
-			avl *aux = r;
-			avl *parent = NULL;
-			bool isRight;
-
-			while (aux) {
-				parent = aux;
-				if (_cmp(v, aux->d)) {
-					//left
-					std::cout << "left, ";
-					aux = aux->l;
-					isRight = false;
-				} else if (v != aux->d) {
-					//right
-					std::cout << "right, ";
-					aux = aux->r;
-					isRight = true;
-				} else {
-					std::cout << "already inserted" << std::endl;
-					//already inserted
-					aux->d = v;
-					return ;
-				}
-			}
-
-			aux = new avl; //todo replace using allocator instead
-			aux->d = v;
-			aux->l = NULL;
-			aux->r = NULL;
-			aux->p = parent;
-			_size++;
-			
-			if (parent) {
-				if (isRight) {
-					std::cout << " set as new right child of " << parent->d << std::endl;
-					parent->r = aux;
-				} else  {
-					std::cout << " set as new left child of " << parent->d << std::endl;
-					parent->l = aux;
-				}
-			} else {
-				std::cout << "no parent set as root" << std::endl;
-				r = aux;
-			}
-			balance(aux);
-			//getchar();
-			//std::cout << "full rebalanced tree: " << std::endl;
-			//this->printBT("", r, true);
-
-/*
-if (_cmp(target, node->d)){
-return get(target, node->l, "searching in left child");
-}
-*/
-
+			r = insert_rec(r, v, NULL);
+			avl *aux = getNode(v);
+			r = balance_iter(aux);
 		}
 
 		size_t size() {
@@ -603,25 +292,10 @@ return get(target, node->l, "searching in left child");
 		}
 
 		size_t max_size() {
-			//TODO: implementar usando allocator max size 
 			return (size_t) -1;
 		}
 
 
-		/*
-		*	Iterator rules
-		*	Inorder
-		*	(All left children -> node -> right children)
-		*
-		*	From any node:
-		*	 next -> leftmost node of right child (if right child doesnt have left children it will be the leftmost node)
-		*	 if no right children next is the parent node
-		*	Begin:
-		*	 leftmost node
-		*	End:
-		*	 null; end - 1 -> rightmost node
-		*	
-		*/
 		class Iterator:
 		public ft::iterator<ft::bidirectional_iterator_tag, T> {
 			
@@ -871,7 +545,7 @@ return get(target, node->l, "searching in left child");
 			std::cout << "with deletion but without rebalancing" << std::endl;
 			printBT();
 			std::cout << "===================================================" << std::endl;
-			balance(r);
+			//balance(r); method removed, deprecated
 		}
 	};
 }
