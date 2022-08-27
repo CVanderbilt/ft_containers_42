@@ -156,6 +156,51 @@ namespace ft
     }
 }
 
+	avl *createNode(T v, avl *parent) {
+		avl *n = new avl; //todo replace using allocator instead
+		n->d = v;
+		n->l = NULL;
+		n->r = NULL;
+		n->p = parent;
+
+		return n;
+	}
+
+	//balancing called from this function
+	//todo no need to pass n, always insert in root
+	avl *insert_iter(avl *n, T v) {
+		avl *parent = NULL;
+		bool isRight = true;
+		while (n != NULL) {
+			if (_cmp(v, r->d)) {
+				parent = n;
+				n = n->l;
+				isRight = false;
+			} else if (v != r->d) {
+				parent = n;
+				n = n->r;
+				isRight = true;
+			} else
+				return n;
+		}
+
+		n = createNode(v, parent);
+
+		if (parent == NULL) {
+			r = n;
+			_size = 0;
+		}
+		else if (isRight)
+			parent->r = n;
+		else
+			parent->l = n;
+		
+		_size++;
+		if (parent) //todo maybe this if can be removed when we dont need to use output of balance_iter
+			r = balance_iter(parent);
+		return n;
+	}
+
 		avl * insert_rec(avl *r, T v, avl *parent) {
 			if (r == NULL) {
 				r = new avl; //todo replace using allocator instead
@@ -286,9 +331,7 @@ namespace ft
 		}
 
 		void insert(T v) {
-			r = insert_rec(r, v, NULL);
-			avl *aux = getNode(v);
-			r = balance_iter(aux);
+			insert_iter(r, v);
 		}
 
 		size_t size() {
