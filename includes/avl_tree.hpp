@@ -140,9 +140,13 @@ namespace ft
 			std::cout << "* -> " << parentMsg;
 		}
 
+		int diff = difference(node);
+
+		std::string suffix = diff > 1 || diff < -1 ? "!!!!!!!!!!" : "";
+
         std::cout << "v(" <<node->d << ')';
 
-		std::cout << " [diff (" << difference(node) << ")]";
+		std::cout << " [diff (" << difference(node) << ")" << suffix << "]";
 
 		std::cout << std::endl;
 
@@ -540,12 +544,12 @@ namespace ft
 
 		void erase(Iterator it) {
 			std::cout << "going to erase node with value " << *it << std::endl;
-			//avl *r = it.erase();
-			it.erase();
+			avl *n = it.erase();
 			std::cout << "with deletion but without rebalancing" << std::endl;
 			printBT();
 			std::cout << "===================================================" << std::endl;
-			//balance(r); method removed, deprecated
+			r = balance_iter(n);
+			_size--;
 		}
 	};
 }

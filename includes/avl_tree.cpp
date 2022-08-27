@@ -152,13 +152,13 @@ int main() {
    
 	ft::avl_tree<int> avl;
 
+	//*
 	avl.insert(6);
 	avl.insert(7);
 	avl.insert(8);
 	avl.insert(5);
 	avl.insert(3);
 	avl.insert(2);
-	///*
 	avl.insert(100);
 	avl.insert(4);
 	avl.insert(10);
@@ -179,18 +179,10 @@ int main() {
 	avl.insert(-9);
 	avl.insert(-1);
 	avl.insert(-11);
-	avl.insert(-20);//*/
+	avl.insert(-20);
+	//*/
 
 	avl.printBT();
-
-	ft::avl_tree<int>::Iterator it = avl.begin();
-
-	std::cout << "tenemos iterator" << std::endl;
-	
-	while (it != avl.end())
-	{
-		std::cout << *it++ << std::endl;
-	}
 		//std::cout << *it++ << ", ";
 
 	std::cout << std::endl;
@@ -205,7 +197,8 @@ int main() {
 		std::cout << "6.Show as a triangle" << std::endl;
 		std::cout << "7.Search value" << std::endl;
 		std::cout << "8.Erase node with specific value" << std::endl;
-		std::cout << "9.Exit" << std::endl;
+		std::cout << "9.Loop with iterators" << std::endl;
+		std::cout << "10.Exit" << std::endl;
 		std::cout << "Enter your Choice: ";
 		std::cin >> c;
     	switch (c) {
@@ -244,19 +237,19 @@ int main() {
 				break;
 			}
 			case 6: {
-				std::cout << "Show as a triangle" << std::endl;
+				std::cout << "Showing as a triangle" << std::endl;
 				avl.printBT();
 				break;
 			}
 			case 7: {
-				std::cout << "Enter value to search" << std::endl;
+				std::cout << "Enter value to search: ";
 				std::cin >> i;
 				avl.printBT();
 				avl.get(i);
 				break;
 			}
 			case 8: {
-				std::cout << "Enter value to erase" << std::endl;
+				std::cout << "Enter value to erase: ";
 				std::cin >> i;
 				ft::avl_tree<int>::Iterator it = avl.begin();
 				while (it != avl.end()) {
@@ -272,7 +265,14 @@ int main() {
 				avl.printBT();
 				break;
 			}
-        	case 9: {
+			case 9: {
+				std::cout << "Looping with iterators: " << std::endl;
+				ft::avl_tree<int>::Iterator it = avl.begin();
+				while (it != avl.end()) std::cout << *it++ << " ";
+				std::cout << std::endl;
+				break ;
+			}
+        	case 10: {
             	exit(1);
 			}
 	    	default: {

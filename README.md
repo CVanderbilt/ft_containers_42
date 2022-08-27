@@ -16,7 +16,6 @@
 
 - avl_tree.hpp:
   - Update to add private methods (ex rotation methods should only be called internally and thus they should be private)
-  - Finish implementation for erase method
   - Update to remove the need of reassig the variable r internally each time we call method like insert, balance, etc... Instead it should be updated always by that method
   - Fix indentation
   - Update to make insertion iterative instead of recursive
