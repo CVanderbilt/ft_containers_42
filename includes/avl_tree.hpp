@@ -167,16 +167,16 @@ namespace ft
 	}
 
 	//balancing called from this function
-	//todo no need to pass n, always insert in root
-	avl *insert_iter(avl *n, T v) {
+	avl *insert_iter(T v) {
 		avl *parent = NULL;
+		avl *n = r;
 		bool isRight = true;
 		while (n != NULL) {
-			if (_cmp(v, r->d)) {
+			if (_cmp(v, n->d)) {
 				parent = n;
 				n = n->l;
 				isRight = false;
-			} else if (v != r->d) {
+			} else if (v != n->d) {
 				parent = n;
 				n = n->r;
 				isRight = true;
@@ -331,7 +331,7 @@ namespace ft
 		}
 
 		void insert(T v) {
-			insert_iter(r, v);
+			insert_iter(v);
 		}
 
 		size_t size() {

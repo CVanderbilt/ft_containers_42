@@ -16,9 +16,8 @@
 
 - avl_tree.hpp:
   - Update to add private methods (ex rotation methods should only be called internally and thus they should be private)
-  - Update to remove the need of reassig the variable r internally each time we call method like insert, balance, etc... Instead it should be updated always by that method
+  - Update to remove the need of reassig the variable r internally each time we call method like balance, etc... Instead it should be updated always by that method
   - Fix indentation
-  - Update to make insertion iterative instead of recursive
   - Add support for allocator instead of calling new (usually in insert method, marked with a comment)
   - method ```get```, check NULL return and decide if it would be better using exception instead
   - method ```get```, remove msg input variable
