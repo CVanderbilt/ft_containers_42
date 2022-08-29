@@ -388,17 +388,14 @@ namespace ft
 				//nuevo hijo no tiene hijo izq pero puede tener hijo der
 				//newNode->r->d
 				std::string newNodeR = newNode->r ? std::to_string(newNode->r->d) : "NULL";
-				std::cout << "testLine: " << parentNewNode->l->d << std::endl;
-				std::cout << "parent newNode left child from (" << parentNewNode->l->d << ") to newNode right child (" << newNodeR << ")" << std::endl;
 				parentNewNode->l = newNode->r;
+				if (newNode->r)
+					newNode->r->p = parentNewNode;
 
-				std::cout << "newNode right child from (" << newNodeR << ") to oldNode right child (" << oldNode->r->d << ")" << std::endl;
 				newNode->r = oldNode->r;
 				newNode->r->p = newNode;
-				std::cout << "newNode left child from (" << "fNULL" << ") to oldNode left child (" << oldNode->l->d << ")" << std::endl;
 				newNode->l = oldNode->l;
 				newNode->l->p = newNode;
-				std::cout << "these 2 children set to point to newNode as father" << std::endl;
 				//delete(oldNode->d); TODO: revisar esto
 				delete(oldNode);
 
