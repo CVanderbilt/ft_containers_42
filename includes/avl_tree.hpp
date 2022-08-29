@@ -22,215 +22,6 @@ namespace ft
 		struct avl *p;
 		bool isRight;
 	};
-
-	struct avl	*r;
-	Compare		_cmp;
-	size_t		_size;
-
-	int height(avl *t) {
-		int h = 0;
-
-		if (t != NULL) {
-			int l_height = height(t->l);
-			int r_height = height(t->r);
-			int max_height = std::max(l_height, r_height);
-			h = max_height + 1;
-		}
-		return h;
-	}
-
-	int difference (const avl *t) {
-		int l_height = height(t->l);
-		int r_height = height(t->r);
-		int b_factor = l_height - r_height;
-		return b_factor;
-	}
-
-	avl *rr_rotat(avl *parent) {
-		avl *t;
-		
-		t = parent->r;
-		parent->r = t->l;
-		t->l = parent;
-
-		t->p = parent->p;
-		parent->p = t;
-		avl *old_tl = parent->r;
-		if (old_tl)
-			old_tl->p = parent;
-		return t;
-	}
-
-	avl *ll_rotat(avl *parent) {
-		avl *t;
-
-		t = parent->l;
-		parent->l = t->r;
-		t->r = parent;
-
-		t->p = parent->p;
-		parent->p = t;
-		avl *old_tr = parent->l;
-		if (old_tr)
-			old_tr->p = parent;
-		return t;
-	}
-
-	avl *lr_rotat(avl *parent) {
-		avl *t;
-		t = parent->l;
-		parent->l = rr_rotat(t);
-		return ll_rotat(parent);
-	}
-
-	avl *rl_rotat(avl *parent) {
-		avl *t;
-		t = parent->r;
-		parent->r = ll_rotat(t);
-		return rr_rotat(parent);
-	}
-
-	avl *balance_rec(avl *t) {
-		int bal_factor = difference(t);
-		if (bal_factor > 1) {
-			if (difference(t->l) > 0)
-				t = ll_rotat(t);
-			else
-				t = lr_rotat(t);
-		} else if (bal_factor < -1) {
-			if (difference(t->r) > 0)
-				t = rl_rotat(t);
-			else
-				t = rr_rotat(t);
-		}
-		return t;
-	}
-
-	avl *balance_iter(avl *t) {
-		avl *aux = t;
-		while (t) {
-			avl *parent = t->p;
-			bool isLeft = false;
-			if (parent)
-				isLeft = parent->l == t;
-			t = balance_rec(t);
-			if (parent) {
-				if (isLeft)
-					parent->l = t;
-				else
-					parent->r = t;
-			}
-			aux = t;
-			t = t->p;
-		}
-
-		return aux;
-	}
-
-	void printBT(const std::string& prefix, const avl* node, bool isLeft) {
-	if( node != nullptr )
-    {
-        std::cout << prefix;
-
-		std::string parentMsg = "p(NULL)";
-		if (node->p) {
-			parentMsg = "p(" + std::to_string(node->p->d) + ")";
-        	std::cout << (isLeft ? "├L─" : "└R─") << parentMsg;
-		} else {
-			std::cout << "* -> " << parentMsg;
-		}
-
-		int diff = difference(node);
-
-		std::string suffix = diff > 1 || diff < -1 ? "!!!!!!!!!!" : "";
-
-        std::cout << "v(" <<node->d << ')';
-
-		std::cout << " [diff (" << difference(node) << ")" << suffix << "]";
-
-		std::cout << std::endl;
-
-        // enter the next tree level - left and right branch
-        printBT( prefix + (isLeft ? "│   " : "    "), node->l, true);
-        printBT( prefix + (isLeft ? "│   " : "    "), node->r, false);
-    }
-}
-
-	avl *createNode(T v, avl *parent) {
-		avl *n = new avl; //todo replace using allocator instead
-		n->d = v;
-		n->l = NULL;
-		n->r = NULL;
-		n->p = parent;
-
-		return n;
-	}
-
-	//balancing called from this function
-	avl *insert_iter(T v) {
-		avl *parent = NULL;
-		avl *n = r;
-		bool isRight = true;
-		while (n != NULL) {
-			if (_cmp(v, n->d)) {
-				parent = n;
-				n = n->l;
-				isRight = false;
-			} else if (v != n->d) {
-				parent = n;
-				n = n->r;
-				isRight = true;
-			} else
-				return n;
-		}
-
-		n = createNode(v, parent);
-
-		if (parent == NULL) {
-			r = n;
-			_size = 0;
-		}
-		else if (isRight)
-			parent->r = n;
-		else
-			parent->l = n;
-		
-		_size++;
-		if (parent) //todo maybe this if can be removed when we dont need to use output of balance_iter
-			r = balance_iter(parent);
-		return n;
-	}
-
-	avl * insert_rec(avl *r, T v, avl *parent) {
-		if (r == NULL) {
-			r = new avl; //todo replace using allocator instead
-			r->d = v;
-			r->l = NULL;
-			r->r = NULL;
-			r->p = parent;
-			_size++;
-			return r;
-		} else if (_cmp(v, r->d)) {
-			r->l = insert_rec(r->l, v, r);
-		} else if (v != r->d) {
-			r->r = insert_rec(r->r, v, r);
-		}
-		return r;
-	}
-
-	T get(T target, struct avl *node, std::string msg) {
-		if (!node) {
-			return (T)NULL;
-		}
-		if (_cmp(target, node->d)){
-			return get(target, node->l, "searching in left child");
-		}
-		if (target == node->d) {
-			return node->d;
-		}
-		return get(target, node->r, "searching in right child");
-	}
-
 	public:
 	/*
 	*	Elemental access
@@ -576,6 +367,219 @@ namespace ft
 		r = balance_iter(n);
 		_size--;
 	}
+
+private:
+
+	struct avl	*r;
+	Compare		_cmp;
+	size_t		_size;
+
+	int height(avl *t) {
+		int h = 0;
+
+		if (t != NULL) {
+			int l_height = height(t->l);
+			int r_height = height(t->r);
+			int max_height = std::max(l_height, r_height);
+			h = max_height + 1;
+		}
+		return h;
+	}
+
+	int difference (const avl *t) {
+		int l_height = height(t->l);
+		int r_height = height(t->r);
+		int b_factor = l_height - r_height;
+		return b_factor;
+	}
+
+	avl *rr_rotat(avl *parent) {
+		avl *t;
+		
+		t = parent->r;
+		parent->r = t->l;
+		t->l = parent;
+
+		t->p = parent->p;
+		parent->p = t;
+		avl *old_tl = parent->r;
+		if (old_tl)
+			old_tl->p = parent;
+		return t;
+	}
+
+	avl *ll_rotat(avl *parent) {
+		avl *t;
+
+		t = parent->l;
+		parent->l = t->r;
+		t->r = parent;
+
+		t->p = parent->p;
+		parent->p = t;
+		avl *old_tr = parent->l;
+		if (old_tr)
+			old_tr->p = parent;
+		return t;
+	}
+
+	avl *lr_rotat(avl *parent) {
+		avl *t;
+		t = parent->l;
+		parent->l = rr_rotat(t);
+		return ll_rotat(parent);
+	}
+
+	avl *rl_rotat(avl *parent) {
+		avl *t;
+		t = parent->r;
+		parent->r = ll_rotat(t);
+		return rr_rotat(parent);
+	}
+
+	avl *balance_rec(avl *t) {
+		int bal_factor = difference(t);
+		if (bal_factor > 1) {
+			if (difference(t->l) > 0)
+				t = ll_rotat(t);
+			else
+				t = lr_rotat(t);
+		} else if (bal_factor < -1) {
+			if (difference(t->r) > 0)
+				t = rl_rotat(t);
+			else
+				t = rr_rotat(t);
+		}
+		return t;
+	}
+
+	avl *balance_iter(avl *t) {
+		avl *aux = t;
+		while (t) {
+			avl *parent = t->p;
+			bool isLeft = false;
+			if (parent)
+				isLeft = parent->l == t;
+			t = balance_rec(t);
+			if (parent) {
+				if (isLeft)
+					parent->l = t;
+				else
+					parent->r = t;
+			}
+			aux = t;
+			t = t->p;
+		}
+
+		return aux;
+	}
+
+	void printBT(const std::string& prefix, const avl* node, bool isLeft) {
+	if( node != nullptr )
+    {
+        std::cout << prefix;
+
+		std::string parentMsg = "p(NULL)";
+		if (node->p) {
+			parentMsg = "p(" + std::to_string(node->p->d) + ")";
+        	std::cout << (isLeft ? "├L─" : "└R─") << parentMsg;
+		} else {
+			std::cout << "* -> " << parentMsg;
+		}
+
+		int diff = difference(node);
+
+		std::string suffix = diff > 1 || diff < -1 ? "!!!!!!!!!!" : "";
+
+        std::cout << "v(" <<node->d << ')';
+
+		std::cout << " [diff (" << difference(node) << ")" << suffix << "]";
+
+		std::cout << std::endl;
+
+        // enter the next tree level - left and right branch
+        printBT( prefix + (isLeft ? "│   " : "    "), node->l, true);
+        printBT( prefix + (isLeft ? "│   " : "    "), node->r, false);
+    }
+}
+
+	avl *createNode(T v, avl *parent) {
+		avl *n = new avl; //todo replace using allocator instead
+		n->d = v;
+		n->l = NULL;
+		n->r = NULL;
+		n->p = parent;
+
+		return n;
+	}
+
+	//balancing called from this function
+	avl *insert_iter(T v) {
+		avl *parent = NULL;
+		avl *n = r;
+		bool isRight = true;
+		while (n != NULL) {
+			if (_cmp(v, n->d)) {
+				parent = n;
+				n = n->l;
+				isRight = false;
+			} else if (v != n->d) {
+				parent = n;
+				n = n->r;
+				isRight = true;
+			} else
+				return n;
+		}
+
+		n = createNode(v, parent);
+
+		if (parent == NULL) {
+			r = n;
+			_size = 0;
+		}
+		else if (isRight)
+			parent->r = n;
+		else
+			parent->l = n;
+		
+		_size++;
+		if (parent) //todo maybe this if can be removed when we dont need to use output of balance_iter
+			r = balance_iter(parent);
+		return n;
+	}
+
+	avl * insert_rec(avl *r, T v, avl *parent) {
+		if (r == NULL) {
+			r = new avl; //todo replace using allocator instead
+			r->d = v;
+			r->l = NULL;
+			r->r = NULL;
+			r->p = parent;
+			_size++;
+			return r;
+		} else if (_cmp(v, r->d)) {
+			r->l = insert_rec(r->l, v, r);
+		} else if (v != r->d) {
+			r->r = insert_rec(r->r, v, r);
+		}
+		return r;
+	}
+
+	T get(T target, struct avl *node, std::string msg) {
+		if (!node) {
+			return (T)NULL;
+		}
+		if (_cmp(target, node->d)){
+			return get(target, node->l, "searching in left child");
+		}
+		if (target == node->d) {
+			return node->d;
+		}
+		return get(target, node->r, "searching in right child");
+	}
+
+
+
 	};
 }
 

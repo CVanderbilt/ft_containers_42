@@ -15,7 +15,6 @@
 ## TODO
 
 - avl_tree.hpp:
-  - Update to add private methods (ex rotation methods should only be called internally and thus they should be private)
   - Update to remove the need of reassig the variable r internally each time we call method like balance, etc... Instead it should be updated always by that method
   - Add support for allocator instead of calling new (usually in insert method, marked with a comment)
   - method ```get```, check NULL return and decide if it would be better using exception instead
@@ -24,6 +23,5 @@
   - Add operator= support using deep copy and update copy constructor to use the new operator=
   - Properly finish max_size method
   - Clean iterator implementation and update todo list with todo comments in there
-  - Move public section to top (public methods and variables should be on top for easier access)
 - avl_tree.cpp
   - Add leaks test when exiting
