@@ -19,7 +19,6 @@
   - Add support for allocator instead of calling new (usually in insert method, marked with a comment)
   - method ```get```, check NULL return and decide if it would be better using exception instead
   - method ```get```, remove msg input variable
-  - remove print methods (printbt, show, inorder...)
   - Add operator= support using deep copy and update copy constructor to use the new operator=
   - Properly finish max_size method
   - Clean iterator implementation and update todo list with todo comments in there

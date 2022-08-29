@@ -208,15 +208,12 @@ int main() {
 		std::cout << "0.Show size" << std::endl;
 		std::cout << "1.Insert Element into the tree" << std::endl;
 		std::cout << "2.show Balanced AVL Tree" << std::endl;
-		std::cout << "3.InOrder traversal" << std::endl;
-		std::cout << "4.PreOrder traversal" << std::endl;
-		std::cout << "5.PostOrder traversal" << std::endl;
-		std::cout << "6.Show as a triangle" << std::endl;
-		std::cout << "7.Search value" << std::endl;
-		std::cout << "8.Erase node with specific value" << std::endl;
-		std::cout << "9.Loop with iterators" << std::endl;
-		std::cout << "10.Automatic tests" << std::endl;
-		std::cout << "11.Exit" << std::endl;
+		std::cout << "3.Show as a triangle" << std::endl;
+		std::cout << "4.Search value" << std::endl;
+		std::cout << "5.Erase node with specific value" << std::endl;
+		std::cout << "6.Loop with iterators" << std::endl;
+		std::cout << "7.Automatic tests" << std::endl;
+		std::cout << "8.Exit" << std::endl;
 		std::cout << "Enter your Choice: ";
 		std::cin >> c;
     	switch (c) {
@@ -237,36 +234,18 @@ int main() {
 				break;
 			}
 			case 3: {
-				std::cout << "Inorder Traversal:" << std::endl;
-				avl.inorder();
-				std::cout << std::endl;
-				break;
-			}
-			case 4: {
-				std::cout << "Preorder Traversal:" << std::endl;
-				avl.preorder();
-				std::cout << std::endl;
-				break;
-			}
-			case 5: {
-				std::cout << "Postorder Traversal:" << std::endl;
-				avl.postorder();
-				std::cout << std::endl;
-				break;
-			}
-			case 6: {
 				std::cout << "Showing as a triangle" << std::endl;
 				avl.printBT();
 				break;
 			}
-			case 7: {
+			case 4: {
 				std::cout << "Enter value to search: ";
 				std::cin >> i;
 				avl.printBT();
 				avl.get(i);
 				break;
 			}
-			case 8: {
+			case 5: {
 				std::cout << "Enter value to erase: ";
 				std::cin >> i;
 				std::cout << "entered: " << i << std::endl;
@@ -274,17 +253,17 @@ int main() {
 				avl.printBT();
 				break;
 			}
-			case 9: {
+			case 6: {
 				std::cout << "Looping with iterators: " << std::endl;
 				iteratorTest(&avl);
 				break ;
 			}
-			case 10: {
+			case 7: {
 				std::cout << "Running automatic test" << std::endl;
 				autoTest();
 				break ;
 			}
-        	case 11: {
+        	case 8: {
             	exit(1);
 			}
 	    	default: {
