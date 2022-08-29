@@ -3,149 +3,166 @@
 #include <sstream>
 #include <algorithm>
 #include <utility>
+#include <limits.h>
 #include "avl_tree.hpp"
 
 #define pow2(n) (1 << (n))
-/*
-struct avl {
-   int d;
-   struct avl *l;
-   struct avl *r;
-}*r;
 
-class avl_tree {
-   public:
-      int height(avl *);
-      int difference(avl *);
-      avl *rr_rotat(avl *);
-      avl *ll_rotat(avl *);
-      avl *lr_rotat(avl*);
-      avl *rl_rotat(avl *);
-      avl * balance(avl *);
-      avl * insert(avl*, int);
-      void show(avl*, int);
-      void inorder(avl *);
-      void preorder(avl *);
-      void postorder(avl*);
-      avl_tree() {
-         r = NULL;
-      }
-};
-int avl_tree::height(avl *t) {
-   int h = 0;
-   if (t != NULL) {
-      int l_height = height(t->l);
-      int r_height = height(t->r);
-      int max_height = std::max(l_height, r_height);
-      h = max_height + 1;
-   }
-   return h;
+void announce(const std::string& msg) {
+	const std::string a = "*--------------------------------------------------------*";
+	
+	std::cout << a << std::endl;
+	std::cout << msg << std::endl;
+	std::cout << a << std::endl;
 }
-int avl_tree::difference(avl *t) {
-   int l_height = height(t->l);
-   int r_height = height(t->r);
-   int b_factor = l_height - r_height;
-   return b_factor;
+
+void findAndErase(int n, ft::avl_tree<int> *tree) {
+	ft::avl_tree<int>::Iterator it = tree->begin();
+	std::cout << "iterator search" << std::endl;
+	size_t maxsize = tree->size();
+	size_t actualsize = 0;
+	while (it != tree->end()) {
+		std::cout << "actual value: " << *it << std::endl;
+		if (*it == n) {
+			std::cout << "node with value " << n << " found in tree" << std::endl;
+			std::cout << "tree before deletion" << std::endl;
+			tree->printBT();
+			tree->erase(it);
+			std::cout << "tree after deletion" << std::endl;
+			tree->printBT();
+			return ;
+		}
+		actualsize++;
+		it++;
+		if (actualsize > maxsize) { //prevent for loops in malformed tree
+			std::cout << "size check!!!" << std::endl;
+			break ;
+		}
+		//TODO: add test de erase(it++)
+	}
+	std::cout << "value not found!!" << std::endl;
 }
-avl *avl_tree::rr_rotat(avl *parent) {
-   avl *t;
-   t = parent->r;
-   parent->r = t->l;
-   t->l = parent;
-   std::cout<<"Right-Right Rotation";
-   return t;
+
+bool iteratorTest(ft::avl_tree<int> *tree) {
+	bool result = true;
+	ft::avl_tree<int>::Iterator it = tree->begin();
+	size_t calculatedSize = 0;
+	size_t expectedSize = tree->size();
+	int prevValue = INT_MIN;
+	while (it != tree->end()) {
+		std::cout << *it << " ";
+		if (*it < prevValue) {
+			std::cout << "(not sorted properly)" << std::endl;
+			result = false;
+		}
+		prevValue = *it++;
+		calculatedSize++;
+		if (calculatedSize > expectedSize) { //this check will prevent loops
+			std::cout << "size failed!!!" << std::endl;
+			result = false;
+			break ;
+		}
+	}
+	std::cout << std::endl;
+	std::cout << "Expected size (tree size): " << expectedSize;
+	if (calculatedSize != expectedSize) {
+		result = false;
+		std::cout << " but calculated: " << calculatedSize;
+	}
+	std::cout << std::endl;
+	return result;
 }
-avl *avl_tree::ll_rotat(avl *parent) {
-   avl *t;
-   t = parent->l;
-   parent->l = t->r;
-   t->r = parent;
-   std::cout<<"Left-Left Rotation";
-   return t;
+
+void autoTest() {
+	ft::avl_tree<int> avl;
+	bool result = true;
+	
+	announce("Inserting...");
+	//*
+	avl.insert(6);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(7);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(8);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(5);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(3);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(2);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(100);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(4);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(10);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(9);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(1);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(11);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-2);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-6);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-7);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-8);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-5);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-3);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(20);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-100);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-4);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-10);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-9);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-1);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-11);
+	if (!iteratorTest(&avl)) result = false;
+	avl.insert(-20);
+	if (!iteratorTest(&avl)) result = false;
+	//*/
+
+	std::cout << "printing tree, check balances" << std::endl;
+	avl.printBT();
+
+	announce("Iterator (should be ordered)");
+	if (!iteratorTest(&avl)) result = false;
+
+	announce("Erasing some values...");
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(-100, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(-3, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(100, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(9, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(-100, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(-9, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(-4, &avl);
+	if (!iteratorTest(&avl)) result = false;
+	findAndErase(1, &avl);
+	if (!iteratorTest(&avl)) result = false;
+
+	if (!result)
+		std::cout << "KO: Some tests failed" << std::endl;
+	else
+		std::cout << "OK: No tests failed" << std::endl;
 }
-avl *avl_tree::lr_rotat(avl *parent) {
-   avl *t;
-   t = parent->l;
-   parent->l = rr_rotat(t);
-   std::cout<<"Left-Right Rotation";
-   return ll_rotat(parent);
-}
-avl *avl_tree::rl_rotat(avl *parent) {
-   avl *t;
-   t = parent->r;
-   parent->r = ll_rotat(t);
-   std::cout<<"Right-Left Rotation";
-   return rr_rotat(parent);
-}
-avl *avl_tree::balance(avl *t) {
-   int bal_factor = difference(t);
-   if (bal_factor > 1) {
-      if (difference(t->l) > 0)
-         t = ll_rotat(t);
-      else
-         t = lr_rotat(t);
-   } else if (bal_factor < -1) {
-      if (difference(t->r) > 0)
-         t = rl_rotat(t);
-      else
-         t = rr_rotat(t);
-   }
-   return t;
-}
-avl *avl_tree::insert(avl *r, int v) {
-   if (r == NULL) {
-      r = new avl;
-      r->d = v;
-      r->l = NULL;
-      r->r = NULL;
-      return r;
-   } else if (v< r->d) {
-      r->l = insert(r->l, v);
-      r = balance(r);
-   } else if (v >= r->d) {
-      r->r = insert(r->r, v);
-      r = balance(r);
-   } return r;
-}
-void avl_tree::show(avl *p, int l) {
-   int i;
-   if (p != NULL) {
-      show(p->r, l+ 1);
-      std::cout<<" ";
-      if (p == r)
-         std::cout << "Root -> ";
-      for (i = 0; i < l&& p != r; i++)
-         std::cout << " ";
-         std::cout << p->d;
-         show(p->l, l + 1);
-   }
-}
-void avl_tree::inorder(avl *t) {
-   if (t == NULL)
-      return;
-      inorder(t->l);
-      std::cout << t->d << " ";
-      inorder(t->r);
-}
-void avl_tree::preorder(avl *t) {
-   if (t == NULL)
-      return;
-      std::cout << t->d << " ";
-      preorder(t->l);
-      preorder(t->r);
-}
-void avl_tree::postorder(avl *t) {
-   if (t == NULL)
-      return;
-      postorder(t ->l);
-      postorder(t ->r);
-      std::cout << t->d << " ";
-}*/
-struct avl {
-   		int d;
-  		struct avl *l;
-   		struct avl *r;
-	}*r;
 
 int main() {
 	int c, i;
@@ -198,7 +215,8 @@ int main() {
 		std::cout << "7.Search value" << std::endl;
 		std::cout << "8.Erase node with specific value" << std::endl;
 		std::cout << "9.Loop with iterators" << std::endl;
-		std::cout << "10.Exit" << std::endl;
+		std::cout << "10.Automatic tests" << std::endl;
+		std::cout << "11.Exit" << std::endl;
 		std::cout << "Enter your Choice: ";
 		std::cin >> c;
     	switch (c) {
@@ -251,28 +269,22 @@ int main() {
 			case 8: {
 				std::cout << "Enter value to erase: ";
 				std::cin >> i;
-				ft::avl_tree<int>::Iterator it = avl.begin();
-				while (it != avl.end()) {
-					if (*it == i) {
-						avl.printBT();
-						avl.erase(it);
-						//it.erase();
-						break;
-					}
-					it++;
-					//TODO: add test de erase(it++)
-				}
+				std::cout << "entered: " << i << std::endl;
+				findAndErase(i, &avl);
 				avl.printBT();
 				break;
 			}
 			case 9: {
 				std::cout << "Looping with iterators: " << std::endl;
-				ft::avl_tree<int>::Iterator it = avl.begin();
-				while (it != avl.end()) std::cout << *it++ << " ";
-				std::cout << std::endl;
+				iteratorTest(&avl);
 				break ;
 			}
-        	case 10: {
+			case 10: {
+				std::cout << "Running automatic test" << std::endl;
+				autoTest();
+				break ;
+			}
+        	case 11: {
             	exit(1);
 			}
 	    	default: {
