@@ -195,12 +195,14 @@ namespace ft
 		//TODO: fix end() - 1 
 		// predecrement. move backward to largest value < current value
 		Iterator operator-- () {
+			std::cout << "--1" << std::endl;
 			_node = getPrevNode(_node);
 			return *this;
 		}
 		
 		// postdecrement
 		Iterator operator-- (int) {
+			std::cout << "--2" << std::endl;
 			Iterator ret(*this);
 
 			_node = getPrevNode(_node);
@@ -254,7 +256,6 @@ namespace ft
 				}
 			}
 
-			//delete(_node->d); TODO: revisar esto
 			_alloc.deallocate(_node, 1);
 
 			return parent;			
@@ -272,7 +273,6 @@ namespace ft
 			}
 
 			_alloc.deallocate(_node, 1);
-			//delete(_node->d); TODO: revisar esto
 
 			return parent;
 		}
@@ -309,12 +309,12 @@ namespace ft
 
 		avl *getPrevNode(avl *node) {
 			avl *aux;
-			
+
 			if (!node)
-				return NULL;
+				return getRightMost(_root);
 
 			if (node->l)
-				return getRightMost(node->r);
+				return getRightMost(node->l);
 
 			do
 			{

@@ -43,6 +43,41 @@ void findAndErase(int n, ft::avl_tree<int> *tree) {
 	std::cout << "value not found!!" << std::endl;
 }
 
+bool iteratorTestEndToBegin(ft::avl_tree<int> *tree) {
+	bool result = true;
+	bool check = false;
+	int prev;
+	size_t calculated = 0;
+
+	for (ft::avl_tree<int>::Iterator it = tree->end(); it != tree->begin();) {
+		it--;
+		calculated++;
+
+		if (calculated > tree->size()) {
+			result = false;
+			std::cout << "size check failed" << std::endl;
+			break ;
+		}
+
+		std::cout << *it << " ";
+
+		if (check) {
+			if (prev < *it) {
+				std::cout << "(not sorted properly)" << std::endl;
+				result = false;
+			}
+		}
+
+		prev = *it;
+		check = true;
+	}
+	if (tree->begin() != tree->end())
+		std::cout << *tree->begin();
+	std::cout << std::endl;
+	
+	return result;
+}
+
 bool iteratorTest(ft::avl_tree<int> *tree) {
 	bool result = true;
 	ft::avl_tree<int>::Iterator it = tree->begin();
@@ -70,7 +105,8 @@ bool iteratorTest(ft::avl_tree<int> *tree) {
 		std::cout << " but calculated: " << calculatedSize;
 	}
 	std::cout << std::endl;
-	return result;
+	bool result2 = iteratorTestEndToBegin(tree);
+	return result && result2;
 }
 
 void autoTest() {
