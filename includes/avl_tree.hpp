@@ -34,18 +34,11 @@ namespace ft
 	private:
 
 	avl			*r;
-	avl_node<T>	*root;
 	Compare		_cmp;
 	size_t		_size;
 	Allocator	_alloc;
 
 	public:
-	/*
-	*	Elemental access
-	*/
-	T get(T target) {
-		return get(target, r, "searching in root");
-	}
 
 	void show(avl *p, int l) {
 		int i;
@@ -64,7 +57,7 @@ namespace ft
 	avl_tree(
 		Compare cmp = Compare(),
 		const Allocator alloc = Allocator())
-		: r(NULL), root(NULL), _cmp(cmp), _size(0), _alloc(alloc)
+		: r(NULL), _cmp(cmp), _size(0), _alloc(alloc)
 	{}
 
 	avl_tree(const avl_tree& tree) { //TODO: use deep copy
@@ -85,16 +78,20 @@ namespace ft
 
 	}
 
+	/*
+	*	Should be private, we don't need to expose internal logic
+	*/
 	avl *getNode(T v) {
-		avl *aux = r;
+		avl *node = r;
 
-		while (aux) {
-			if (aux->d == v) 
-				return aux;
-			if (_cmp(v, aux->d))
-				aux = aux->l;
-			else
-				aux = aux->r;
+		while (node) {
+			if (_cmp(v, node->d)) {
+				node = node->l;
+			} else if (v == node->d) {
+				return node;
+			} else {
+				node = node->r;
+			}
 		}
 
 		return NULL;
@@ -148,11 +145,15 @@ namespace ft
 	public ft::iterator<ft::bidirectional_iterator_tag, T> {
 		
 		private:
+		avl *_root;
 		avl *_node;
 		Allocator _alloc;
 
 		public:
-		Iterator(avl *node = NULL, Allocator alloc = Allocator()): _node(node), _alloc(alloc) {}
+		Iterator(avl *root = NULL, Allocator alloc = Allocator()):
+			_root(root), _node(getLeftMost(root)), _alloc(alloc) {}
+		Iterator(avl *node, avl *root = NULL, Allocator alloc = Allocator())
+			: _root(root), _node(node), _alloc(alloc) {}
 		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
 
 		avl *eraseNodeWithTwoChildren() {
@@ -234,9 +235,6 @@ namespace ft
 			else
 				return eraseNodeWithOneChildren();
 		}
-
-		Iterator static begin(avl *root) { return Iterator(getLeftMost(root)); }
-		Iterator static end(avl *root) { return Iterator(); }
 
 		bool operator== (const Iterator& rhs) const { return _node == rhs._node; }
 		
@@ -325,12 +323,21 @@ namespace ft
 		}
 	};
 
+	/*
+	*	Elemental access
+	*/
+	Iterator get(T target) {
+		avl *node = getNode(target);
+
+		return Iterator(node, r, _alloc);
+	}
+
 	Iterator begin() {
-		return Iterator::begin(r);
+		return Iterator(r, _alloc);
 	}
 
 	Iterator end() {
-		return Iterator::end(r);
+		return Iterator(NULL, r, _alloc);
 	}
 
 	void erase(Iterator it) {
@@ -480,18 +487,6 @@ private:
 		return n;
 	}
 
-	T get(T target, avl *node, std::string msg) {
-		if (!node) {
-			return (T)NULL;
-		}
-		if (_cmp(target, node->d)){
-			return get(target, node->l, "searching in left child");
-		}
-		if (target == node->d) {
-			return node->d;
-		}
-		return get(target, node->r, "searching in right child");
-	}
 	};
 }
 
