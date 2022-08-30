@@ -10,18 +10,35 @@
 
 namespace ft
 {
-	template <class T=int, class Compare = std::less<T> >
-	class avl_tree {
+	//add a destructor and check if it is being called + implement logic to maybe call destructor of d (? maybe also automatic)
+	template<class T>
+	class avl_node {
+		public:
+		T d;
+		avl_node *l;
+		avl_node *r;
+		avl_node *p;
+	};
+
+
+	template <
+		class T=int, class Compare = std::less<T>,
+		class Allocator = std::allocator<avl_node<T> >
+	>
+	class avl_tree
+	{
+	public:
+
+	typedef avl_node<T> avl;
 
 	private:
 
-	struct avl {
-		T d;
-		struct avl *l;
-		struct avl *r;
-		struct avl *p;
-		bool isRight;
-	};
+	avl			*r;
+	avl_node<T>	*root;
+	Compare		_cmp;
+	size_t		_size;
+	Allocator	_alloc;
+
 	public:
 	/*
 	*	Elemental access
@@ -44,17 +61,11 @@ namespace ft
 		}
 	}
 
-	avl_tree(Compare cmp) {
-		r = NULL;
-		_cmp = cmp;
-		_size = 0;
-	}
-
-	avl_tree() {
-		r = NULL;
-		_cmp = Compare();
-		_size = 0;
-	}
+	avl_tree(
+		Compare cmp = Compare(),
+		const Allocator alloc = Allocator())
+		: r(NULL), root(NULL), _cmp(cmp), _size(0), _alloc(alloc)
+	{}
 
 	avl_tree(const avl_tree& tree) { //TODO: use deep copy
 		r = NULL;
@@ -138,11 +149,11 @@ namespace ft
 		
 		private:
 		avl *_node;
+		Allocator _alloc;
 
 		public:
-		Iterator(): _node(NULL) {}
-		Iterator(avl *node): _node(node) {}
-		Iterator(const Iterator& it): _node(it._node) {}
+		Iterator(avl *node = NULL, Allocator alloc = Allocator()): _node(node), _alloc(alloc) {}
+		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
 
 		avl *eraseNodeWithTwoChildren() {
 			Iterator it(*this);
@@ -171,7 +182,7 @@ namespace ft
 			newNode->l = oldNode->l;
 			newNode->l->p = newNode;
 
-			delete(oldNode);
+			_alloc.deallocate(oldNode, 1);
 			return (parentNewNode);
 		}
 
@@ -190,7 +201,7 @@ namespace ft
 			}
 
 			//delete(_node->d); TODO: revisar esto
-			delete(_node);
+			_alloc.deallocate(_node, 1);
 
 			return parent;			
 		}
@@ -206,7 +217,7 @@ namespace ft
 				}
 			}
 
-			delete(_node);
+			_alloc.deallocate(_node, 1);
 			//delete(_node->d); TODO: revisar esto
 
 			return parent;
@@ -329,10 +340,6 @@ namespace ft
 	}
 
 private:
-
-	struct avl	*r;
-	Compare		_cmp;
-	size_t		_size;
 
 	int height(avl *t) {
 		int h = 0;
@@ -464,7 +471,7 @@ private:
 }
 
 	avl *createNode(T v, avl *parent) {
-		avl *n = new avl; //todo replace using allocator instead
+		avl_node<T> *n = this->_alloc.allocate(1);
 		n->d = v;
 		n->l = NULL;
 		n->r = NULL;
@@ -473,7 +480,7 @@ private:
 		return n;
 	}
 
-	T get(T target, struct avl *node, std::string msg) {
+	T get(T target, avl *node, std::string msg) {
 		if (!node) {
 			return (T)NULL;
 		}
