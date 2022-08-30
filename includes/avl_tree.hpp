@@ -60,10 +60,11 @@ namespace ft
 		: r(NULL), _cmp(cmp), _size(0), _alloc(alloc)
 	{}
 
-	avl_tree(const avl_tree& tree) { //TODO: use deep copy
-		r = NULL;
-		_cmp = tree._cmp;
-		_size = 0;
+	avl_tree(const avl_tree& tree)
+	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc) {
+		for(Iterator it = tree.begin(); it != tree.end(); it++) {
+			this->insert(*it);
+		}
 	}
 
 	void printBT() {
@@ -75,7 +76,6 @@ namespace ft
 			std::cout << "Tree is Empty" << std::endl;
 		else
 			show(r, 1);
-
 	}
 
 	/*
@@ -155,6 +155,59 @@ namespace ft
 		Iterator(avl *node, avl *root = NULL, Allocator alloc = Allocator())
 			: _root(root), _node(node), _alloc(alloc) {}
 		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
+		
+		avl *erase() {
+			if (!_node)
+				return NULL;
+			avl *b;
+			if (_node->r && _node->l)
+				return eraseNodeWithTwoChildren();
+			else if (!_node->r && !_node->l)
+				return eraseNodeWithNoChildren();
+			else
+				return eraseNodeWithOneChildren();
+		}
+
+		bool operator== (const Iterator& rhs) const { return _node == rhs._node; }
+		
+		bool operator!= (const Iterator& rhs) const {
+			return _node != rhs._node;
+		}
+		
+		const T& operator* () const {
+			return _node->d;
+		}
+
+		// preincrement
+		Iterator& operator++ () {
+			_node = getNextNode(_node);
+			return *this;
+		}
+		
+		// postincrement
+		Iterator operator++ (int) {
+			Iterator ret(*this);
+
+			_node = getNextNode(_node);
+			return ret;
+		}
+		
+		//TODO: fix end() - 1 
+		// predecrement. move backward to largest value < current value
+		Iterator operator-- () {
+			_node = getPrevNode(_node);
+			return *this;
+		}
+		
+		// postdecrement
+		Iterator operator-- (int) {
+			Iterator ret(*this);
+
+			_node = getPrevNode(_node);
+			return ret;
+		}
+
+		private:
 
 		avl *eraseNodeWithTwoChildren() {
 			Iterator it(*this);
@@ -224,29 +277,7 @@ namespace ft
 			return parent;
 		}
 		
-		avl *erase() {
-			if (!_node)
-				return NULL;
-			avl *b;
-			if (_node->r && _node->l)
-				return eraseNodeWithTwoChildren();
-			else if (!_node->r && !_node->l)
-				return eraseNodeWithNoChildren();
-			else
-				return eraseNodeWithOneChildren();
-		}
-
-		bool operator== (const Iterator& rhs) const { return _node == rhs._node; }
-		
-		bool operator!= (const Iterator& rhs) const {
-			return _node != rhs._node;
-		}
-		
-		const T& operator* () const {
-			return _node->d;
-		}
-		
-		static avl *getLeftMost(avl *node) {
+		avl *getLeftMost(avl *node) {
 			if (node) {	
 				while (node->l)
 					node = node->l;
@@ -254,7 +285,7 @@ namespace ft
 			return node;
 		}
 
-		static avl *getRightMost(avl *node) {
+		avl *getRightMost(avl *node) {
 			while (node->r)
 				node = node->r;
 			return node;
@@ -292,37 +323,9 @@ namespace ft
 			} while (node && node->l == aux);
 			return node;
 		}
-
-		// preincrement
-		Iterator& operator++ () {
-			_node = getNextNode(_node);
-			return *this;
-		}
-		
-		// postincrement
-		Iterator operator++ (int) {
-			Iterator ret(*this);
-
-			_node = getNextNode(_node);
-			return ret;
-		}
-		
-		//TODO: fix end() - 1 
-		// predecrement. move backward to largest value < current value
-		Iterator operator-- () {
-			_node = getPrevNode(_node);
-			return *this;
-		}
-		
-		// postdecrement
-		Iterator operator-- (int) {
-			Iterator ret(*this);
-
-			_node = getPrevNode(_node);
-			return ret;
-		}
 	};
 
+	public:
 	/*
 	*	Elemental access
 	*/
@@ -346,7 +349,7 @@ namespace ft
 		_size--;
 	}
 
-private:
+	private:
 
 	int height(avl *t) {
 		int h = 0;
