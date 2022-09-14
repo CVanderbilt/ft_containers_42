@@ -200,7 +200,7 @@ void autoTest() {
 		std::cout << "OK: No tests failed" << std::endl;
 }
 
-int main() {
+void manual_test() {
 	int c, i;
    
 	ft::avl_tree<int> avl;
@@ -300,12 +300,23 @@ int main() {
 				break ;
 			}
         	case 8: {
-            	exit(1);
+            	return ;
 			}
 	    	default: {
             	std::cout << "Wrong Choice" << std::endl;
 			}
       }
    }//*/
-   return 0;
+}
+
+int main () {
+	int i;
+	manual_test();
+	std::cout << "Finished testing, check leaks now" << std::endl;
+	std::cout << "Press enter to exit" << std::endl;
+
+	getchar();
+	getchar();
+	
+	return (0);
 }

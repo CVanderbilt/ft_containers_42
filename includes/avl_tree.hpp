@@ -10,20 +10,29 @@
 
 namespace ft
 {
-	//add a destructor and check if it is being called + implement logic to maybe call destructor of d (? maybe also automatic)
-	template<class T>
+	template<class T, class Allocator = std::allocator<T> >
 	class avl_node {
+		private:
+		Allocator _alloc;
 		public:
-		T d;
+		T *d;
 		avl_node *l;
 		avl_node *r;
 		avl_node *p;
+
+		avl_node(T v, avl_node *parent = NULL):
+			_alloc(Allocator()) d(NULL), l(NULL), r(NULL), p(parent)
+		{
+			d = _alloc.allocate(1);
+			_alloc.construct(n, T(v));
+		}
 	};
 
 
 	template <
 		class T=int, class Compare = std::less<T>,
-		class Allocator = std::allocator<avl_node<T> >
+		class ValueAllocator = std::allocator<T>,
+		class NodeAllocator = std::allocator<avl_node<T> >
 	>
 	class avl_tree
 	{
@@ -33,10 +42,11 @@ namespace ft
 
 	private:
 
-	avl			*r;
-	Compare		_cmp;
-	size_t		_size;
-	Allocator	_alloc;
+	avl				*r;
+	Compare			_cmp;
+	size_t			_size;
+	NodeAllocator	_alloc;
+	ValueAllocator	_valloc;
 
 	public:
 
@@ -56,7 +66,7 @@ namespace ft
 
 	avl_tree(
 		Compare cmp = Compare(),
-		const Allocator alloc = Allocator())
+		const NodeAllocator alloc = NodeAllocator())
 		: r(NULL), _cmp(cmp), _size(0), _alloc(alloc)
 	{}
 
@@ -64,6 +74,12 @@ namespace ft
 	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc) {
 		for(Iterator it = tree.begin(); it != tree.end(); it++) {
 			this->insert(*it);
+		}
+	}
+
+	~avl_tree() {
+		for (Iterator it = this->begin(); it != this->end();) {
+			this->erase(it++);
 		}
 	}
 
@@ -78,27 +94,8 @@ namespace ft
 			show(r, 1);
 	}
 
-	/*
-	*	Should be private, we don't need to expose internal logic
-	*/
-	avl *getNode(T v) {
-		avl *node = r;
-
-		while (node) {
-			if (_cmp(v, node->d)) {
-				node = node->l;
-			} else if (v == node->d) {
-				return node;
-			} else {
-				node = node->r;
-			}
-		}
-
-		return NULL;
-	}
-
 	//balancing called from this function
-	avl *insert(T v) {
+	avl *insert(const T& v) {
 		avl *parent = NULL;
 		avl *n = r;
 		bool isRight = true;
@@ -107,7 +104,7 @@ namespace ft
 				parent = n;
 				n = n->l;
 				isRight = false;
-			} else if (v != n->d) {
+			} else if (_cmp(n->d, v)) {
 				parent = n;
 				n = n->r;
 				isRight = true;
@@ -147,12 +144,12 @@ namespace ft
 		private:
 		avl *_root;
 		avl *_node;
-		Allocator _alloc;
+		NodeAllocator _alloc;
 
 		public:
-		Iterator(avl *root = NULL, Allocator alloc = Allocator()):
+		Iterator(avl *root = NULL, NodeAllocator alloc = NodeAllocator()):
 			_root(root), _node(getLeftMost(root)), _alloc(alloc) {}
-		Iterator(avl *node, avl *root = NULL, Allocator alloc = Allocator())
+		Iterator(avl *node, avl *root = NULL, NodeAllocator alloc = NodeAllocator())
 			: _root(root), _node(node), _alloc(alloc) {}
 		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
 		
@@ -482,12 +479,29 @@ namespace ft
 
 	avl *createNode(T v, avl *parent) {
 		avl_node<T> *n = this->_alloc.allocate(1);
+		_alloc.construct(n, avl_node<T>(v));
 		n->d = v;
 		n->l = NULL;
 		n->r = NULL;
 		n->p = parent;
 
 		return n;
+	}
+
+	avl *getNode(T v) {
+		avl *node = r;
+
+		while (node) {
+			if (_cmp(v, node->d)) {
+				node = node->l;
+			} else if (v == node->d) {
+				return node;
+			} else {
+				node = node->r;
+			}
+		}
+
+		return NULL;
 	}
 
 	};
