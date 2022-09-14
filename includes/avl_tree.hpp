@@ -20,11 +20,23 @@ namespace ft
 		avl_node *r;
 		avl_node *p;
 
-		avl_node(T v, avl_node *parent = NULL):
-			_alloc(Allocator()) d(NULL), l(NULL), r(NULL), p(parent)
+		avl_node(T v, avl_node *parent):
+			_alloc(Allocator()), d(NULL), l(NULL), r(NULL), p(parent)
 		{
 			d = _alloc.allocate(1);
-			_alloc.construct(n, T(v));
+			_alloc.construct(d, v);
+		}
+
+		avl_node(const avl_node& n):
+			_alloc(n._alloc), d(NULL), l(NULL), r(NULL), p(n.p)
+		{
+			d = _alloc.allocate(1);
+			_alloc.construct(d, *n.d);
+		}
+
+		~avl_node() {
+			_alloc.destroy(d);
+			_alloc.deallocate(d, 1);
 		}
 	};
 
@@ -100,11 +112,11 @@ namespace ft
 		avl *n = r;
 		bool isRight = true;
 		while (n != NULL) {
-			if (_cmp(v, n->d)) {
+			if (_cmp(v, *n->d)) {
 				parent = n;
 				n = n->l;
 				isRight = false;
-			} else if (_cmp(n->d, v)) {
+			} else if (_cmp(*n->d, v)) {
 				parent = n;
 				n = n->r;
 				isRight = true;
@@ -172,7 +184,7 @@ namespace ft
 		}
 		
 		const T& operator* () const {
-			return _node->d;
+			return *_node->d;
 		}
 
 		// preincrement
@@ -235,6 +247,7 @@ namespace ft
 			newNode->l = oldNode->l;
 			newNode->l->p = newNode;
 
+			_alloc.destroy(oldNode);
 			_alloc.deallocate(oldNode, 1);
 			return (parentNewNode);
 		}
@@ -253,6 +266,7 @@ namespace ft
 				}
 			}
 
+			_alloc.destroy(_node);
 			_alloc.deallocate(_node, 1);
 
 			return parent;			
@@ -269,6 +283,7 @@ namespace ft
 				}
 			}
 
+			_alloc.destroy(_node);
 			_alloc.deallocate(_node, 1);
 
 			return parent;
@@ -455,7 +470,7 @@ namespace ft
 
 		std::string parentMsg = "p(NULL)";
 		if (node->p) {
-			parentMsg = "p(" + std::to_string(node->p->d) + ")";
+			parentMsg = "p(" + std::to_string(*node->p->d) + ")";
         	std::cout << (isLeft ? "├L─" : "└R─") << parentMsg;
 		} else {
 			std::cout << "* -> " << parentMsg;
@@ -479,8 +494,8 @@ namespace ft
 
 	avl *createNode(T v, avl *parent) {
 		avl_node<T> *n = this->_alloc.allocate(1);
-		_alloc.construct(n, avl_node<T>(v));
-		n->d = v;
+		std::cout << "allocating in: " << (long long int)n << ", for: " << v << std::endl;
+		_alloc.construct(n, avl_node<T>(v, parent));
 		n->l = NULL;
 		n->r = NULL;
 		n->p = parent;
@@ -492,12 +507,12 @@ namespace ft
 		avl *node = r;
 
 		while (node) {
-			if (_cmp(v, node->d)) {
+			if (_cmp(v, *node->d)) {
 				node = node->l;
-			} else if (v == node->d) {
-				return node;
-			} else {
+			} else if (_cmp(*node->d, v)) {
 				node = node->r;
+			} else {
+				return node;
 			}
 		}
 
