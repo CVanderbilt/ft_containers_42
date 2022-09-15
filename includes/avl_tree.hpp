@@ -20,8 +20,8 @@ namespace ft
 		avl_node *r;
 		avl_node *p;
 
-		avl_node(T v, avl_node *parent):
-			_alloc(Allocator()), d(NULL), l(NULL), r(NULL), p(parent)
+		avl_node(T v, avl_node *parent, Allocator alloc = Allocator()):
+			_alloc(alloc), d(NULL), l(NULL), r(NULL), p(parent)
 		{
 			d = _alloc.allocate(1);
 			_alloc.construct(d, v);
@@ -78,12 +78,13 @@ namespace ft
 
 	avl_tree(
 		Compare cmp = Compare(),
+		const ValueAllocator valloc = ValueAllocator(),
 		const NodeAllocator alloc = NodeAllocator())
-		: r(NULL), _cmp(cmp), _size(0), _alloc(alloc)
+		: r(NULL), _cmp(cmp), _size(0), _alloc(alloc), _valloc(valloc)
 	{}
 
 	avl_tree(const avl_tree& tree)
-	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc) {
+	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc), _valloc(tree._valloc) {
 		for(Iterator it = tree.begin(); it != tree.end(); it++) {
 			this->insert(*it);
 		}
@@ -495,7 +496,7 @@ namespace ft
 	avl *createNode(T v, avl *parent) {
 		avl_node<T> *n = this->_alloc.allocate(1);
 		std::cout << "allocating in: " << (long long int)n << ", for: " << v << std::endl;
-		_alloc.construct(n, avl_node<T>(v, parent));
+		_alloc.construct(n, avl_node<T>(v, parent, _valloc));
 		n->l = NULL;
 		n->r = NULL;
 		n->p = parent;
