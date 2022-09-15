@@ -83,6 +83,8 @@ template<
 		_comp(other._comp),
 		_bst(other._bst) //TODO make sure this is being copied correctly
 	{}
+
+	~map() {}
 };
 }
 
