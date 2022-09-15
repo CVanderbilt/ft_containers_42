@@ -17,26 +17,25 @@ template<
 	/*
 	*	Member types
 	*/
-	typedef Key 						key_type;
-	typedef T 							mapped_type;
-	typedef std::pair<const Key, T>		value_type;
-	typedef std::size_t					size_type;
-	typedef std::ptrdiff_t				difference_type;
-	typedef Compare						key_compare;
-	typedef Allocator					allocator_type;
-	typedef value_type&					reference;
-	typedef const value_type&			const_reference;
-	typedef typename Allocator::pointer			pointer;
-	typedef typename Allocator::const_pointer	const_pointer;
-	/*iterator 	LegacyBidirectionalIterator to value_type
-	const_iterator 	LegacyBidirectionalIterator to const value_type
-	reverse_iterator 	std::reverse_iterator<iterator>
-	const_reverse_iterator 	std::reverse_iterator<const_iterator>*/
+	typedef Key 											key_type;
+	typedef T 												mapped_type;
+	typedef std::pair<const Key, T>							value_type;
+	typedef std::size_t										size_type;
+	typedef std::ptrdiff_t									difference_type;
+	typedef Compare											key_compare;
+	typedef Allocator										allocator_type;
+	typedef value_type&										reference;
+	typedef const value_type&								const_reference;
+	typedef typename Allocator::pointer						pointer;
+	typedef typename Allocator::const_pointer				const_pointer;
+	typedef typename avl_tree<value_type>::Iterator			iterator;
+	typedef const typename avl_tree<value_type>::Iterator	const_iterator;
+	//todo implement reverse iterator
 
 	protected:
 	allocator_type			_alloc;
 	key_compare				_comp;
-	avl_tree <value_type>	_bst;
+	avl_tree<value_type>	_bst;
 
 	/*
 	*	Member class
@@ -66,6 +65,23 @@ template<
 		_alloc(alloc),
 		_comp(comp),
 		_bst()
+	{}
+
+	template< class InputIt >
+	map (const_iterator first, const_iterator last,
+    	const Compare& comp = Compare(),
+    	const Allocator& alloc = Allocator() ):
+		_alloc(alloc),
+		_comp(comp),
+		_bst()
+	{
+		//todo use insert with iterators to insert all the elements inside [first, last)
+	}
+
+	map (const map& other):
+		_alloc(other._alloc),
+		_comp(other._comp),
+		_bst(other._bst) //TODO make sure this is being copied correctly
 	{}
 };
 }
