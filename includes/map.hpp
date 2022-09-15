@@ -1,5 +1,8 @@
-#include <iostream>
-#include "avl_tree.hpp"
+#ifndef MAP_HPP
+# define MAP_HPP
+
+# include <iostream>
+# include "avl_tree.hpp"
 
 namespace ft{
 
@@ -53,8 +56,18 @@ template<
 			return (comp(lhs.first, rhs.first));
 		}
 	};
+
+	public:
 	/*
-	* Map code here
+	*	Constructor todo: check explicit keyword, check if I have to add map() default constructor
 	*/
+	explicit map (const key_compare& comp = key_compare(),
+		const allocator_type& alloc = allocator_type()):
+		_alloc(alloc),
+		_comp(comp),
+		_bst()
+	{}
 };
 }
+
+#endif
