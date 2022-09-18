@@ -85,12 +85,23 @@ namespace ft
 
 	avl_tree(const avl_tree& tree)
 	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc), _valloc(tree._valloc) {
-		for(Iterator it = tree.begin(); it != tree.end(); it++) {
+		for (Iterator it = tree.begin(); it != tree.end(); it++) {
 			this->insert(*it);
 		}
 	}
 
 	~avl_tree() {
+		this->clear();
+	}
+
+	avl_tree& operator= (const avl_tree& other) {
+		this->clear();
+		for (Iterator it = other.begin(); it != other.end(); it++) {
+			this->insert(*it);
+		}
+	}
+
+	void clear() {
 		for (Iterator it = this->begin(); it != this->end();) {
 			this->erase(it++);
 		}
@@ -352,7 +363,15 @@ namespace ft
 		return Iterator(r, _alloc);
 	}
 
+	Iterator begin() const {
+		return Iterator(r, _alloc);
+	}
+
 	Iterator end() {
+		return Iterator(NULL, r, _alloc);
+	}
+
+	Iterator end() const {
 		return Iterator(NULL, r, _alloc);
 	}
 
@@ -495,7 +514,6 @@ namespace ft
 
 	avl *createNode(T v, avl *parent) {
 		avl_node<T> *n = this->_alloc.allocate(1);
-		std::cout << "allocating in: " << (long long int)n << ", for: " << v << std::endl;
 		_alloc.construct(n, avl_node<T>(v, parent, _valloc));
 		n->l = NULL;
 		n->r = NULL;

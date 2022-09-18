@@ -28,15 +28,9 @@ template<
 	typedef const value_type&								const_reference;
 	typedef typename Allocator::pointer						pointer;
 	typedef typename Allocator::const_pointer				const_pointer;
-	typedef typename avl_tree<value_type>::Iterator			iterator;
-	typedef const typename avl_tree<value_type>::Iterator	const_iterator;
 	//todo implement reverse iterator
 
 	protected:
-	allocator_type			_alloc;
-	key_compare				_comp;
-	avl_tree<value_type>	_bst;
-
 	/*
 	*	Member class
 	*/
@@ -56,35 +50,44 @@ template<
 		}
 	};
 
+	typedef avl_tree<value_type, value_compare, Allocator>	bst;
+
+	value_compare _cmp;
+	bst	_bst;
+
 	public:
+
+	typedef typename bst::Iterator			iterator;
+	typedef const typename bst::Iterator	const_iterator;
 	/*
 	*	Constructor todo: check explicit keyword, check if I have to add map() default constructor
 	*/
 	explicit map (const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type()):
-		_alloc(alloc),
-		_comp(comp),
-		_bst()
+		_cmp(comp),
+		_bst(bst(_cmp, alloc))
 	{}
 
 	template< class InputIt >
-	map (const_iterator first, const_iterator last,
-    	const Compare& comp = Compare(),
-    	const Allocator& alloc = Allocator() ):
-		_alloc(alloc),
-		_comp(comp),
-		_bst()
+	map (InputIt first, InputIt last,
+		const Compare& comp = Compare(),
+		const Allocator& alloc = Allocator() ):
+		_cmp(comp),
+		_bst(comp, alloc)
 	{
 		//todo use insert with iterators to insert all the elements inside [first, last)
 	}
 
 	map (const map& other):
-		_alloc(other._alloc),
-		_comp(other._comp),
 		_bst(other._bst) //TODO make sure this is being copied correctly
 	{}
 
 	~map() {}
+
+	map& operator= (const map& other) {
+		this->_cmp = other._cmp;
+		this->_bst = other._bst;
+	}
 };
 }
 
