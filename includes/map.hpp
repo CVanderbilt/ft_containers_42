@@ -84,9 +84,38 @@ template<
 
 	~map() {}
 
-	map& operator= (const map& other) {
+	map& operator=(const map& other) {
 		this->_cmp = other._cmp;
 		this->_bst = other._bst;
+	}
+
+	allocator_type get_allocator() const {
+		return _bst._valloc;
+	}
+
+	mapped_type& at(const Key& key) {
+		typename bst::Iterator it = this->getIteratorToPair(key);
+
+		if (it == this->_bst.end())
+			throw std::out_of_range("Temporal exception message"); //check exception message
+
+		return (*it).second;
+	}
+
+	const mapped_type& at(const Key& key) const {
+		typename bst::Iterator it = this->getIteratorToPair(key);
+
+		if (it == this->_bst.end())
+			throw std::out_of_range("Temporal exception message"); //check exception message
+
+		return (*it).second;
+	}
+
+	private:
+	typename bst::Iterator getIteratorToPair(const Key& key) {
+		value_type toSearch;
+		toSearch.first = key;
+		return this->_bst.get(toSearch);
 	}
 };
 }
