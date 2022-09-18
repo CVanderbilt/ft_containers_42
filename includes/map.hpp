@@ -111,6 +111,17 @@ template<
 		return (*it).second;
 	}
 
+	mapped_type& operator[] (const Key& key) {
+		typename bst::Iterator it = this->getIteratorToPair(key);
+
+		if (it == this->_bst.end())
+		//crear el elemento a devolver
+			throw std::out_of_range("Temporal exception message (next commented line will be added instead of this one when make pair is created"); //check exception message
+			//return insert(std::make_pair(key, T())).first->second;
+		return (*it).second;
+	}
+	//todo: add logic containing duplicated code in both at methods and operator[] method
+
 	private:
 	typename bst::Iterator getIteratorToPair(const Key& key) {
 		value_type toSearch;
