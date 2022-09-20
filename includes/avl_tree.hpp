@@ -164,7 +164,14 @@ namespace ft
 
 	class Iterator:
 	public ft::iterator<ft::bidirectional_iterator_tag, T> {
-		
+		public:
+
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type					value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category	iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type		difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer				pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference			reference;
+
 		private:
 		avl *_root;
 		avl *_node;
@@ -177,7 +184,7 @@ namespace ft
 			: _root(root), _node(node), _alloc(alloc) {}
 		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
 		
-		avl *erase() {
+		avl *erase() { //cambiar esto por una friend function
 			if (!_node)
 				return NULL;
 			avl *b;
@@ -189,13 +196,10 @@ namespace ft
 				return eraseNodeWithOneChildren();
 		}
 
-		bool operator== (const Iterator& rhs) const { return _node == rhs._node; }
+		friend bool operator== (const Iterator& a, const Iterator& b) { return a._node == b._node; };
+		friend bool operator!= (const Iterator& a, const Iterator& b) { return a._node != b._node; };
 		
-		bool operator!= (const Iterator& rhs) const {
-			return _node != rhs._node;
-		}
-		
-		const T& operator* () const {
+		const value_type& operator* () const {
 			return *_node->d;
 		}
 
