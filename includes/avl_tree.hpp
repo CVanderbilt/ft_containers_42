@@ -171,10 +171,11 @@ namespace ft
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type		difference_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer				pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference			reference;
+		
+		avl *_node;
 
 		private:
 		avl *_root;
-		avl *_node;
 		NodeAllocator _alloc;
 
 		public:
@@ -183,18 +184,6 @@ namespace ft
 		Iterator(avl *node, avl *root = NULL, NodeAllocator alloc = NodeAllocator())
 			: _root(root), _node(node), _alloc(alloc) {}
 		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
-		
-		avl *erase() { //cambiar esto por una friend function
-			if (!_node)
-				return NULL;
-			avl *b;
-			if (_node->r && _node->l)
-				return eraseNodeWithTwoChildren();
-			else if (!_node->r && !_node->l)
-				return eraseNodeWithNoChildren();
-			else
-				return eraseNodeWithOneChildren();
-		}
 
 		friend bool operator== (const Iterator& a, const Iterator& b) { return a._node == b._node; };
 		friend bool operator!= (const Iterator& a, const Iterator& b) { return a._node != b._node; };
@@ -235,75 +224,6 @@ namespace ft
 		}
 
 		private:
-
-		avl *eraseNodeWithTwoChildren() {
-			Iterator it(*this);
-
-			avl *oldNode = _node;
-			avl *newNode = (++it)._node;
-			avl *parentNewNode = newNode->p;
-			avl *parentOldNode = _node->p;
-
-			_node = newNode;
-			newNode->p = oldNode->p;
-
-			if (parentOldNode) {
-				if (parentOldNode->l == oldNode)
-					parentOldNode->l = newNode;
-				else
-					parentOldNode->r = newNode;
-			}
-
-			parentNewNode->l = newNode->r;
-			if (newNode->r)
-				newNode->r->p = parentNewNode;
-
-			newNode->r = oldNode->r;
-			newNode->r->p = newNode;
-			newNode->l = oldNode->l;
-			newNode->l->p = newNode;
-
-			_alloc.destroy(oldNode);
-			_alloc.deallocate(oldNode, 1);
-			return (parentNewNode);
-		}
-
-		avl* eraseNodeWithOneChildren() {
-			avl *parent = _node->p;
-
-			avl *child = _node->r ? _node->r : _node->l;
-
-			child->p = parent;
-			if (parent) {
-				if (parent->r == _node) {
-					parent->r = child;
-				} else {
-					parent->l = child;
-				}
-			}
-
-			_alloc.destroy(_node);
-			_alloc.deallocate(_node, 1);
-
-			return parent;			
-		}
-
-		avl* eraseNodeWithNoChildren() {
-			avl *parent = _node->p;
-
-			if (parent) {
-				if (parent->r == _node) {
-					parent->r = NULL;
-				} else {
-					parent->l = NULL;
-				}
-			}
-
-			_alloc.destroy(_node);
-			_alloc.deallocate(_node, 1);
-
-			return parent;
-		}
 		
 		avl *getLeftMost(avl *node) {
 			if (node) {	
@@ -380,12 +300,93 @@ namespace ft
 	}
 
 	void erase(Iterator it) {
-		avl *n = it.erase();
+		avl *n = erase_node(it);
 		r = balance_iter(n);
 		_size--;
 	}
 
+	bool empty() { return this->_size == 0; }
+
 	private:
+
+	avl *erase_node(Iterator it) { //cambiar esto por una friend function
+			if (!it._node)
+				return NULL;
+			avl *b;
+			if (it._node->r && it._node->l)
+				return eraseNodeWithTwoChildren(it._node, it);
+			else if (!it._node->r && !it._node->l)
+				return eraseNodeWithNoChildren(it._node);
+			else
+				return eraseNodeWithOneChildren(it._node);
+		}
+
+	avl *eraseNodeWithTwoChildren(avl *_node, Iterator& it) {
+		avl *oldNode = _node;
+		avl *newNode = (++it)._node;
+		avl *parentNewNode = newNode->p;
+		avl *parentOldNode = _node->p;
+
+		_node = newNode;
+		newNode->p = oldNode->p;
+
+		if (parentOldNode) {
+			if (parentOldNode->l == oldNode)
+				parentOldNode->l = newNode;
+			else
+				parentOldNode->r = newNode;
+		}
+
+		parentNewNode->l = newNode->r;
+		if (newNode->r)
+			newNode->r->p = parentNewNode;
+
+		newNode->r = oldNode->r;
+		newNode->r->p = newNode;
+		newNode->l = oldNode->l;
+		newNode->l->p = newNode;
+
+		_alloc.destroy(oldNode);
+		_alloc.deallocate(oldNode, 1);
+		return (parentNewNode);
+	}
+
+	avl* eraseNodeWithOneChildren(avl *_node) {
+		avl *parent = _node->p;
+
+		avl *child = _node->r ? _node->r : _node->l;
+
+		child->p = parent;
+		if (parent) {
+			if (parent->r == _node) {
+				parent->r = child;
+			} else {
+				parent->l = child;
+			}
+		}
+
+		_alloc.destroy(_node);
+		_alloc.deallocate(_node, 1);
+
+		return parent;			
+	}
+
+	avl* eraseNodeWithNoChildren(avl *_node) {
+		avl *parent = _node->p;
+
+		if (parent) {
+			if (parent->r == _node) {
+				parent->r = NULL;
+			} else {
+				parent->l = NULL;
+			}
+		}
+
+		_alloc.destroy(_node);
+		_alloc.deallocate(_node, 1);
+
+		return parent;
+	}
 
 	int height(avl *t) {
 		int h = 0;

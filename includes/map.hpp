@@ -57,12 +57,13 @@ template<
 
 	public:
 
-	typedef typename bst::Iterator			iterator;
-	typedef const typename bst::Iterator	const_iterator;
+	typedef typename bst::Iterator iterator;
+	//const iterator missing
+
 	/*
 	*	Constructor todo: check explicit keyword, check if I have to add map() default constructor
 	*/
-	explicit map (const key_compare& comp = key_compare(),
+	map (const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type()):
 		_cmp(comp),
 		_bst(bst(_cmp, alloc))
@@ -122,6 +123,34 @@ template<
 	}
 	//todo: add logic containing duplicated code in both at methods and operator[] method
 
+	iterator begin() { return this->_bst.begin(); }
+	//const_iterator begin() { ... }
+	iterator end() { return this->_bst.end(); }
+	//const_iterator end() { ... }
+
+	//iterator rbegin() { return this->_bst.begin(); }
+	//const_iterator begin() { ... }
+	//iterator rend() { return this->_bst.end(); }
+	//const_iterator end() { ... }
+
+	bool empty() const { return this->_bst.empty(); }
+	size_type size() const { return this->_bst.size(); }
+	size_type max_size() const { return this->_bst.max_size(); }
+	void clear() { this->_bst.clear(); }
+/*
+	std::pair<iterator, bool> insert( const value_type& value ) { //1
+
+	}
+
+	iterator insert( iterator hint, const value_type& value ) { //4
+
+	}
+
+	template< class InputIt >
+	void insert( InputIt first, InputIt last ) { //7
+
+	}
+*/
 	private:
 	typename bst::Iterator getIteratorToPair(const Key& key) {
 		value_type toSearch;
