@@ -137,15 +137,15 @@ template<
 	size_type size() const { return this->_bst.size(); }
 	size_type max_size() const { return this->_bst.max_size(); }
 	void clear() { this->_bst.clear(); }
-/*
-	std::pair<iterator, bool> insert( const value_type& value ) { //1
 
+	std::pair<iterator, bool> insert( const value_type& value ) { //1
+		return (this->_bst.insertAndReturnIterator(value));
 	}
 
 	iterator insert( iterator hint, const value_type& value ) { //4
-
+		return (this->_bst.insertAndReturnIterator(value, hint._node));
 	}
-
+/*
 	template< class InputIt >
 	void insert( InputIt first, InputIt last ) { //7
 

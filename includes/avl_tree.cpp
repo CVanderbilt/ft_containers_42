@@ -250,6 +250,7 @@ void manual_test() {
 		std::cout << "6.Loop with iterators" << std::endl;
 		std::cout << "7.Automatic tests" << std::endl;
 		std::cout << "8.Exit" << std::endl;
+		std::cout << "9.Insert element into tree using hint" << std::endl;
 		std::cout << "Enter your Choice: ";
 		std::cin >> c;
     	switch (c) {
@@ -301,6 +302,21 @@ void manual_test() {
 			}
         	case 8: {
             	return ;
+			}
+			case 9: {
+				int hint;
+        		std::cout << "Enter value to be inserted: ";
+        		std::cin >> i;
+				std::cout << "Enter value to find and use as hint: ";
+				std::cin >> hint;
+				ft::avl_tree<int>::Iterator it = avl.get(hint); 
+				if (it != avl.end()) {
+					avl.insert(i, it);
+				} else {
+					std::cout << "Value not inserted because hint couldnt be found" << std::endl;
+					break ;
+				}
+				break ;
 			}
 	    	default: {
             	std::cout << "Wrong Choice" << std::endl;

@@ -119,7 +119,7 @@ namespace ft
 	}
 
 	//balancing called from this function
-	avl *insert(const T& v) {
+	avl *insert(const T& v, bool *check = NULL) {
 		avl *parent = NULL;
 		avl *n = r;
 		bool isRight = true;
@@ -133,8 +133,13 @@ namespace ft
 				n = n->r;
 				isRight = true;
 			} else
+			{
+				if (check) *check = true;
 				return n;
+			}
 		}
+
+		if (check) *check = false;
 
 		n = createNode(v, parent);
 
@@ -299,6 +304,13 @@ namespace ft
 		return Iterator(NULL, r, _alloc);
 	}
 
+	std::pair<Iterator, bool> insertAndReturnIterator(const T& v) {
+		bool check;
+		avl* node = insert(v, &check);
+
+		std::make_pair(check, Iterator(node, r)); //todo change with ft::make_pair
+	}
+
 	void erase(Iterator it) {
 		avl *n = erase_node(it);
 		r = balance_iter(n);
@@ -306,6 +318,79 @@ namespace ft
 	}
 
 	bool empty() { return this->_size == 0; }
+
+	avl *insertBehind(const T& v, avl *node, bool nodeIsRight) {
+		avl *left = NULL;
+		avl *right = NULL;
+
+		if (this->_cmp(v, *(node->d))) {
+			right = node;
+		} else if (this->_cmp(*(node->d), v)) {
+			left = node;
+		} else { //hinted node equals newNode -> overwrite
+			*(node->d) = v;
+			return node;
+		}
+		avl * newNode = this->createNode(v, node->p);
+		newNode->r = right;
+		newNode->l = left;
+
+		if (nodeIsRight)
+			node->p->r = newNode;
+		else
+			node->p->l = newNode;
+		node->p = newNode;
+		this->_size++;
+		return node;
+	}
+
+	//TODO: Implement something to check if value to be inserted already exists in the tree before inserting a new copy
+	avl *insert(const T& v, Iterator hint, bool *check = NULL) {
+		avl *newNode; // node to be created storing v
+		avl *hintedNode = hint._node; //node pointed by the hint
+
+		std::cout << "Inserting: " << v << "; with hint address: " << hint._node << std::endl;
+
+		if (!hintedNode) return this->insert(v, check); //if hinted node == end() -> normal insert
+		std::cout << "valid hinted node with value: " << *hint << std::endl;
+
+		avl *parentNode = hintedNode->p; //parent of the hinted node
+		std::cout << "parent of the hinted node address: " << parentNode << std::endl;
+
+		if (!parentNode) return this->insert(v, check); //if parent node == NULL -> normal insert
+		std::cout << "parent of the hinted node value: " << parentNode->d << std::endl;
+
+		//new node will be inserted between hinted node and its parent
+		// Si hinted node es hijo derecho && parentNode < v => parent(r)->V(r/l)->hint
+		if (parentNode->r == hintedNode) {
+			std::cout << "hinted node is right child" << std::endl;
+			std::cout << "cmp: " << this->_cmp(1, 2) << std::endl;
+			if (this->_cmp(*(parentNode->d), v)) {
+				//inserta en medio
+				newNode = insertBehind(v, hintedNode, true);
+				std::cout << "tree after hinted insertion without rebalancing" << std::endl;
+				this->printBT();
+				this->r = balance_iter(newNode);
+				std::cout << "tree after hinted insertion with rebalancing" << std::endl;
+				this->printBT();
+				return newNode;
+			}
+		} else if (this->_cmp(v, *(parentNode->d))) { // else Si hinted node es hijo izquierdo y v < parentNode => parent(l)->V(r/l)->hint 
+			std::cout << "hinted node is left child and valid" << std::endl;
+			//inserta en medio
+			newNode = insertBehind(v, hintedNode, false); //por aqui
+			std::cout << "tree after hinted insertion without rebalancing" << std::endl;
+			this->printBT();
+			this->r = balance_iter(newNode);
+			std::cout << "tree after hinted insertion with rebalancing" << std::endl;
+			this->printBT();
+			return newNode;
+		}
+
+		std::cout << "useless hint, will do normal insertion" << std::endl;
+		//normal insertion
+		return this->insert(v, check);
+	}
 
 	private:
 
@@ -505,7 +590,7 @@ namespace ft
 
 		std::string suffix = diff > 1 || diff < -1 ? "!!!!!!!!!!" : "";
 
-        std::cout << "v(" <<node->d << ')';
+        std::cout << "v(" << *node->d << ')';
 
 		std::cout << " [diff (" << difference(node) << ")" << suffix << "]";
 

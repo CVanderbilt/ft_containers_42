@@ -18,6 +18,7 @@
   - Check if we need to free/destroy allocators and comparators
   - iterators_traits, reverse_iterator, enable_if, is_integral, equal/lexicographical com-
 pare, std::pair, std::make_pair, must be reimplemented.
+  - Find and replace std::pair with ft::pair
 
 - avl_tree.hpp:
   - Properly finish max_size method
