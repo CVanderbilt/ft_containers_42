@@ -76,7 +76,7 @@ template<
 		_cmp(comp),
 		_bst(comp, alloc)
 	{
-		//todo use insert with iterators to insert all the elements inside [first, last)
+		this->insert(first, last);
 	}
 
 	map (const map& other):
@@ -145,12 +145,13 @@ template<
 	iterator insert( iterator hint, const value_type& value ) { //4
 		return (this->_bst.insertAndReturnIterator(value, hint._node));
 	}
-/*
+
 	template< class InputIt >
 	void insert( InputIt first, InputIt last ) { //7
-
+		for (; first != last; first++)
+			this->_bst.insert(first);
 	}
-*/
+
 	private:
 	typename bst::Iterator getIteratorToPair(const Key& key) {
 		value_type toSearch;
