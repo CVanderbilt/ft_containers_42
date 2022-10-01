@@ -14,6 +14,9 @@
 
 ## TODO
 
+- NextThings:
+  - add map tests
+
 - General:
   - Check for usages of ```*.d``` and ```*->d``` see if they are being used properly (not assigning ```a.d = b.d``` but ```*(a.d)=*(b.d))```
   - Check if we need to free/destroy allocators and comparators
