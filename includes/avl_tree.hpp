@@ -194,9 +194,15 @@ namespace ft
 
 		friend bool operator== (const Iterator& a, const Iterator& b) { return a._node == b._node; };
 		friend bool operator!= (const Iterator& a, const Iterator& b) { return a._node != b._node; };
-		
+		/*
+		//returning const reference, will be added to allow deferentiation of const_pointer, it cant be used in map::operator[]
 		const value_type& operator* () const {
 			return *_node->d;
+		}
+		*/
+
+		value_type& operator* () { //returning reference, needed to be able to modify ref returned in map::operator[]
+			return (*_node->d;
 		}
 
 		// preincrement

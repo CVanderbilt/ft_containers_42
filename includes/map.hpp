@@ -114,11 +114,10 @@ template<
 		return (*it).second;
 	}
 
-	mapped_type& operator[] (const Key& key) {
+	T& operator[] (const key_type& key) {
 		typename bst::Iterator it = this->getIteratorToPair(key);
 
-		if (it == this->_bst.end())
-			return insert(ft::make_pair(key, T())).first->second;
+		it = it == this->_bst.end() ? insert(ft::make_pair(key, mapped_type())).first : it; 
 		return (*it).second;
 	}
 	//todo: add logic containing duplicated code in both at methods and operator[] method
@@ -167,8 +166,7 @@ template<
 
 	private:
 	typename bst::Iterator getIteratorToPair(const Key& key) {
-		value_type toSearch;
-		toSearch.first = key;
+		value_type toSearch = ft::make_pair(key, mapped_type());
 		return this->_bst.get(toSearch);
 	}
 };
