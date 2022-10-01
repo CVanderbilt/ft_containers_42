@@ -7,6 +7,7 @@
 # include <algorithm>
 # include <utility>
 # include "iterator.hpp"
+# include "utils.hpp"
 
 namespace ft
 {
@@ -304,11 +305,11 @@ namespace ft
 		return Iterator(NULL, r, _alloc);
 	}
 
-	std::pair<Iterator, bool> insertAndReturnIterator(const T& v) {
+	ft::pair<Iterator, bool> insertAndReturnIterator(const T& v) {
 		bool check;
 		avl* node = insert(v, &check);
 
-		std::make_pair(check, Iterator(node, r)); //todo change with ft::make_pair
+		return ft::make_pair(Iterator(node, r), check);
 	}
 
 	void erase(Iterator it) {

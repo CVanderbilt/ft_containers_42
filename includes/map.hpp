@@ -11,7 +11,7 @@ template<
     class Key,
     class T,
     class Compare = std::less<Key>,
-    class Allocator = std::allocator<std::pair<const Key, T> >
+    class Allocator = std::allocator<ft::pair<const Key, T> >
 > class map {
 	public:
 	/*
@@ -19,7 +19,7 @@ template<
 	*/
 	typedef Key 											key_type;
 	typedef T 												mapped_type;
-	typedef std::pair<const Key, T>							value_type;
+	typedef ft::pair<const Key, T>							value_type;
 	typedef std::size_t										size_type;
 	typedef std::ptrdiff_t									difference_type;
 	typedef Compare											key_compare;
@@ -116,9 +116,7 @@ template<
 		typename bst::Iterator it = this->getIteratorToPair(key);
 
 		if (it == this->_bst.end())
-		//crear el elemento a devolver
-			throw std::out_of_range("Temporal exception message (next commented line will be added instead of this one when make pair is created"); //check exception message
-			//return insert(std::make_pair(key, T())).first->second;
+			return insert(ft::make_pair(key, T())).first->second;
 		return (*it).second;
 	}
 	//todo: add logic containing duplicated code in both at methods and operator[] method
@@ -138,13 +136,12 @@ template<
 	size_type max_size() const { return this->_bst.max_size(); }
 	void clear() { this->_bst.clear(); }
 
-	//todo replace std::pair with ft::pair
-	std::pair<iterator, bool> insert( const value_type& value ) { //1
+	ft::pair<iterator, bool> insert( const value_type& value ) { //1
 		return (this->_bst.insertAndReturnIterator(value));
 	}
 
 	iterator insert( iterator hint, const value_type& value ) { //4
-		return (this->_bst.insertAndReturnIterator(value, hint._node));
+		return (this->_bst.insertAndReturnIterator(value, hint._node).first);
 	}
 
 	template< class InputIt >
