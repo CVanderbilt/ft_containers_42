@@ -312,6 +312,8 @@ namespace ft
 	}
 
 	void erase(Iterator it) {
+		if (!it._node)
+			return ;
 		avl *n = erase_node(it);
 		r = n ? balance_iter(n) : r;
 		_size--;

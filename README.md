@@ -30,3 +30,4 @@ pare, std::pair, std::make_pair, must be reimplemented.
   - Check if I need to add a default constructor map() (right now using default values)
   - Add logic for constructor with iterators once we have logic for insertion with iterators
   - Add logic containing duplicated code in both at methods and operator[] method
+  - Add logic for const iterators (also in tree)

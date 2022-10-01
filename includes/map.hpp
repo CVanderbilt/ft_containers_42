@@ -153,6 +153,19 @@ template<
 			this->_bst.insert(first);
 	}
 
+	void erase( iterator pos ) {
+		this->_bst.erase(pos);
+	}
+
+	void erase( iterator first, iterator last ) {
+		for (iterator it = first; it != last; it++)
+			this->erase(it);
+	}
+
+	size_type erase( const Key& key ) {
+		this->erase(this->getIteratorToPair(key));
+	}
+
 	private:
 	typename bst::Iterator getIteratorToPair(const Key& key) {
 		value_type toSearch;
