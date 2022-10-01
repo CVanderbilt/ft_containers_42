@@ -346,50 +346,36 @@ namespace ft
 
 	//TODO: Implement something to check if value to be inserted already exists in the tree before inserting a new copy
 	avl *insert(const T& v, Iterator hint, bool *check = NULL) {
-		avl *newNode; // node to be created storing v
-		avl *hintedNode = hint._node; //node pointed by the hint
+		avl *new_node;
 
-		std::cout << "Inserting: " << v << "; with hint address: " << hint._node << std::endl;
+		avl *hinted_node = hint._node;
+		if (!hinted_node) return insert(v, check);
 
-		if (!hintedNode) return this->insert(v, check); //if hinted node == end() -> normal insert
-		std::cout << "valid hinted node with value: " << *hint << std::endl;
+		avl *parent_node = hinted_node->p;
+		if (!parent_node) return insert(v, check);
 
-		avl *parentNode = hintedNode->p; //parent of the hinted node
-		std::cout << "parent of the hinted node address: " << parentNode << std::endl;
+		avl **parent_child = parent_node->r == hinted_node ? &(parent_node->r) : &(parent_node->l);
 
-		if (!parentNode) return this->insert(v, check); //if parent node == NULL -> normal insert
-		std::cout << "parent of the hinted node value: " << parentNode->d << std::endl;
-
-		//new node will be inserted between hinted node and its parent
-		// Si hinted node es hijo derecho && parentNode < v => parent(r)->V(r/l)->hint
-		if (parentNode->r == hintedNode) {
-			std::cout << "hinted node is right child" << std::endl;
-			std::cout << "cmp: " << this->_cmp(1, 2) << std::endl;
-			if (this->_cmp(*(parentNode->d), v)) {
-				//inserta en medio
-				newNode = insertBehind(v, hintedNode, true);
-				std::cout << "tree after hinted insertion without rebalancing" << std::endl;
-				this->printBT();
-				this->r = balance_iter(newNode);
-				std::cout << "tree after hinted insertion with rebalancing" << std::endl;
-				this->printBT();
-				return newNode;
+		if (parent_node->r == hinted_node) {
+			if (_cmp(v, *(hinted_node->d))) {
+				new_node = createNode(v, parent_node);
+				parent_node->r = new_node;
+				new_node->r = hinted_node;
+				hinted_node->p = new_node;
+				this->_size++;
+				return new_node;
 			}
-		} else if (this->_cmp(v, *(parentNode->d))) { // else Si hinted node es hijo izquierdo y v < parentNode => parent(l)->V(r/l)->hint 
-			std::cout << "hinted node is left child and valid" << std::endl;
-			//inserta en medio
-			newNode = insertBehind(v, hintedNode, false); //por aqui
-			std::cout << "tree after hinted insertion without rebalancing" << std::endl;
-			this->printBT();
-			this->r = balance_iter(newNode);
-			std::cout << "tree after hinted insertion with rebalancing" << std::endl;
-			this->printBT();
-			return newNode;
+		} else {
+			if (_cmp(*(hinted_node->d), v)) {
+				new_node = createNode(v, parent_node);
+				parent_node->l = new_node;
+				new_node->l = hinted_node;
+				hinted_node->p = new_node;
+				this->_size++;
+				return new_node;
+			}
 		}
-
-		std::cout << "useless hint, will do normal insertion" << std::endl;
-		//normal insertion
-		return this->insert(v, check);
+		return insert(v, check);
 	}
 
 	private:
@@ -406,34 +392,36 @@ namespace ft
 				return eraseNodeWithOneChildren(it._node);
 		}
 
-	avl *eraseNodeWithTwoChildren(avl *_node, Iterator& it) {
-		avl *oldNode = _node;
-		avl *newNode = (++it)._node;
-		avl *parentNewNode = newNode->p;
-		avl *parentOldNode = _node->p;
+	avl *eraseNodeWithTwoChildren(avl *erasedNode, Iterator& it) {
+		avl *successorNode = (++it)._node;
+		avl *ret = successorNode;
 
-		_node = newNode;
-		newNode->p = oldNode->p;
-
-		if (parentOldNode) {
-			if (parentOldNode->l == oldNode)
-				parentOldNode->l = newNode;
-			else
-				parentOldNode->r = newNode;
+		if (successorNode->p != erasedNode) {
+			successorNode->p->l = successorNode->r;
+			if (successorNode->r)
+				successorNode->r->p = successorNode->p;
+			successorNode->r = erasedNode->r;
+			if (successorNode->r)
+				successorNode->r->p = successorNode;
+			ret = successorNode->p;
 		}
 
-		parentNewNode->l = newNode->r;
-		if (newNode->r)
-			newNode->r->p = parentNewNode;
+		successorNode->p = erasedNode->p;
+		successorNode->l = erasedNode->l;
+		if (successorNode->l)
+			successorNode->l->p = successorNode;
 
-		newNode->r = oldNode->r;
-		newNode->r->p = newNode;
-		newNode->l = oldNode->l;
-		newNode->l->p = newNode;
+		if (erasedNode->p) {
+			if (erasedNode->p->r == erasedNode)
+				erasedNode->p->r = successorNode;
+			else
+				erasedNode->p->l = successorNode;
+		}
 
-		_alloc.destroy(oldNode);
-		_alloc.deallocate(oldNode, 1);
-		return (parentNewNode);
+		_alloc.destroy(erasedNode);
+		_alloc.deallocate(erasedNode, 1);
+
+		return ret;
 	}
 
 	avl* eraseNodeWithOneChildren(avl *_node) {
@@ -448,7 +436,8 @@ namespace ft
 			} else {
 				parent->l = child;
 			}
-		}
+		} else
+			this->r = child;
 
 		_alloc.destroy(_node);
 		_alloc.deallocate(_node, 1);
@@ -577,10 +566,9 @@ namespace ft
 	if( node != nullptr )
     {
         std::cout << prefix;
-
 		std::string parentMsg = "p(NULL)";
 		if (node->p) {
-			parentMsg = "p(" + std::to_string(*node->p->d) + ")";
+			parentMsg = "p(" + std::to_string(*(node->p->d)) + ")";
         	std::cout << (isLeft ? "├L─" : "└R─") << parentMsg;
 		} else {
 			std::cout << "* -> " << parentMsg;

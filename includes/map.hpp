@@ -138,6 +138,7 @@ template<
 	size_type max_size() const { return this->_bst.max_size(); }
 	void clear() { this->_bst.clear(); }
 
+	//todo replace std::pair with ft::pair
 	std::pair<iterator, bool> insert( const value_type& value ) { //1
 		return (this->_bst.insertAndReturnIterator(value));
 	}

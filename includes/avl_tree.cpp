@@ -35,7 +35,7 @@ void findAndErase(int n, ft::avl_tree<int> *tree) {
 		actualsize++;
 		it++;
 		if (actualsize > maxsize) { //prevent for loops in malformed tree
-			std::cout << "size check!!!" << std::endl;
+			std::cout << "size check!!! (expected: " << maxsize << ", but got: " << actualsize << ")" << std::endl;
 			break ;
 		}
 		//TODO: add test de erase(it++)
