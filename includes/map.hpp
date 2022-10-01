@@ -88,6 +88,8 @@ template<
 	map& operator=(const map& other) {
 		this->_cmp = other._cmp;
 		this->_bst = other._bst;
+
+		return *this;
 	}
 
 	allocator_type get_allocator() const {

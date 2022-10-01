@@ -100,6 +100,7 @@ namespace ft
 		for (Iterator it = other.begin(); it != other.end(); it++) {
 			this->insert(*it);
 		}
+		return *this;
 	}
 
 	void clear() {

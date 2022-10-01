@@ -35,6 +35,8 @@ template<
 	pair& operator=(const pair& other) {
 		this->first = other.first;
 		this->second = other.second;
+
+		return *this;
 	}
 };
 
@@ -53,12 +55,12 @@ bool operator!=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs ) { retu
 template< class T1, class T2 >
 bool operator<( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs ) {
 	if (lhs.first < rhs.first)
-		return true ;
+		return true;
 	if (rhs.first < lhs.first)
-		return false ;
+		return false;
 	if (lhs.second < rhs.second)
-		return true ;
-	return false ;
+		return true;
+	return false;
 }
 
 template< class T1, class T2 >
