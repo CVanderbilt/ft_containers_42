@@ -313,7 +313,7 @@ namespace ft
 
 	void erase(Iterator it) {
 		avl *n = erase_node(it);
-		r = balance_iter(n);
+		r = n ? balance_iter(n) : r;
 		_size--;
 	}
 
@@ -454,7 +454,8 @@ namespace ft
 			} else {
 				parent->l = NULL;
 			}
-		}
+		} else
+			this->r = NULL;
 
 		_alloc.destroy(_node);
 		_alloc.deallocate(_node, 1);
