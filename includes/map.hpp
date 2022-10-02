@@ -80,6 +80,7 @@ template<
 	}
 
 	map (const map& other):
+		_cmp(key_compare()),
 		_bst(other._bst) //TODO make sure this is being copied correctly
 	{}
 
