@@ -202,7 +202,7 @@ namespace ft
 		*/
 
 		value_type& operator* () { //returning reference, needed to be able to modify ref returned in map::operator[]
-			return (*_node->d;
+			return (*_node->d);
 		}
 
 		// preincrement
