@@ -16,6 +16,8 @@
 
 - NextThings:
   - add map tests
+  - add ft::enable_if
+  - add const_iterators
 
 - General:
   - Check for usages of ```*.d``` and ```*->d``` see if they are being used properly (not assigning ```a.d = b.d``` but ```*(a.d)=*(b.d))```

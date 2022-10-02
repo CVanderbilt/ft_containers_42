@@ -19,15 +19,15 @@ template<
 	*/
 	typedef Key 											key_type;
 	typedef T 												mapped_type;
-	typedef ft::pair<const Key, T>							value_type;
+	typedef ft::pair<const key_type, mapped_type>			value_type;
 	typedef std::size_t										size_type;
 	typedef std::ptrdiff_t									difference_type;
 	typedef Compare											key_compare;
 	typedef Allocator										allocator_type;
 	typedef value_type&										reference;
 	typedef const value_type&								const_reference;
-	typedef typename Allocator::pointer						pointer;
-	typedef typename Allocator::const_pointer				const_pointer;
+	typedef typename allocator_type::pointer				pointer;
+	typedef typename allocator_type::const_pointer			const_pointer;
 	//todo implement reverse iterator
 
 	protected:
@@ -40,17 +40,17 @@ template<
 
 		protected:
 		key_compare comp;
-		value_compare (Compare c) : comp(c) {}
+		value_compare (key_compare c) : comp(c) {}
 
 		public:
 
-		bool operator() (const value_type& lhs, const value_type& rhs) const
+		bool operator() (const_reference lhs, const_reference rhs) const
 		{
 			return (comp(lhs.first, rhs.first));
 		}
 	};
 
-	typedef avl_tree<value_type, value_compare, Allocator>	bst;
+	typedef avl_tree<value_type, value_compare, allocator_type>	bst;
 
 	value_compare _cmp;
 	bst	_bst;
@@ -71,8 +71,8 @@ template<
 
 	template< class InputIt >
 	map (InputIt first, InputIt last,
-		const Compare& comp = Compare(),
-		const Allocator& alloc = Allocator() ):
+		const key_compare& comp = key_compare(),
+		const allocator_type& alloc = allocator_type() ):
 		_cmp(comp),
 		_bst(comp, alloc)
 	{
@@ -96,7 +96,7 @@ template<
 		return _bst._valloc;
 	}
 
-	mapped_type& at(const Key& key) {
+	mapped_type& at(const key_type& key) {
 		typename bst::Iterator it = this->getIteratorToPair(key);
 
 		if (it == this->_bst.end())
@@ -105,7 +105,7 @@ template<
 		return (*it).second;
 	}
 
-	const mapped_type& at(const Key& key) const {
+	const mapped_type& at(const key_type& key) const {
 		typename bst::Iterator it = this->getIteratorToPair(key);
 
 		if (it == this->_bst.end())
@@ -137,11 +137,11 @@ template<
 	size_type max_size() const { return this->_bst.max_size(); }
 	void clear() { this->_bst.clear(); }
 
-	ft::pair<iterator, bool> insert( const value_type& value ) { //1
+	ft::pair<iterator, bool> insert( const_reference value ) { //1
 		return (this->_bst.insertAndReturnIterator(value));
 	}
 
-	iterator insert( iterator hint, const value_type& value ) { //4
+	iterator insert( iterator hint, const_reference value ) { //4
 		return (this->_bst.insertAndReturnIterator(value, hint._node).first);
 	}
 
@@ -160,12 +160,12 @@ template<
 			this->erase(it);
 	}
 
-	size_type erase( const Key& key ) {
+	size_type erase( const key_type& key ) {
 		this->erase(this->getIteratorToPair(key));
 	}
 
 	private:
-	typename bst::Iterator getIteratorToPair(const Key& key) {
+	typename bst::Iterator getIteratorToPair(const key_type& key) {
 		value_type toSearch = ft::make_pair(key, mapped_type());
 		return this->_bst.get(toSearch);
 	}
