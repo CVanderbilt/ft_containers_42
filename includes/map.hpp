@@ -57,7 +57,8 @@ template<
 
 	public:
 
-	typedef typename bst::Iterator iterator;
+	typedef typename bst::iterator iterator;
+	typedef typename bst::const_iterator const_iterator;
 	//const iterator missing
 
 	/*
@@ -115,8 +116,8 @@ template<
 		return (*it).second;
 	}
 
-	T& operator[] (const key_type& key) {
-		typename bst::Iterator it = this->getIteratorToPair(key);
+	mapped_type& operator[] (const key_type& key) {
+		iterator it = this->getIteratorToPair(key);
 
 		it = it == this->_bst.end() ? insert(ft::make_pair(key, mapped_type())).first : it; 
 		return (*it).second;
@@ -166,7 +167,7 @@ template<
 	}
 
 	private:
-	typename bst::Iterator getIteratorToPair(const key_type& key) {
+	iterator getIteratorToPair(const key_type& key) {
 		value_type toSearch = ft::make_pair(key, mapped_type());
 		return this->_bst.get(toSearch);
 	}

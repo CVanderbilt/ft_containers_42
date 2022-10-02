@@ -15,7 +15,6 @@
 ## TODO
 
 - NextThings:
-  - add map tests
   - add ft::enable_if
   - add const_iterators
 
@@ -27,6 +26,7 @@
 pare, std::pair, std::make_pair, must be reimplemented.
 
 - avl_tree.hpp:
+  - Add operator -> to avl_tree
   - Properly finish max_size method
   - Check tests for hinted inserts
 

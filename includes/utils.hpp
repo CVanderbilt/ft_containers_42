@@ -72,6 +72,15 @@ bool operator>( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs ) { retur
 template< class T1, class T2 >
 bool operator>=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs ) { return !(lhs < rhs); }
 
+template <bool, typename T = void>
+struct enable_if
+{};
+
+template <typename T>
+struct enable_if<true, T> {
+  typedef T type;
+};
+
 }
 
 #endif

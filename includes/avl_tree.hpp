@@ -86,7 +86,7 @@ namespace ft
 
 	avl_tree(const avl_tree& tree)
 	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc), _valloc(tree._valloc) {
-		for (Iterator it = tree.begin(); it != tree.end(); it++) {
+		for (iterator it = tree.begin(); it != tree.end(); it++) {
 			this->insert(*it);
 		}
 	}
@@ -97,14 +97,14 @@ namespace ft
 
 	avl_tree& operator= (const avl_tree& other) {
 		this->clear();
-		for (Iterator it = other.begin(); it != other.end(); it++) {
+		for (iterator it = other.begin(); it != other.end(); it++) {
 			this->insert(*it);
 		}
 		return *this;
 	}
 
 	void clear() {
-		for (Iterator it = this->begin(); it != this->end();) {
+		for (iterator it = this->begin(); it != this->end();) {
 			this->erase(it++);
 		}
 	}
@@ -169,6 +169,7 @@ namespace ft
 	}
 
 
+	template <bool Const = false>
 	class Iterator:
 	public ft::iterator<ft::bidirectional_iterator_tag, T> {
 		public:
@@ -192,18 +193,13 @@ namespace ft
 			: _root(root), _node(node), _alloc(alloc) {}
 		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
 
-		friend bool operator== (const Iterator& a, const Iterator& b) { return a._node == b._node; };
-		friend bool operator!= (const Iterator& a, const Iterator& b) { return a._node != b._node; };
-		/*
-		//returning const reference, will be added to allow deferentiation of const_pointer, it cant be used in map::operator[]
-		const value_type& operator* () const {
-			return *_node->d;
-		}
-		*/
-
 		value_type& operator* () { //returning reference, needed to be able to modify ref returned in map::operator[]
 			return (*_node->d);
 		}
+/*
+		const value_type& operator* (std::enable_if<false>) {
+			return (*_node->d);
+		}*/
 
 		// preincrement
 		Iterator& operator++ () {
@@ -287,39 +283,44 @@ namespace ft
 	};
 
 	public:
+	typedef Iterator<false> iterator;
+	typedef Iterator<true> const_iterator;
+
+	friend bool operator== (const iterator& a, const iterator& b) { return a._node == b._node; };
+	friend bool operator!= (const iterator& a, const iterator& b) { return a._node != b._node; };
 	/*
 	*	Elemental access
 	*/
-	Iterator get(T target) {
+	iterator get(T target) {
 		avl *node = getNode(target);
 
-		return Iterator(node, r, _alloc);
+		return iterator(node, r, _alloc);
 	}
 
-	Iterator begin() {
-		return Iterator(r, _alloc);
+	iterator begin() {
+		return iterator(r, _alloc);
 	}
 
-	Iterator begin() const {
-		return Iterator(r, _alloc);
+	iterator begin() const {
+		return iterator(r, _alloc);
 	}
 
-	Iterator end() {
-		return Iterator(NULL, r, _alloc);
+	iterator end() {
+		return iterator(NULL, r, _alloc);
 	}
 
-	Iterator end() const {
-		return Iterator(NULL, r, _alloc);
+	iterator end() const {
+		return iterator(NULL, r, _alloc);
 	}
 
-	ft::pair<Iterator, bool> insertAndReturnIterator(const T& v) {
+	ft::pair<iterator, bool> insertAndReturnIterator(const T& v) {
 		bool check;
 		avl* node = insert(v, &check);
 
-		return ft::make_pair(Iterator(node, r), check);
+		return ft::make_pair(iterator(node, r), check);
 	}
 
-	void erase(Iterator it) {
+	void erase(iterator it) {
 		if (!it._node)
 			return ;
 		avl *n = erase_node(it);
@@ -355,7 +356,7 @@ namespace ft
 	}
 
 	//TODO: Implement something to check if value to be inserted already exists in the tree before inserting a new copy
-	avl *insert(const T& v, Iterator hint, bool *check = NULL) {
+	avl *insert(const T& v, iterator hint, bool *check = NULL) {
 		avl *new_node;
 
 		avl *hinted_node = hint._node;
@@ -390,7 +391,7 @@ namespace ft
 
 	private:
 
-	avl *erase_node(Iterator it) { //cambiar esto por una friend function
+	avl *erase_node(iterator it) { //cambiar esto por una friend function
 			if (!it._node)
 				return NULL;
 			avl *b;
@@ -402,7 +403,7 @@ namespace ft
 				return eraseNodeWithOneChildren(it._node);
 		}
 
-	avl *eraseNodeWithTwoChildren(avl *erasedNode, Iterator& it) {
+	avl *eraseNodeWithTwoChildren(avl *erasedNode, iterator& it) {
 		avl *successorNode = (++it)._node;
 		avl *ret = successorNode;
 
