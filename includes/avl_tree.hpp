@@ -236,46 +236,8 @@ public:
 		}
 	}
 
-void ft(const std::string& prefix, const avl* node, bool isLeft, int kk) const{
-		//std::cout << "test ultimo" << std::endl;
-		//exit(0);
-		if( node != nullptr )
-		{
-			//std::cout << "entra" << std::endl;
-			std::cout << prefix;
-			std::string parentMsg = "p(NULL)";
-			if (node->p) {
-				parentMsg = "p(" + std::to_string((int)(node->p->d)->first) + ")";
-				std::cout << (isLeft ? "├L─" : "└R─") << parentMsg;
-			} else {
-				std::cout << "* -> " << parentMsg;
-			}
-			int diff = difference(node);
-			std::string suffix = diff > 1 || diff < -1 ? "!!!!!!!!!!" : "";
-
-			//std::cout << "+++" << std::endl;
-			std::cout << "v(" << (node->d)->first << ')';
-			//std::cout << "---" << std::endl;
-
-			std::cout << " [diff (" << difference(node) << ")" << suffix << "]";
-
-			std::cout << std::endl;
-
-			// enter the next tree level - left and right branch
-			ft( prefix + (isLeft ? "│   " : "    "), node->l, true, kk);
-			ft( prefix + (isLeft ? "│   " : "    "), node->r, false, kk);
-		}
-	}
-
-
-	void printBT() const {
-		std::cout << "printing as a triangle" << std::endl;
-		std::cout << "r: " << r << std::endl;
-		avl *kk(r);
-		avl *kk2(r);
-		std::cout << kk2 << std::endl;
-		std::cout << "======" << std::endl;
-		ft("", r, false, 2);
+	void printBT() {
+		printBT("", r, false);    
 	}
 
 	void show() {
@@ -347,33 +309,23 @@ public:
 	}
 
 	iterator begin() {
-		//std::cout << "begin normal" << std::endl;
 		return iterator(r);
 	}
 
 	iterator begin() const {
-		//std::cout << "begin const" << std::endl;
 		return iterator(r);
 	}
 
 	iterator end() {
-		//std::cout << "end normal" << std::endl;
-		/*iterator ret = iterator(r);
-		ret._node = NULL;
-		std::cout << "node updated" << std::endl;
-		return ret;*/
 		return iterator(NULL, r);
 	}
 
 	iterator end() const {
-		//std::cout << "end const" << std::endl;
-		//this->printBT();
 		return iterator(NULL, r);
 	}
 
 	ft::pair<iterator, bool> insertAndReturnIterator(const T& v) {
 		bool check;
-		//std::cout << "inserting: " << v.first << ":" << v.second << std::endl;
 		avl* node = insert(v, &check);
 
 		return ft::make_pair(iterator(node, r), check);
