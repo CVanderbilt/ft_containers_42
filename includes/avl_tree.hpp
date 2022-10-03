@@ -169,7 +169,6 @@ namespace ft
 	}
 
 
-	template <bool Const = false>
 	class Iterator:
 	public ft::iterator<ft::bidirectional_iterator_tag, T> {
 		public:
@@ -283,8 +282,8 @@ namespace ft
 	};
 
 	public:
-	typedef Iterator<false> iterator;
-	typedef Iterator<true> const_iterator;
+	typedef Iterator iterator;
+	typedef Iterator const_iterator;
 
 	friend bool operator== (const iterator& a, const iterator& b) { return a._node == b._node; };
 	friend bool operator!= (const iterator& a, const iterator& b) { return a._node != b._node; };

@@ -2,84 +2,78 @@
 # define MAP_HPP
 
 # include <iostream>
+# include <cstdio>
+# include <sstream>
+# include <algorithm>
+# include <utility>
+# include "iterator.hpp"
+# include "utils.hpp"
 # include "avl_tree.hpp"
 
-namespace ft{
+namespace ft {
 
+template <
+	class Key,
+	class T,
+	class Compare = std::less<Key>,
+	class Allocator = std::allocator<ft::pair<const Key, T> >
+>
+class map
+{
+public:
+	// types:
+	typedef Key											key_type;
+	typedef T											mapped_type;
+	typedef pair<const key_type, mapped_type>			value_type;
+	typedef Compare										key_compare;
+	typedef Allocator									allocator_type;
+	typedef typename allocator_type::reference			reference;
+	typedef typename allocator_type::const_reference	const_reference;
+	typedef typename allocator_type::pointer			pointer;
+	typedef typename allocator_type::const_pointer		const_pointer;
+	typedef typename allocator_type::size_type			size_type;
+	typedef typename allocator_type::difference_type	difference_type;
 
-template<
-    class Key,
-    class T,
-    class Compare = std::less<Key>,
-    class Allocator = std::allocator<ft::pair<const Key, T> >
-> class map {
-	public:
-	/*
-	*	Member types
-	*/
-	typedef Key 											key_type;
-	typedef T 												mapped_type;
-	typedef ft::pair<const key_type, mapped_type>			value_type;
-	typedef std::size_t										size_type;
-	typedef std::ptrdiff_t									difference_type;
-	typedef Compare											key_compare;
-	typedef Allocator										allocator_type;
-	typedef value_type&										reference;
-	typedef const value_type&								const_reference;
-	typedef typename allocator_type::pointer				pointer;
-	typedef typename allocator_type::const_pointer			const_pointer;
-	//todo implement reverse iterator
+	//typedef implementation-defined						iterator;
+	//typedef implementation-defined						const_iterator;
+	//typedef std::reverse_iterator<iterator>				reverse_iterator;
+	//typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
 
-	protected:
-	/*
-	*	Member class
-	*/
-	class value_compare : std::binary_function<value_type, value_type, bool>
+	class value_compare:
+		public std::binary_function<value_type, value_type, bool>
 	{
-		friend class map<key_type, mapped_type, key_compare, allocator_type>;
-
-		protected:
+		friend class map;
+	protected:
 		key_compare comp;
-		value_compare (key_compare c) : comp(c) {}
 
-		public:
-
-		bool operator() (const_reference lhs, const_reference rhs) const
-		{
-			return (comp(lhs.first, rhs.first));
-		}
+		value_compare(key_compare c): comp(c) {}
+	public:
+		bool operator()(const_reference& x, const_reference& y) const { return comp(x.first, y.first); }
 	};
+
+private:
 
 	typedef avl_tree<value_type, value_compare, allocator_type>	bst;
 
-	value_compare _cmp;
-	bst	_bst;
-
-	public:
-
+	value_compare	_cmp;
+	bst				_bst;
+public:
+	
 	typedef typename bst::iterator iterator;
-	typedef typename bst::const_iterator const_iterator;
-	//const iterator missing
+	typedef typename bst::iterator const_iterator;
 
-	/*
-	*	Constructor todo: check explicit keyword, check if I have to add map() default constructor
-	*/
-	map (const key_compare& comp = key_compare(),
-		const allocator_type& alloc = allocator_type()):
+	// construct/copy/destroy:
+	map(const Compare& comp = key_compare(), const Allocator& alloc = Allocator()):
 		_cmp(comp),
 		_bst(bst(_cmp, alloc))
 	{}
 
-	template< class InputIt >
-	map (InputIt first, InputIt last,
-		const key_compare& comp = key_compare(),
-		const allocator_type& alloc = allocator_type() ):
+	template <class InputIt>
+	map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()):
 		_cmp(comp),
-		_bst(comp, alloc)
-	{
-		this->insert(first, last);
+		_bst(comp, alloc) {
+			insert(first, last);
 	}
-
 	map (const map& other):
 		_cmp(key_compare()),
 		_bst(other._bst) //TODO make sure this is being copied correctly
@@ -88,90 +82,131 @@ template<
 	~map() {}
 
 	map& operator=(const map& other) {
-		this->_cmp = other._cmp;
-		this->_bst = other._bst;
+		_cmp = other._cmp;
+		_bst = other._bst;
 
 		return *this;
 	}
 
-	allocator_type get_allocator() const {
-		return _bst._valloc;
+	// iterators:
+	iterator begin() { return _bst.begin(); }
+	// TODO const_iterator begin() const;
+	iterator end() { return _bst.end(); }
+	// TODO const_iterator end() const;
+
+	// TODO: reverse_iterator rbegin();
+	// TODO: const_reverse_iterator rbegin() const;
+	// TODO: reverse_iterator rend();
+	// TODO: const_reverse_iterator rend()   const;
+
+	// capacity:
+	bool      empty()    const { return _bst.empty(); }
+	size_type size()     const { return _bst.size(); }
+	size_type max_size() const { return _bst.size(); }
+
+	// element access:
+	mapped_type& operator[](const key_type& key) {
+		iterator it = getIteratorToPair(key);
+
+		it = it == _bst.end() ? insert(ft::make_pair(key, mapped_type())).first : it; 
+		return (*it).second;
 	}
 
 	mapped_type& at(const key_type& key) {
-		typename bst::Iterator it = this->getIteratorToPair(key);
+		typename bst::Iterator it = getIteratorToPair(key);
 
-		if (it == this->_bst.end())
-			throw std::out_of_range("Temporal exception message"); //check exception message
-
-		return (*it).second;
-	}
-
-	const mapped_type& at(const key_type& key) const {
-		typename bst::Iterator it = this->getIteratorToPair(key);
-
-		if (it == this->_bst.end())
-			throw std::out_of_range("Temporal exception message"); //check exception message
+		if (it == _bst.end())
+			throw std::out_of_range("Temporal exception message"); //todo: check exception message
 
 		return (*it).second;
 	}
-
-	mapped_type& operator[] (const key_type& key) {
-		iterator it = this->getIteratorToPair(key);
-
-		it = it == this->_bst.end() ? insert(ft::make_pair(key, mapped_type())).first : it; 
-		return (*it).second;
-	}
-	//todo: add logic containing duplicated code in both at methods and operator[] method
-
-	iterator begin() { return this->_bst.begin(); }
-	//const_iterator begin() { ... }
-	iterator end() { return this->_bst.end(); }
-	//const_iterator end() { ... }
-
-	//iterator rbegin() { return this->_bst.begin(); }
-	//const_iterator begin() { ... }
-	//iterator rend() { return this->_bst.end(); }
-	//const_iterator end() { ... }
-
-	bool empty() const { return this->_bst.empty(); }
-	size_type size() const { return this->_bst.size(); }
-	size_type max_size() const { return this->_bst.max_size(); }
-	void clear() { this->_bst.clear(); }
-
-	ft::pair<iterator, bool> insert( const_reference value ) { //1
-		return (this->_bst.insertAndReturnIterator(value));
-	}
-
-	iterator insert( iterator hint, const_reference value ) { //4
-		return (this->_bst.insertAndReturnIterator(value, hint._node).first);
-	}
-
-	template< class InputIt >
-	void insert( InputIt first, InputIt last ) { //7
+    // modifiers:
+	pair<iterator, bool> insert(const value_type& v) { return _bst.insertAndReturnIterator(v); }
+	iterator insert(iterator position, const value_type& v) { return _bst.insertAndReturnIterator(position, v); }
+	template <class InputIterator>
+	void insert(InputIterator first, InputIterator last) {
 		for (; first != last; first++)
-			this->_bst.insert(first);
+			_bst.insert(first);
 	}
 
-	void erase( iterator pos ) {
-		this->_bst.erase(pos);
-	}
-
-	void erase( iterator first, iterator last ) {
+	iterator  erase(iterator pos) { _bst.erase(pos); }
+	size_type erase(const key_type& key) { erase(getIteratorToPair(key)); }
+	iterator  erase(const_iterator first, const_iterator last) {
 		for (iterator it = first; it != last; it++)
-			this->erase(it);
+			erase(it);
 	}
+	void clear() { _bst.clear(); }
 
-	size_type erase( const key_type& key ) {
-		this->erase(this->getIteratorToPair(key));
-	}
+	// TODO void swap(map& m);
 
-	private:
+	// observers:
+	allocator_type get_allocator() const { return _bst.valloc; }
+	// TODO key_compare    key_comp()      const;
+	// TODO value_compare  value_comp()    const;
+
+	// map operations:
+	// TODO iterator find(const key_type& k);
+	// TODO const_iterator find(const key_type& k) const;
+
+	// TODO size_type      count(const key_type& k) const;
+	
+	// TODO iterator lower_bound(const key_type& k);
+	// TODO const_iterator lower_bound(const key_type& k) const;
+
+	// TODO iterator upper_bound(const key_type& k);
+	// TODO const_iterator upper_bound(const key_type& k) const;
+
+	// TODO: pair<iterator,iterator>             equal_range(const key_type& k);
+	// TODO: pair<const_iterator,const_iterator> equal_range(const key_type& k) const;
+
+private:
 	iterator getIteratorToPair(const key_type& key) {
 		value_type toSearch = ft::make_pair(key, mapped_type());
 		return this->_bst.get(toSearch);
 	}
 };
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator==(const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return x._bst == y._bst; }
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator< (const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return x._bst < y._bst; }
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator!=(const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return x._bst != y._bst; }
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator> (const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return x._bst > y._bst; }
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator>=(const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return x._bst >= y._bst; }
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator<=(const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return x._bst <= y._bst; }
+
+// specialized algorithms:
+/* TODO: template <class Key, class T, class Compare, class Allocator>
+void
+swap(map<Key, T, Compare, Allocator>& x, map<Key, T, Compare, Allocator>& y);*/
+
 }
 
 #endif
