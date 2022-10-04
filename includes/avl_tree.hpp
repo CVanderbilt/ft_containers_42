@@ -203,7 +203,7 @@ public:
 
 		Iterator(const Iterator<Const>& x): _root(x._root), _node(x._node) {}
 		template <bool B>
-		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _root(x._root), _node(x._node) {std::cout << "upgrade called" << std::endl;}
+		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _root(x._root), _node(x._node) {}
 
 		Iterator& operator=(const Iterator& x) { _node = x._node; _root = x._root; return *this; }
 

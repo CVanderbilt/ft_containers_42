@@ -54,6 +54,8 @@ class mapTester {
 
 
 	void testHeader(const std::string& testName) {
+		this->testResults[testName] = true;
+
 		char delimiter = '=';
 		size_t headerLenght = TEST_HEADER_SIZE;
 		size_t testNameMaxSize = 30;
@@ -127,7 +129,6 @@ class mapTester {
 		const std::string testName = "AssignmentOperatorTest";
 		const std::string different = "different";
 		testHeader(testName);
-		this->testResults[testName] = true;
 		ft::map<int, std::string> newMap;
 
 		newMap = mapToCopy;
@@ -175,17 +176,43 @@ class mapTester {
 		//also check size
 		//const iterators test
 		//std::map<int, int> kk;
-		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
-			std::cout << '(' << (*cit).first << ": " << (*cit).second << ')' << std::endl;
+		size_t expectedSize = mapToTraverse.size();
+		std::string different = "different";
+		std::string iteratorTestName = "IteratorTest";
+		std::string revrseIteratorTestName = "ReverseIteratorTest";
+
+		testHeader(iteratorTestName);
+
+		size_t calculatedSize = 0;
+		size_t modPos = 3;
+		for (ft::map<int, std::string>::iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
+			if (this->verbose) std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
+			if (calculatedSize == modPos)
+				cit->second = different;
+			calculatedSize++;
+		}
+		if (calculatedSize != expectedSize) {
+			this->logError("The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			this->testResults[iteratorTestName] = false;
 		}
 
+		calculatedSize = 0;
 		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
-			std::cout << '(' << (*cit).first << ": " << (*cit).second << ')' << std::endl;
+			if (this->verbose) std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
+			if (calculatedSize == modPos)
+				if ((*cit).second != different)  {
+					this->logError("The map was modified through an iterator but couldn't find the modification in the expected position", true);
+					this->testResults[iteratorTestName] = false;
+				}
+			calculatedSize++;
+			//cit->second = "kk"; // Uncommenting this line will result in compilation error (can't assign when using const_iterator)
 		}
+		if (calculatedSize != expectedSize) {
+			this->logError("(after modifying the map through an iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			this->testResults[iteratorTestName] = false;
+		}
+		testEnd(this->testResults[iteratorTestName]);
 
-		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
-			std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
-		}
 
 		//check for const iterators once they are implemented
 		//check for reverse iterators once they are implemented
@@ -235,7 +262,7 @@ int main() {
 
 	ft::map<int, std::string> testMap;
 
-	mapTester tester;
+	mapTester tester(true);
 
 	tester.doTests();
 	std::cout << std::endl;

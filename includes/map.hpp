@@ -60,7 +60,7 @@ private:
 public:
 	
 	typedef typename bst::iterator iterator;
-	typedef typename bst::iterator const_iterator;
+	typedef typename bst::const_iterator const_iterator;
 
 	// construct/copy/destroy:
 	map(const Compare& comp = key_compare(), const Allocator& alloc = Allocator()):
