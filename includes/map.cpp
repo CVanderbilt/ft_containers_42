@@ -120,6 +120,7 @@ class mapTester {
 			std::cout << "(" << (*it).first << ": " << (*it).second << ")" << std::endl;
 
 		assignmentOperatorTest(testMap);
+		beginEndTest(testMap);
 	}
 
 	void assignmentOperatorTest(ft::map<int, std::string> mapToCopy) {
@@ -172,6 +173,20 @@ class mapTester {
 
 	void beginEndTest(ft::map<int, std::string> mapToTraverse) {
 		//also check size
+		//const iterators test
+		//std::map<int, int> kk;
+		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
+			std::cout << '(' << (*cit).first << ": " << (*cit).second << ')' << std::endl;
+		}
+
+		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
+			std::cout << '(' << (*cit).first << ": " << (*cit).second << ')' << std::endl;
+		}
+
+		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
+			std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
+		}
+
 		//check for const iterators once they are implemented
 		//check for reverse iterators once they are implemented
 		//check for const reverse iterators once they are implemented

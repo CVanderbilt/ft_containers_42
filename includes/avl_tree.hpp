@@ -171,66 +171,53 @@ namespace ft
 
 	template <bool Const = false>
 	class Iterator:
-	public ft::iterator<ft::bidirectional_iterator_tag, T> {
+	public ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type > {
 		public:
 
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type					value_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category	iterator_category;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type		difference_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer				pointer;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference			reference;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type>::value_type	value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category									iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type										difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer												pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference											reference;
 		
 		avl *_node;
-
-		private:
 		avl *_root;
-		NodeAllocator _alloc;
 
 		public:
-		Iterator(avl *root = NULL, NodeAllocator alloc = NodeAllocator()):
-			_root(root), _node(getLeftMost(root)), _alloc(alloc) {}
-		Iterator(avl *node, avl *root = NULL, NodeAllocator alloc = NodeAllocator())
-			: _root(root), _node(node), _alloc(alloc) {}
-		Iterator(const Iterator& it): _node(it._node), _alloc(it._alloc) {}
-
-		value_type& operator* () { //returning reference, needed to be able to modify ref returned in map::operator[]
-			return (*_node->d);
+		Iterator(avl *root = NULL):
+			_root(root), _node(getLeftMost(root)) {}
+		Iterator(avl *node, avl *root)
+			: _root(root), _node(node)
+		{
+			if (!_root && _node) {
+				_root = _node;
+				avl *aux = _node->p;
+				while (aux) {
+					_root = aux;
+					aux = aux->p;
+				}
+			}
 		}
-/*
-		const value_type& operator* (std::enable_if<false>) {
-			return (*_node->d);
-		}*/
 
-		// preincrement
-		Iterator& operator++ () {
-			_node = getNextNode(_node);
-			return *this;
-		}
+		Iterator(const Iterator<Const>& x): _root(x._root), _node(x._node) {}
+		template <bool B>
+		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _root(x._root), _node(x._node) {std::cout << "upgrade called" << std::endl;}
+
+		Iterator& operator=(const Iterator& x) { _node = x._node; _root = x._root; return *this; }
+
+		template <bool B> bool operator== (const Iterator<B>& x) const { return _node == x._node; }
+		template <bool B> bool operator!= (const Iterator<B>& x) const { return _node != x._node; }
+
+		value_type& operator* () { return (*_node->d); }
+		value_type* operator-> () { return (_node->d); }
+
+		// prefix
+		Iterator& operator++ () { _node = getNextNode(_node); return *this; }
+		Iterator operator-- () { std::cout << "--1" << std::endl; _node = getPrevNode(_node); return *this; }
 		
-		// postincrement
-		Iterator operator++ (int) {
-			Iterator ret(*this);
-
-			_node = getNextNode(_node);
-			return ret;
-		}
-		
-		//TODO: fix end() - 1 
-		// predecrement. move backward to largest value < current value
-		Iterator operator-- () {
-			std::cout << "--1" << std::endl;
-			_node = getPrevNode(_node);
-			return *this;
-		}
-		
-		// postdecrement
-		Iterator operator-- (int) {
-			std::cout << "--2" << std::endl;
-			Iterator ret(*this);
-
-			_node = getPrevNode(_node);
-			return ret;
-		}
+		// postfix
+		Iterator operator++ (int) { Iterator ret(*this); _node = getNextNode(_node); return ret; }
+		Iterator operator-- (int) { std::cout << "--2" << std::endl; Iterator ret(*this); _node = getPrevNode(_node); return ret; }
 
 		private:
 		
@@ -286,31 +273,29 @@ namespace ft
 	typedef Iterator<false> iterator;
 	typedef Iterator<true> const_iterator;
 
-	friend bool operator== (const iterator& a, const iterator& b) { return a._node == b._node; };
-	friend bool operator!= (const iterator& a, const iterator& b) { return a._node != b._node; };
 	/*
 	*	Elemental access
 	*/
 	iterator get(T target) {
 		avl *node = getNode(target);
 
-		return iterator(node, r, _alloc);
+		return iterator(node, r);
 	}
 
 	iterator begin() {
-		return iterator(r, _alloc);
+		return iterator(r);
 	}
 
 	iterator begin() const {
-		return iterator(r, _alloc);
+		return iterator(r);
 	}
 
 	iterator end() {
-		return iterator(NULL, r, _alloc);
+		return iterator(NULL, r);
 	}
 
 	iterator end() const {
-		return iterator(NULL, r, _alloc);
+		return iterator(NULL, r);
 	}
 
 	ft::pair<iterator, bool> insertAndReturnIterator(const T& v) {
