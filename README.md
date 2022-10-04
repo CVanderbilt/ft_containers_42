@@ -17,6 +17,7 @@
 - NextThings:
 
 - General:
+  - Ordenar avl_tree.hpp
   - Create a test framework to test each feature of my container and compare its speed against the official container
   - Check for usages of ```*.d``` and ```*->d``` see if they are being used properly (not assigning ```a.d = b.d``` but ```*(a.d)=*(b.d))```
   - Check if we need to free/destroy allocators and comparators

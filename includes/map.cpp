@@ -52,6 +52,17 @@ class mapTester {
 
 	bool verbose;
 
+	std::string randStr(size_t size = 10) {
+		std::string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!?";
+		size_t alphabet_size = alphabet.length();
+		std::string ret;
+		for (int i = 0; i < 10; i++){
+			int n = rand();
+			n = n > 0 ? n : n * -1;
+			ret += alphabet.c_str()[n % alphabet_size];
+		}
+		return ret;
+	}
 
 	void testHeader(const std::string& testName) {
 		testResults[testName] = true;
@@ -127,6 +138,7 @@ class mapTester {
 		swapTest();
 		comparersTest();
 		findTest();
+		boundsTest();
 	}
 
 	void assignmentOperatorTest(ft::map<int, std::string> mapToCopy) {
@@ -428,6 +440,39 @@ class mapTester {
 
 		testEnd(testResults[countTestName]);
 	}
+
+	void boundsTest() {
+		std::string boundsTestName = "boundsTest";
+		testHeader(boundsTestName);
+		size_t mapSize = 100;
+		ft::map<int, std::string> mapa;
+
+		
+		int bound = rand();
+
+		mapa.insert(ft::make_pair(rand(), randStr()));
+		for (int i = 0; i < mapSize; i++) {
+			int to_insert = rand();
+			mapa.insert(ft::make_pair(to_insert, randStr()));
+		}
+
+		ft::map<int, std::string>::iterator it = mapa.begin();
+		while (it != mapa.end() && it->first < bound)
+			it++;
+		if (it != mapa.lower_bound(bound)) {
+			logError("manually calculated lower bound doesnt match the returned by the method lower_bound", true);
+			testResults[boundsTestName] = false;
+		}
+
+		while (it != mapa.end() && it->first < bound)
+			it++;
+		if (it != mapa.lower_bound(bound)) {
+			logError("manually calculated lower bound doesnt match the returned by the method lower_bound", true);
+			testResults[boundsTestName] = false;
+		}
+
+		testEnd(testResults[boundsTestName]);
+	}
 	
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {
 	}
@@ -470,6 +515,7 @@ class mapTester {
 
 bool execute_tests(bool v) {
 	ft::map<int, std::string> testMap;
+	srand(42);
 
 	mapTester tester(v);
 	std::map<int, int> kk;

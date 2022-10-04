@@ -166,16 +166,34 @@ public:
 		return find(k) == end() ? 0 : 1;
 	}
 	
-	// TODO iterator lower_bound(const key_type& k);
-	// TODO const_iterator lower_bound(const key_type& k) const;
+	iterator lower_bound(const key_type& k) { return calculateLowerBound(k); }
+	const_iterator lower_bound(const key_type& k) const { return calculateLowerBound(k); }
 
-	// TODO iterator upper_bound(const key_type& k);
-	// TODO const_iterator upper_bound(const key_type& k) const;
+	iterator upper_bound(const key_type& k) { return calculateUpperBound(k); }
+	const_iterator upper_bound(const key_type& k) const { return calculateUpperBound(k); }
 
 	// TODO: pair<iterator,iterator>             equal_range(const key_type& k);
 	// TODO: pair<const_iterator,const_iterator> equal_range(const key_type& k) const;
 
 private:
+	iterator calculateLowerBound(const key_type& key) {
+		key_compare cmp = key_compare();
+		iterator it;
+		for (it = begin(); it != end(); it++)
+			if (cmp(key, it->first))
+				break ;
+		return it;
+	}
+
+	iterator calculateUpperBound(const key_type& key) {
+		key_compare cmp = key_compare();
+		reverse_iterator it;
+		for (it = rbegin(); it != begin(); it++)
+			if (cmp(it->first, key))
+				break ;
+		return it.base();
+	}
+
 	iterator getIteratorToPair(const key_type& key) {
 		value_type toSearch = ft::make_pair(key, mapped_type());
 		return this->_bst.get(toSearch);

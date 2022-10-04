@@ -288,33 +288,16 @@ public:
 	/*
 	*	Elemental access
 	*/
-	iterator get(const T target) {
-		avl *node = getNode(target);
+	iterator get(const T target) { avl *node = getNode(target); return iterator(node, r); }
+	const_iterator get(const T target) const { avl *node = getNode(target); return const_iterator(node, r); }
 
-		return iterator(node, r);
-	}
-
-	const_iterator get(const T target) const {
-		avl *node = getNode(target);
-
-		return const_iterator(node, r);
-	}
-
-	iterator begin() {
-		return iterator(r);
-	}
-
-	const_iterator begin() const {
-		return iterator(r);
-	}
-
-	iterator end() {
-		return iterator(NULL, r);
-	}
-
-	const_iterator end() const {
-		return iterator(NULL, r);
-	}
+	/*
+	*	Iterators
+	*/
+	iterator begin() { return iterator(r); }
+	const_iterator begin() const { return iterator(r); }
+	iterator end() { return iterator(NULL, r); }
+	const_iterator end() const { return iterator(NULL, r); }
 
 	ft::pair<iterator, bool> insertAndReturnIterator(const T& v) {
 		bool check;
