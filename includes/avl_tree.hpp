@@ -288,10 +288,16 @@ public:
 	/*
 	*	Elemental access
 	*/
-	iterator get(T target) {
+	iterator get(const T target) {
 		avl *node = getNode(target);
 
 		return iterator(node, r);
+	}
+
+	const_iterator get(const T target) const {
+		avl *node = getNode(target);
+
+		return const_iterator(node, r);
 	}
 
 	iterator begin() {
@@ -608,7 +614,7 @@ private:
 		return n;
 	}
 
-	avl *getNode(T v) {
+	avl *getNode(T v) const {
 		avl *node = r;
 
 		while (node) {

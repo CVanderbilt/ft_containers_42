@@ -162,7 +162,9 @@ public:
 	iterator find(const key_type& k) { return getIteratorToPair(k); }
 	const_iterator find(const key_type& k) const { return getIteratorToPair(k); }
 
-	// TODO size_type      count(const key_type& k) const;
+	size_type      count(const key_type& k) const {
+		return find(k) == end() ? 0 : 1;
+	}
 	
 	// TODO iterator lower_bound(const key_type& k);
 	// TODO const_iterator lower_bound(const key_type& k) const;
@@ -175,6 +177,11 @@ public:
 
 private:
 	iterator getIteratorToPair(const key_type& key) {
+		value_type toSearch = ft::make_pair(key, mapped_type());
+		return this->_bst.get(toSearch);
+	}
+
+	const_iterator getIteratorToPair(const key_type& key) const {
 		value_type toSearch = ft::make_pair(key, mapped_type());
 		return this->_bst.get(toSearch);
 	}

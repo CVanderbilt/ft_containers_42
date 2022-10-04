@@ -417,6 +417,16 @@ class mapTester {
 		}
 
 		testEnd(testResults[findTestName]);
+
+		std::string countTestName = "countTest";
+		testHeader(countTestName);
+
+		if (mapa.count(5) != 0 || mapa.count(9) != 1){
+			logError("count failed", 1);
+			testResults[countTestName] = false;
+		}
+
+		testEnd(testResults[countTestName]);
 	}
 	
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {
