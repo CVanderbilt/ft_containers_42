@@ -54,7 +54,7 @@ class mapTester {
 
 
 	void testHeader(const std::string& testName) {
-		this->testResults[testName] = true;
+		testResults[testName] = true;
 
 		char delimiter = '=';
 		size_t headerLenght = TEST_HEADER_SIZE;
@@ -96,8 +96,8 @@ class mapTester {
 			std::cout << delimiter;
 		std::cout << std::endl;
 	}
-	void log(std::string msg, bool override = false) { if (this->verbose || override) std::cout << msg << std::endl; }
-	void logError(std::string msg, bool override = false) { if (this->verbose || override) std::cerr << msg << std::endl; }
+	void log(std::string msg, bool override = false) { if (verbose || override) std::cout << msg << std::endl; }
+	void logError(std::string msg, bool override = false) { if (verbose || override) std::cerr << msg << std::endl; }
 
 	public:
 
@@ -123,6 +123,7 @@ class mapTester {
 
 		assignmentOperatorTest(testMap);
 		beginEndTest(testMap);
+		atTest();
 	}
 
 	void assignmentOperatorTest(ft::map<int, std::string> mapToCopy) {
@@ -143,9 +144,9 @@ class mapTester {
 			if (copiedIt == copiedEnd || toCopyIt == toCopyEnd)
 				break ;
 			if (*copiedIt != *toCopyIt) {
-				this->logError("found different values in iterators in the same position", true);
-				this->logError("In pos (" + std::to_string(pos) + "), found: (" + std::to_string((*copiedIt).first) + "," + (*copiedIt).second + ") and expected: (" + std::to_string((*toCopyIt).first) + "," + (*toCopyIt).second);
-				this->testResults[testName] = false;
+				logError("found different values in iterators in the same position", true);
+				logError("In pos (" + std::to_string(pos) + "), found: (" + std::to_string((*copiedIt).first) + "," + (*copiedIt).second + ") and expected: (" + std::to_string((*toCopyIt).first) + "," + (*toCopyIt).second);
+				testResults[testName] = false;
 			}
 			pos++;
 			(*copiedIt).second = "different";
@@ -155,21 +156,21 @@ class mapTester {
 
 		if (copiedIt != copiedEnd || toCopyIt != toCopyEnd)
 		{
-			this->logError("Something failed because both iteators didn't finished at the same time", true);
-			this->testResults[testName] = false;
+			logError("Something failed because both iteators didn't finished at the same time", true);
+			testResults[testName] = false;
 		}
 
 		if ((*newMap.begin()).second != "different")
 		{
-			this->logError("Updating the new map through the iterator didn't work", true);
-			this->testResults[testName] = false;
+			logError("Updating the new map through the iterator didn't work", true);
+			testResults[testName] = false;
 		}
 		if ((*mapToCopy.begin()).second == (*newMap.begin()).second)
 		{
-			this->logError("The new map was updated through its first iterator but it still equals the second map first iteratr");
-			this->testResults[testName] = false;
+			logError("The new map was updated through its first iterator but it still equals the second map first iteratr");
+			testResults[testName] = false;
 		}
-		testEnd(this->testResults[testName]);
+		testEnd(testResults[testName]);
 	}
 
 	void beginEndTest(ft::map<int, std::string> mapToTraverse) {
@@ -183,37 +184,37 @@ class mapTester {
 		size_t calculatedSize = 0;
 		size_t modPos = 3;
 		for (ft::map<int, std::string>::iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
-			if (this->verbose) std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
+			if (verbose) std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
 			if (calculatedSize == modPos)
 				cit->second = different;
 			calculatedSize++;
 		}
 		if (calculatedSize != expectedSize) {
-			this->logError("The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
-			this->testResults[iteratorTestName] = false;
+			logError("The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			testResults[iteratorTestName] = false;
 		}
 
 		calculatedSize = 0;
 		for (ft::map<int, std::string>::const_iterator cit = mapToTraverse.begin(); cit != mapToTraverse.end(); cit++) {
-			if (this->verbose) std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
+			if (verbose) std::cout << '(' << cit->first << ": " << cit->second << ')' << std::endl;
 			if (calculatedSize == modPos)
 				if ((*cit).second != different)  {
-					this->logError("The map was modified through an iterator but couldn't find the modification in the expected position", true);
-					this->testResults[iteratorTestName] = false;
+					logError("The map was modified through an iterator but couldn't find the modification in the expected position", true);
+					testResults[iteratorTestName] = false;
 				}
 			calculatedSize++;
 			//cit->second = "kk"; // Uncommenting this line will result in compilation error (can't assign when using const_iterator)
 		}
 		if (calculatedSize != expectedSize) {
-			this->logError("(after modifying the map through an iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
-			this->testResults[iteratorTestName] = false;
+			logError("(after modifying the map through an iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			testResults[iteratorTestName] = false;
 		}
 
 		const ft::map<int, int> constMap;
 		const ft::map<int, int>::const_iterator it = constMap.begin();
 		//const ft::map<int, int>::iterator it = constMap.begin(); //Uncommenting this line will result in compilation error (if const map, begin and end methods will return only const_iterator)
 
-		testEnd(this->testResults[iteratorTestName]);
+		testEnd(testResults[iteratorTestName]);
 
 		testHeader(reverseIteratorTestName);
 
@@ -222,19 +223,19 @@ class mapTester {
 
 		rit--;
 		if (rit.base() != mapToTraverse.end()) {
-			this->testResults[reverseIteratorTestName] = false;
-			this->logError("The base iterator of the reverse iterator after incrementing its begin is different than the regular iterator end()", true);
+			testResults[reverseIteratorTestName] = false;
+			logError("The base iterator of the reverse iterator after incrementing its begin is different than the regular iterator end()", true);
 		}
 		rit = mapToTraverse.rbegin();
 		mit--;
 		calculatedSize = 0;
-		if (this->verbose) std::cout << "reverse:regular" << std::endl;
+		if (verbose) std::cout << "reverse:regular" << std::endl;
 		do {
-			if (this->verbose) 
+			if (verbose) 
 				std::cout << "(" << rit->first << "," << rit->second << "):(" << mit->first << "," << mit->second << ")" << std::endl;
 			if (rit->first != mit->first) {
-				this->logError("The reverse iterator sequence doesnt match with the regular iterator sequence reverted", true);
-				this->testResults[reverseIteratorTestName] = false;
+				logError("The reverse iterator sequence doesnt match with the regular iterator sequence reverted", true);
+				testResults[reverseIteratorTestName] = false;
 			}
 			if (calculatedSize == modPos)
 				rit->second = different;
@@ -243,8 +244,8 @@ class mapTester {
 			calculatedSize++;
 		} while (rit.base() != mapToTraverse.begin());
 		if (calculatedSize != expectedSize) {
-			this->logError("(reverse_iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
-			this->testResults[iteratorTestName] = false;
+			logError("(reverse_iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			testResults[iteratorTestName] = false;
 		}
 
 		rit = mapToTraverse.rbegin();
@@ -252,26 +253,61 @@ class mapTester {
 
 		calculatedSize = 0;
 		do {
-			if (this->verbose) 
+			if (verbose) 
 				std::cout << "(" << rit->first << "," << rit->second << "):("
 				<< mit->first << "," << mit->second << ")" << std::endl;
 			if (rit->first != mit->first) {
-				this->logError("The reverse iterator sequence doesnt match with the regular iterator sequence reverted", true);
-				this->testResults[reverseIteratorTestName] = false;
+				logError("The reverse iterator sequence doesnt match with the regular iterator sequence reverted", true);
+				testResults[reverseIteratorTestName] = false;
 			}
 			if (calculatedSize == modPos)
 				if (rit->second != different) {
-					this->logError("The map was modified through an iterator but couldn't find the modification in the expected position", true);
-					this->testResults[iteratorTestName] = false;
+					logError("The map was modified through an iterator but couldn't find the modification in the expected position", true);
+					testResults[iteratorTestName] = false;
 				}
 			rit++;
 			mit--;
 			calculatedSize++;
 		} while (rit.base() != mapToTraverse.begin());
 		if (calculatedSize != expectedSize) {
-			this->logError("(reverse_iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
-			this->testResults[iteratorTestName] = false;
+			logError("(reverse_iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			testResults[iteratorTestName] = false;
 		}
+	}
+
+	void atTest() {
+		std::string atTestName = "map::at";
+		testHeader(atTestName);
+		ft::map<int, int> mapa;
+		mapa.insert(ft::make_pair(3, 7));
+
+		try
+		{
+			if (mapa.at(3) != 7) {
+				logError("at returning something different than the expected value", true);
+				testResults[atTestName] = false;
+			}
+		}
+		catch(const std::exception& e)
+		{
+			logError("at trhew exception when looking for a value that should be found in the map", true);
+			testResults[atTestName] = false;
+		}
+
+		try
+		{
+			mapa.at(5);
+			logError("at didn't threw exception when lookig for a value that shouldn't be found in the map", true);
+			testResults[atTestName] = false;
+		}
+		catch(const std::exception& e) {
+			if(verbose) {
+				std::cout << "next line is the expected exception" << std::endl;
+				std::cout << e.what() << std::endl;
+			}
+		}
+
+		testEnd(testResults[atTestName]);
 	}
 
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {
@@ -292,7 +328,7 @@ class mapTester {
 
 	bool showResults() {
 		bool ret = true;
-		for (ft::map<std::string, bool>::iterator it = this->testResults.begin(); it != this->testResults.end(); it++) {
+		for (ft::map<std::string, bool>::iterator it = testResults.begin(); it != testResults.end(); it++) {
 			std::string testName = (*it).first;
 			bool result = (*it).second;
 			std::cout << "[" << testName << "]:" << (result ? "OK" : "KO") << std::endl;

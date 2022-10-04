@@ -115,10 +115,19 @@ public:
 	}
 
 	mapped_type& at(const key_type& key) {
-		typename bst::Iterator it = getIteratorToPair(key);
+		iterator it = getIteratorToPair(key);
 
 		if (it == _bst.end())
-			throw std::out_of_range("Temporal exception message"); //todo: check exception message
+			throw std::out_of_range("map::at:  key not found");
+
+		return (*it).second;
+	}
+
+	const mapped_type& at(const key_type& key) const {
+		const_iterator it = getIteratorToPair(key);
+
+		if (it == _bst.end())
+			throw std::out_of_range("map::at:  key not found");
 
 		return (*it).second;
 	}
