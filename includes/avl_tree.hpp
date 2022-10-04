@@ -44,7 +44,7 @@ public:
 };
 
 template <class T> //T will be reference to T(in map) or const reference to T == map::reference or map::const_reference
-class Avl_Tree_Iterator: public ft::iterator<ft::bidirectional_iterator_tag, T> {
+class Avl_Tree_Iterator_Base: public ft::iterator<ft::bidirectional_iterator_tag, T> {
 
 public:
 
@@ -58,15 +58,16 @@ public:
 		
 	avl *_node;
 
-private:
+protected:
 
 	avl *_root;
 
 public:
-	Avl_Tree_Iterator(avl *root = NULL):
+	Avl_Tree_Iterator_Base(): _root(NULL), _node(NULL) {}
+	Avl_Tree_Iterator_Base(avl *root = NULL):
 		_root(root), _node(getLeftMost(root))
-	{} //equivalente a begin() -> con root seteamos el nodo a leftmost de esa root
-	Avl_Tree_Iterator(avl *node, avl *root):
+	{}
+	Avl_Tree_Iterator_Base(avl *node, avl *root):
 		_root(root), _node(node)
 	{
 		if (!_root && _node) {
@@ -79,49 +80,12 @@ public:
 		}
 	}
 
-	value_type& operator* () { //returning reference, needed to be able to modify ref returned in map::operator[]
-		return (*_node->d);
-	}
+	T& operator* () { return (*(this->_node->d)); }
 
-	// preincrement
-	Avl_Tree_Iterator& operator++ () {
-		_node = getNextNode(_node);
-		return *this;
-	}
-	
-	// postincrement
-	Avl_Tree_Iterator operator++ (int) {
-		Avl_Tree_Iterator ret(*this);
+	friend bool operator== (const Avl_Tree_Iterator_Base& a, const Avl_Tree_Iterator_Base& b) { return a._node == b._node; };
+	friend bool operator!= (const Avl_Tree_Iterator_Base& a, const Avl_Tree_Iterator_Base& b) { return !(a == b); };
 
-		_node = getNextNode(_node);
-		return ret;
-	}
-		
-	//TODO: fix end() - 1 
-	// predecrement. move backward to largest value < current value
-	Avl_Tree_Iterator operator-- () {
-		std::cout << "--1" << std::endl;
-		_node = getPrevNode(_node);
-		return *this;
-	}
-		
-	// postdecrement
-	Avl_Tree_Iterator operator-- (int) {
-		std::cout << "--2" << std::endl;
-		Avl_Tree_Iterator ret(*this);
-
-		_node = getPrevNode(_node);
-		return ret;
-	}
-
-	friend bool operator== (const Avl_Tree_Iterator& a, const Avl_Tree_Iterator& b) {
-		if (a._node && b._node)
-			std::cout << "Comparing (" << (*(a._node->d)).first << "," << (*(b._node->d)).first << ")" << std::endl;
-		return a._node == b._node;
-	};
-	friend bool operator!= (const Avl_Tree_Iterator& a, const Avl_Tree_Iterator& b) { return !(a == b); };
-
-private:
+protected:
 		
 	avl *getLeftMost(avl *node) {
 		if (node) {	
@@ -169,6 +133,41 @@ private:
 		} while (node && node->l == aux);
 		return node;
 	}
+};
+
+template <class T>
+class Avl_Tree_Iterator: public Avl_Tree_Iterator_Base<T> {
+public:
+	Avl_Tree_Iterator(avl_node<T> *root = NULL): Avl_Tree_Iterator_Base<T>(root) {}
+	Avl_Tree_Iterator(avl_node<T> *node, avl_node<T> *root): Avl_Tree_Iterator_Base<T>(node, root) {}
+	Avl_Tree_Iterator(const Avl_Tree_Iterator<T>& it): Avl_Tree_Iterator_Base<T>(it._node, it._root) {}
+
+	T& operator* () { return (*(this->_node->d)); }
+
+	// prefix
+	Avl_Tree_Iterator& operator++ () { this->_node = this->getNextNode(this->_node); return *this; }
+	Avl_Tree_Iterator operator-- () { this->_node = this->getPrevNode(this->_node); return *this; }
+	// postfix
+	Avl_Tree_Iterator operator++ (int) { Avl_Tree_Iterator ret(*this); this->_node = this->getNextNode(this->_node); return ret; }
+	Avl_Tree_Iterator operator-- (int) { Avl_Tree_Iterator ret(*this); this->_node = this->getPrevNode(this->_node); return ret; }
+};
+
+template <class T> //T will be reference to T(in map) or const reference to T == map::reference or map::const_reference
+class Avl_Tree_Iterator_Const: public Avl_Tree_Iterator_Base<T> {
+public:
+	Avl_Tree_Iterator_Const(avl_node<T> *root = NULL): Avl_Tree_Iterator_Base<T>(root) {}
+	Avl_Tree_Iterator_Const(avl_node<T> *node, avl_node<T> *root): Avl_Tree_Iterator_Base<T>(node, root) {}
+	Avl_Tree_Iterator_Const(const Avl_Tree_Iterator_Const<T>& it): Avl_Tree_Iterator_Base<T>(it._node, it._root) {}
+	Avl_Tree_Iterator_Const(const Avl_Tree_Iterator<T>& it): Avl_Tree_Iterator_Base<T>(it._node, it._root) {}
+
+	T& operator* () { return (*(this->_node->d)); }
+
+	// prefix
+	Avl_Tree_Iterator_Const& operator++ () { this->_node = this->getNextNode(this->_node); return *this; }
+	Avl_Tree_Iterator_Const operator-- () { this->_node = this->getPrevNode(this->_node); return *this; }
+	// postfix
+	Avl_Tree_Iterator_Const operator++ (int) { Avl_Tree_Iterator_Const ret(*this); this->_node = this->getNextNode(this->_node); return ret; }
+	Avl_Tree_Iterator_Const operator-- (int) { Avl_Tree_Iterator_Const ret(*this); this->_node = this->getPrevNode(this->_node); return ret; }
 };
 
 template <
@@ -297,7 +296,7 @@ public:
 
 public:
 	typedef Avl_Tree_Iterator<T> iterator;
-	typedef Avl_Tree_Iterator<const T> const_iterator;
+	typedef Avl_Tree_Iterator_Const<const T> const_iterator;
 
 	/*
 	*	Elemental access

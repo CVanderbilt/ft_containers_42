@@ -15,8 +15,8 @@
 ## TODO
 
 - NextThings:
-  - add ft::enable_if
-  - add const_iterators
+  - add const_iterator in avl_tree (missing tests)
+  - add iterator and const_iterator in map, similar as done in stl (cmd + click std::map)
 
 - General:
   - Create a test framework to test each feature of my container and compare its speed against the official container
