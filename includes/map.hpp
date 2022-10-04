@@ -159,8 +159,8 @@ public:
 	value_compare  value_comp()    const { return _cmp; }
 
 	// map operations:
-	// TODO iterator find(const key_type& k);
-	// TODO const_iterator find(const key_type& k) const;
+	iterator find(const key_type& k) { return getIteratorToPair(k); }
+	const_iterator find(const key_type& k) const { return getIteratorToPair(k); }
 
 	// TODO size_type      count(const key_type& k) const;
 	

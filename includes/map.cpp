@@ -126,6 +126,7 @@ class mapTester {
 		atTest();
 		swapTest();
 		comparersTest();
+		findTest();
 	}
 
 	void assignmentOperatorTest(ft::map<int, std::string> mapToCopy) {
@@ -386,6 +387,36 @@ class mapTester {
 		}
 
 		testEnd(testResults[comparersTestName]);
+	}
+
+	void findTest() {
+		std::string findTestName = "findTest";
+		testHeader(findTestName);
+
+		ft::map<int, std::string> mapa;
+		ft::map<int, std::string>::iterator it;
+
+		mapa[0] = "msg";
+		mapa[9] = "msg9";
+		mapa[6] = "12345";
+		mapa[-1] = findTestName;
+
+		it = mapa.find(-1);
+
+		if (it == mapa.end()) {
+			logError("find returned end() instead of iterator pointing at the requested value", true);
+			testResults[findTestName] = false;
+		} else if (it->first != -1 || it->second != findTestName) {
+			logError("find returned an iterator but either the key or the value doesn't match with the expected value", true);
+			testResults[findTestName] = false;
+		}
+
+		it = mapa.find(100);
+		if (it != mapa.end()) {
+			logError("find returned an iterator different than end() when searching for a value that wasn't inserted", true);
+		}
+
+		testEnd(testResults[findTestName]);
 	}
 	
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {
