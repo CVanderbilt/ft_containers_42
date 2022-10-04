@@ -453,19 +453,30 @@ class mapTester {
 		mapa.insert(ft::make_pair(rand(), randStr()));
 		for (int i = 0; i < mapSize; i++) {
 			int to_insert = rand();
+			std::cout << to_insert << "|";
 			mapa.insert(ft::make_pair(to_insert, randStr()));
-		}
+		}std::cout << std::endl;
 
 		ft::map<int, std::string>::iterator it = mapa.begin();
-		while (it != mapa.end() && it->first < bound)
+		std::cout << "first: " << it->first << "; bound: " << bound << std::endl;
+		while (it != mapa.end() && it->first < bound) {
+			std::cout << "a" << std::endl;
+			if (verbose) std::cout << it->second << "|";
 			it++;
+		}
+		if (verbose) std::cout << std::endl;
 		if (it != mapa.lower_bound(bound)) {
 			logError("manually calculated lower bound doesnt match the returned by the method lower_bound", true);
 			testResults[boundsTestName] = false;
 		}
 
-		while (it != mapa.end() && it->first < bound)
+		ft::map<int, std::string>::reverse_iterator rit = mapa.rbegin();
+		std::cout << "rfirst: " << rit->first << "; bound: " << bound << std::endl;
+		while (rit != mapa.rend() && it->first < bound) {
+			if (verbose) std::cout << it->second << "|";
 			it++;
+		}
+		if (verbose) std::cout << std::endl;
 		if (it != mapa.lower_bound(bound)) {
 			logError("manually calculated lower bound doesnt match the returned by the method lower_bound", true);
 			testResults[boundsTestName] = false;

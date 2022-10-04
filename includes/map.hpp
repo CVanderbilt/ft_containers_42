@@ -172,8 +172,8 @@ public:
 	iterator upper_bound(const key_type& k) { return calculateUpperBound(k); }
 	const_iterator upper_bound(const key_type& k) const { return calculateUpperBound(k); }
 
-	// TODO: pair<iterator,iterator>             equal_range(const key_type& k);
-	// TODO: pair<const_iterator,const_iterator> equal_range(const key_type& k) const;
+	pair<iterator,iterator>             equal_range(const key_type& k) { return ft::make_pair(lower_bound(k), upper_bound(k)); }
+	pair<const_iterator,const_iterator> equal_range(const key_type& k) const { return ft::make_pair(lower_bound(k), upper_bound(k)); }
 
 private:
 	iterator calculateLowerBound(const key_type& key) {

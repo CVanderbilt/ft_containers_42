@@ -102,6 +102,34 @@ public:
     reference         operator[](difference_type n) const { return *(*this + n); }
 };
 
+
+template <class I1, class I2>
+bool operator==(const reverse_iterator<I1>& x, const reverse_iterator<I2>& y) { return x.base() == y.base(); }
+template <class I1, class I2>
+bool operator<(const reverse_iterator<I1>& x, const reverse_iterator<I2>& y) { return x.base() > y.base(); }
+template <class I1, class I2>
+bool operator!=(const reverse_iterator<I1>& x, const reverse_iterator<I2>& y) { return x.base() != y.base(); }
+template <class I1, class I2>
+bool operator>(const reverse_iterator<I1>& x, const reverse_iterator<I2>& y) { return x.base() < y.base(); }
+template <class I1, class I2>
+bool operator>=(const reverse_iterator<I1>& x, const reverse_iterator<I2>& y) { return x.base() <= y.base(); }
+template <class I1, class I2>
+bool operator<=(const reverse_iterator<I1>& x, const reverse_iterator<I2>& y) { return x.base() >= y.base(); }
+
+template< class It >
+reverse_iterator<It>
+operator+( typename reverse_iterator<It>::difference_type n,
+const reverse_iterator<It>& it ) {
+	return reverse_iterator<It>(it.base() - n);
+}
+
+template< class It >
+typename reverse_iterator<It>::difference_type
+operator-( const reverse_iterator<It>& lhs,
+const reverse_iterator<It>& rhs ) {
+	return rhs.base() - lhs.base();
+}
+
 }
 
 #endif
