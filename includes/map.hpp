@@ -155,8 +155,8 @@ public:
 
 	// observers:
 	allocator_type get_allocator() const { return _bst.valloc; }
-	// TODO key_compare    key_comp()      const;
-	// TODO value_compare  value_comp()    const;
+	key_compare    key_comp() const { return _cmp.comp; }
+	value_compare  value_comp()    const { return _cmp; }
 
 	// map operations:
 	// TODO iterator find(const key_type& k);

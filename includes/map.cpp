@@ -125,6 +125,7 @@ class mapTester {
 		beginEndTest(testMap);
 		atTest();
 		swapTest();
+		comparersTest();
 	}
 
 	void assignmentOperatorTest(ft::map<int, std::string> mapToCopy) {
@@ -357,6 +358,36 @@ class mapTester {
 		testEnd(testResults[swapTestName]);
 	}
 
+	void comparersTest() {
+		ft::map<int, std::string> mapa;
+		std::string comparersTestName = "comparersTest";
+		testHeader(comparersTestName);
+		ft::map<int, std::string>::key_compare keycmp = mapa.key_comp();
+		ft::map<int, std::string>::value_compare valcmp = mapa.value_comp();
+
+		std::less<int> lesscmp;
+
+		ft::pair<int, std::string> p1(1, "a");
+		ft::pair<int, std::string> p2(2, "a");
+		ft::pair<int, std::string> p3(2, "b");
+
+		if (keycmp(p1.first, p2.first) != lesscmp(p1.first, p2.first) ||
+			keycmp(p3.first, p2.first) != lesscmp(p3.first, p2.first) ||
+			keycmp(p3.first, p1.first) != lesscmp(p3.first, p1.first)) {
+			logError("keycompare() returned comparator returns different than std::less");
+			testResults[comparersTestName] = false;
+		}
+
+		if (valcmp(p1, p2) != lesscmp(p1.first, p2.first) ||
+			valcmp(p3, p2) != lesscmp(p3.first, p2.first) ||
+			valcmp(p3, p1) != lesscmp(p3.first, p1.first)) {
+			logError("keycompare() returned comparator returns different than std::less");
+			testResults[comparersTestName] = false;
+		}
+
+		testEnd(testResults[comparersTestName]);
+	}
+	
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {
 	}
 
