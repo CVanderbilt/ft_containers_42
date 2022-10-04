@@ -215,11 +215,11 @@ public:
 
 		// prefix
 		Iterator& operator++ () { _node = getNextNode(_node); return *this; }
-		Iterator operator-- () { std::cout << "--1" << std::endl; _node = getPrevNode(_node); return *this; }
+		Iterator operator-- () { _node = getPrevNode(_node); return *this; }
 		
 		// postfix
 		Iterator operator++ (int) { Iterator ret(*this); _node = getNextNode(_node); return ret; }
-		Iterator operator-- (int) { std::cout << "--2" << std::endl; Iterator ret(*this); _node = getPrevNode(_node); return ret; }
+		Iterator operator-- (int) { Iterator ret(*this); _node = getPrevNode(_node); return ret; }
 
 		private:
 		

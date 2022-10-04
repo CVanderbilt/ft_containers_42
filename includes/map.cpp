@@ -176,7 +176,7 @@ class mapTester {
 		size_t expectedSize = mapToTraverse.size();
 		std::string different = "different";
 		std::string iteratorTestName = "IteratorTest";
-		std::string revrseIteratorTestName = "ReverseIteratorTest";
+		std::string reverseIteratorTestName = "ReverseIteratorTest";
 
 		testHeader(iteratorTestName);
 
@@ -215,10 +215,63 @@ class mapTester {
 
 		testEnd(this->testResults[iteratorTestName]);
 
+		testHeader(reverseIteratorTestName);
 
-		//check for const iterators once they are implemented
-		//check for reverse iterators once they are implemented
-		//check for const reverse iterators once they are implemented
+		ft::map<int, std::string>::reverse_iterator rit = mapToTraverse.rbegin();
+		ft::map<int, std::string>::iterator mit = mapToTraverse.end();
+
+		rit--;
+		if (rit.base() != mapToTraverse.end()) {
+			this->testResults[reverseIteratorTestName] = false;
+			this->logError("The base iterator of the reverse iterator after incrementing its begin is different than the regular iterator end()", true);
+		}
+		rit = mapToTraverse.rbegin();
+		mit--;
+		calculatedSize = 0;
+		if (this->verbose) std::cout << "reverse:regular" << std::endl;
+		do {
+			if (this->verbose) 
+				std::cout << "(" << rit->first << "," << rit->second << "):(" << mit->first << "," << mit->second << ")" << std::endl;
+			if (rit->first != mit->first) {
+				this->logError("The reverse iterator sequence doesnt match with the regular iterator sequence reverted", true);
+				this->testResults[reverseIteratorTestName] = false;
+			}
+			if (calculatedSize == modPos)
+				rit->second = different;
+			rit++;
+			mit--;
+			calculatedSize++;
+		} while (rit.base() != mapToTraverse.begin());
+		if (calculatedSize != expectedSize) {
+			this->logError("(reverse_iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			this->testResults[iteratorTestName] = false;
+		}
+
+		rit = mapToTraverse.rbegin();
+		mit = --mapToTraverse.end();
+
+		calculatedSize = 0;
+		do {
+			if (this->verbose) 
+				std::cout << "(" << rit->first << "," << rit->second << "):("
+				<< mit->first << "," << mit->second << ")" << std::endl;
+			if (rit->first != mit->first) {
+				this->logError("The reverse iterator sequence doesnt match with the regular iterator sequence reverted", true);
+				this->testResults[reverseIteratorTestName] = false;
+			}
+			if (calculatedSize == modPos)
+				if (rit->second != different) {
+					this->logError("The map was modified through an iterator but couldn't find the modification in the expected position", true);
+					this->testResults[iteratorTestName] = false;
+				}
+			rit++;
+			mit--;
+			calculatedSize++;
+		} while (rit.base() != mapToTraverse.begin());
+		if (calculatedSize != expectedSize) {
+			this->logError("(reverse_iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
+			this->testResults[iteratorTestName] = false;
+		}
 	}
 
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {

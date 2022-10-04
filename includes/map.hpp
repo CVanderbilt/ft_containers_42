@@ -61,6 +61,8 @@ public:
 	
 	typedef typename bst::iterator iterator;
 	typedef typename bst::const_iterator const_iterator;
+	typedef ft::reverse_iterator<iterator> reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>  const_reverse_iterator;
 
 	// construct/copy/destroy:
 	map(const Compare& comp = key_compare(), const Allocator& alloc = Allocator()):
@@ -94,10 +96,10 @@ public:
 	iterator end() { return _bst.end(); }
 	const_iterator end() const { return _bst.end(); }
 
-	// TODO: reverse_iterator rbegin();
-	// TODO: const_reverse_iterator rbegin() const;
-	// TODO: reverse_iterator rend();
-	// TODO: const_reverse_iterator rend()   const;
+	reverse_iterator rbegin() { return reverse_iterator(end()); }
+	const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
+	reverse_iterator rend() { return reverse_iterator(begin()); }
+	const_reverse_iterator rend() const { return reverse_iterator(begin()); }
 
 	// capacity:
 	bool      empty()    const { return _bst.empty(); }
