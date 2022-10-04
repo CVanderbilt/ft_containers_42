@@ -43,132 +43,6 @@ public:
 	}
 };
 
-template <class T> //T will be reference to T(in map) or const reference to T == map::reference or map::const_reference
-class Avl_Tree_Iterator_Base: public ft::iterator<ft::bidirectional_iterator_tag, T> {
-
-public:
-
-	typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type					value_type;
-	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category	iterator_category;
-	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type		difference_type;
-	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer				pointer;
-	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference			reference;
-
-	typedef avl_node<T> avl;
-		
-	avl *_node;
-
-protected:
-
-	avl *_root;
-
-public:
-	Avl_Tree_Iterator_Base(): _root(NULL), _node(NULL) {}
-	Avl_Tree_Iterator_Base(avl *root = NULL):
-		_root(root), _node(getLeftMost(root))
-	{}
-	Avl_Tree_Iterator_Base(avl *node, avl *root):
-		_root(root), _node(node)
-	{
-		if (!_root && _node) {
-			avl *parent = _node->p;
-			root = _node->p;
-			while(parent) {
-				root = parent;
-				parent = parent->p;
-			}
-		}
-	}
-
-	T& operator* () { return (*(this->_node->d)); }
-
-	friend bool operator== (const Avl_Tree_Iterator_Base& a, const Avl_Tree_Iterator_Base& b) { return a._node == b._node; };
-	friend bool operator!= (const Avl_Tree_Iterator_Base& a, const Avl_Tree_Iterator_Base& b) { return !(a == b); };
-
-protected:
-		
-	avl *getLeftMost(avl *node) {
-		if (node) {	
-			while (node->l)
-				node = node->l;
-		}
-		return node;
-	}
-
-	avl *getRightMost(avl *node) {
-		while (node->r)
-			node = node->r;
-		return node;
-	}
-
-	avl *getNextNode(avl *node) {
-		avl *aux;
-		if (!node)
-			return NULL;
-
-		if (node->r)
-			return getLeftMost(node->r);
-
-		do
-		{
-			aux = node;
-			node = node->p;
-		} while (node && node->r == aux);
-		return node;
-	}
-
-	avl *getPrevNode(avl *node) {
-		avl *aux;
-
-		if (!node)
-			return getRightMost(_root);
-
-		if (node->l)
-			return getRightMost(node->l);
-
-		do
-		{
-			aux = node;
-			node = node->p;
-		} while (node && node->l == aux);
-		return node;
-	}
-};
-
-template <class T>
-class Avl_Tree_Iterator: public Avl_Tree_Iterator_Base<T> {
-public:
-	Avl_Tree_Iterator(avl_node<T> *root = NULL): Avl_Tree_Iterator_Base<T>(root) {}
-	Avl_Tree_Iterator(avl_node<T> *node, avl_node<T> *root): Avl_Tree_Iterator_Base<T>(node, root) {}
-	Avl_Tree_Iterator(const Avl_Tree_Iterator<T>& it): Avl_Tree_Iterator_Base<T>(it._node, it._root) {}
-
-	T& operator* () { return (*(this->_node->d)); }
-
-	// prefix
-	Avl_Tree_Iterator& operator++ () { this->_node = this->getNextNode(this->_node); return *this; }
-	Avl_Tree_Iterator operator-- () { this->_node = this->getPrevNode(this->_node); return *this; }
-	// postfix
-	Avl_Tree_Iterator operator++ (int) { Avl_Tree_Iterator ret(*this); this->_node = this->getNextNode(this->_node); return ret; }
-	Avl_Tree_Iterator operator-- (int) { Avl_Tree_Iterator ret(*this); this->_node = this->getPrevNode(this->_node); return ret; }
-};
-
-template <class T> //T will be reference to T(in map) or const reference to T == map::reference or map::const_reference
-class Avl_Tree_Iterator_Const: public Avl_Tree_Iterator_Base<T> {
-public:
-	Avl_Tree_Iterator_Const(avl_node<T> *root = NULL): Avl_Tree_Iterator_Base<T>(root) {}
-	Avl_Tree_Iterator_Const(avl_node<T> *node, avl_node<T> *root): Avl_Tree_Iterator_Base<T>(node, root) {}
-	Avl_Tree_Iterator_Const(const Avl_Tree_Iterator_Const<T>& it): Avl_Tree_Iterator_Base<T>(it._node, it._root) {}
-	Avl_Tree_Iterator_Const(const Avl_Tree_Iterator<T>& it): Avl_Tree_Iterator_Base<T>(it._node, it._root) {}
-
-	T& operator* () { return (*(this->_node->d)); }
-
-	// prefix
-	Avl_Tree_Iterator_Const& operator++ () { this->_node = this->getNextNode(this->_node); return *this; }
-	Avl_Tree_Iterator_Const operator-- () { this->_node = this->getPrevNode(this->_node); return *this; }
-	// postfix
-	Avl_Tree_Iterator_Const operator++ (int) { Avl_Tree_Iterator_Const ret(*this); this->_node = this->getNextNode(this->_node); return ret; }
-	Avl_Tree_Iterator_Const operator-- (int) { Avl_Tree_Iterator_Const ret(*this); this->_node = this->getPrevNode(this->_node); return ret; }
-};
 
 template <
 	class T=int, class Compare = std::less<T>,
@@ -180,6 +54,8 @@ class avl_tree
 private:
 
 	typedef avl_node<T> avl;
+
+	private:
 
 	avl				*r;
 	Compare			_cmp;
@@ -294,10 +170,113 @@ public:
 		return (size_t) -1;
 	}
 
-public:
-	typedef Avl_Tree_Iterator<T> iterator;
-	typedef Avl_Tree_Iterator_Const<const T> const_iterator;
 
+	template <bool Const = false>
+	class Iterator:
+	public ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type > {
+		public:
+
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type>::value_type	value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category									iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type										difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer												pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference											reference;
+		
+		avl *_node;
+		avl *_root;
+
+		public:
+		Iterator(avl *root = NULL):
+			_root(root), _node(getLeftMost(root)) {}
+		Iterator(avl *node, avl *root)
+			: _root(root), _node(node)
+		{
+			if (!_root && _node) {
+				_root = _node;
+				avl *aux = _node->p;
+				while (aux) {
+					_root = aux;
+					aux = aux->p;
+				}
+			}
+		}
+
+		Iterator(const Iterator<Const>& x): _root(x._root), _node(x._node) {}
+		template <bool B>
+		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _root(x._root), _node(x._node) {std::cout << "upgrade called" << std::endl;}
+
+		Iterator& operator=(const Iterator& x) { _node = x._node; _root = x._root; return *this; }
+
+		template <bool B> bool operator== (const Iterator<B>& x) const { return _node == x._node; }
+		template <bool B> bool operator!= (const Iterator<B>& x) const { return _node != x._node; }
+
+		value_type& operator* () { return (*_node->d); }
+		value_type* operator-> () { return (_node->d); }
+
+		// prefix
+		Iterator& operator++ () { _node = getNextNode(_node); return *this; }
+		Iterator operator-- () { std::cout << "--1" << std::endl; _node = getPrevNode(_node); return *this; }
+		
+		// postfix
+		Iterator operator++ (int) { Iterator ret(*this); _node = getNextNode(_node); return ret; }
+		Iterator operator-- (int) { std::cout << "--2" << std::endl; Iterator ret(*this); _node = getPrevNode(_node); return ret; }
+
+		private:
+		
+		avl *getLeftMost(avl *node) {
+			if (node) {	
+				while (node->l)
+					node = node->l;
+			}
+			return node;
+		}
+
+		avl *getRightMost(avl *node) {
+			while (node->r)
+				node = node->r;
+			return node;
+		}
+
+		avl *getNextNode(avl *node) {
+			avl *aux;
+			if (!node)
+				return NULL;
+
+			if (node->r)
+				return getLeftMost(node->r);
+
+			do
+			{
+				aux = node;
+				node = node->p;
+			} while (node && node->r == aux);
+			return node;
+		}
+
+		avl *getPrevNode(avl *node) {
+			avl *aux;
+
+			if (!node)
+				return getRightMost(_root);
+
+			if (node->l)
+				return getRightMost(node->l);
+
+			do
+			{
+				aux = node;
+				node = node->p;
+			} while (node && node->l == aux);
+			return node;
+		}
+	};
+
+	public:
+	typedef Iterator<false> iterator;
+	typedef Iterator<true> const_iterator;
+
+	friend bool operator== (const iterator& a, const iterator& b) { return a._node == b._node; };
+	friend bool operator!= (const iterator& a, const iterator& b) { return a._node != b._node; };
 	/*
 	*	Elemental access
 	*/
