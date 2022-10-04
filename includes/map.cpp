@@ -124,6 +124,7 @@ class mapTester {
 		assignmentOperatorTest(testMap);
 		beginEndTest(testMap);
 		atTest();
+		swapTest();
 	}
 
 	void assignmentOperatorTest(ft::map<int, std::string> mapToCopy) {
@@ -308,6 +309,52 @@ class mapTester {
 		}
 
 		testEnd(testResults[atTestName]);
+	}
+
+	void swapTest() {
+		std::string swapTestName = "SwapTest";
+		testHeader(swapTestName);
+
+		ft::map<int, bool> m1;
+		ft::map<int, bool> m2;
+
+		m1.insert(ft::make_pair(1, true));
+		m1.insert(ft::make_pair(2, true));
+		m1.insert(ft::make_pair(3, true));
+
+		m2.insert(ft::make_pair(-1, false));
+		m2.insert(ft::make_pair(-2, false));
+		m2.insert(ft::make_pair(-3, false));
+
+		for (ft::map<int, bool>::iterator it = m1.begin(); it != m1.end(); it++)
+			std::cout << "m1: (" << it->first << "," << it->second << ")" << std::endl;
+		for (ft::map<int, bool>::iterator it = m2.begin(); it != m2.end(); it++)
+			std::cout << "m2: (" << it->first << "," << it->second << ")" << std::endl;
+		log("m1.swap(m2)");
+		m1.swap(m2);
+		for (ft::map<int, bool>::iterator it = m1.begin(); it != m1.end(); it++) {
+			if (verbose) std::cout << "m1: (" << it->first << "," << it->second << ")" << std::endl;
+			if (it->first > 0 || it->second != false) {
+				logError("not all contents were swapped correctly", 1);
+				testResults[swapTestName] = false;
+			}
+		}
+		for (ft::map<int, bool>::iterator it = m2.begin(); it != m2.end(); it++) {
+			if (verbose) std::cout << "m2: (" << it->first << "," << it->second << ")" << std::endl;
+			if (it->first < 0 || it->second != true) {
+				logError("not all contents were swapped correctly", 1);
+				testResults[swapTestName] = false;
+			}
+		}
+		m2[5] = true;
+		m2.swap(m1);
+
+		if (m2[5] == true || m1[5] != true) {
+			logError("new content added to the second tree wont be swapped to the first tree", true);
+			testResults[swapTestName] = false;
+		}
+
+		testEnd(testResults[swapTestName]);
 	}
 
 	void emptyTest(ft::map<int, std::string> emptyMap, ft::map<int, std::string> nonEmptyMap) {

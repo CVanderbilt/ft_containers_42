@@ -148,7 +148,10 @@ public:
 	}
 	void clear() { _bst.clear(); }
 
-	// TODO void swap(map& m);
+	void swap(map& m) {
+		_bst.swap(m._bst);
+		ft::swap(_cmp, m._cmp);
+	}
 
 	// observers:
 	allocator_type get_allocator() const { return _bst.valloc; }

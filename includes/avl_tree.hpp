@@ -111,6 +111,14 @@ public:
 		}
 	}
 
+	void swap(avl_tree& tree)  {
+		ft::swap(_alloc, tree._alloc);
+		ft::swap(_size, tree._size);
+		ft::swap(_cmp, tree._cmp);
+		ft::swap(_valloc, tree._valloc);
+		ft::swap(r, tree.r);
+	}
+
 	void printBT() {
 		printBT("", r, false);    
 	}
