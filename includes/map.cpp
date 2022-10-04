@@ -173,9 +173,6 @@ class mapTester {
 	}
 
 	void beginEndTest(ft::map<int, std::string> mapToTraverse) {
-		//also check size
-		//const iterators test
-		//std::map<int, int> kk;
 		size_t expectedSize = mapToTraverse.size();
 		std::string different = "different";
 		std::string iteratorTestName = "IteratorTest";
@@ -211,6 +208,11 @@ class mapTester {
 			this->logError("(after modifying the map through an iterator)The map size is expected to be " + std::to_string(expectedSize) + " but counted " + std::to_string(calculatedSize) + " iterators", true);
 			this->testResults[iteratorTestName] = false;
 		}
+
+		const ft::map<int, int> constMap;
+		const ft::map<int, int>::const_iterator it = constMap.begin();
+		//const ft::map<int, int>::iterator it = constMap.begin(); //Uncommenting this line will result in compilation error (if const map, begin and end methods will return only const_iterator)
+
 		testEnd(this->testResults[iteratorTestName]);
 
 
@@ -258,13 +260,22 @@ class mapTester {
 	value_comp
 	//non-member functions*/
 
-int main() {
-
+bool execute_tests(bool v) {
 	ft::map<int, std::string> testMap;
 
-	mapTester tester(true);
+	mapTester tester(v);
+	std::map<int, int> kk;
 
 	tester.doTests();
 	std::cout << std::endl;
 	return tester.showResults() ? 0 : 1;
+}
+
+int main() {
+	bool result = execute_tests(true);
+
+	std::cout << std::endl << "Check now for leaks" << std::endl;
+	getchar();
+
+	return result;
 }

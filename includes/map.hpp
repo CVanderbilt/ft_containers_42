@@ -76,7 +76,7 @@ public:
 	}
 	map (const map& other):
 		_cmp(key_compare()),
-		_bst(other._bst) //TODO make sure this is being copied correctly
+		_bst(other._bst)
 	{}
 
 	~map() {}
@@ -90,9 +90,9 @@ public:
 
 	// iterators:
 	iterator begin() { return _bst.begin(); }
-	// TODO const_iterator begin() const;
+	const_iterator begin() const { return _bst.begin(); }
 	iterator end() { return _bst.end(); }
-	// TODO const_iterator end() const;
+	const_iterator end() const { return _bst.end(); }
 
 	// TODO: reverse_iterator rbegin();
 	// TODO: const_reverse_iterator rbegin() const;

@@ -88,7 +88,7 @@ public:
 
 	avl_tree(const avl_tree& tree)
 	: r(NULL), _cmp(tree._cmp), _size(0), _alloc(tree._alloc), _valloc(tree._valloc) {
-		for (iterator it = tree.begin(); it != tree.end(); it++) {
+		for (const_iterator it = tree.begin(); it != tree.end(); it++) {
 			this->insert(*it);
 		}
 	}
@@ -99,7 +99,7 @@ public:
 
 	avl_tree& operator= (const avl_tree& other) {
 		this->clear();
-		for (iterator it = other.begin(); it != other.end(); it++) {
+		for (const_iterator it = other.begin(); it != other.end(); it++) {
 			this->insert(*it);
 		}
 		return *this;
@@ -290,7 +290,7 @@ public:
 		return iterator(r);
 	}
 
-	iterator begin() const {
+	const_iterator begin() const {
 		return iterator(r);
 	}
 
@@ -298,7 +298,7 @@ public:
 		return iterator(NULL, r);
 	}
 
-	iterator end() const {
+	const_iterator end() const {
 		return iterator(NULL, r);
 	}
 
