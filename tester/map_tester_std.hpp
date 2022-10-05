@@ -1,6 +1,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include "progressBar.hpp"
 
 class MapTesterStd {
 public:
@@ -15,9 +16,13 @@ public:
 
 	MapTesterStd(): method(DEFAULT), size(100), headers(false), _stop(false) {}
 	~MapTesterStd() { 
+		std::cerr << "deleting..." << std::endl;
 		delete cnt;
-		std::cout << "check for leaks now, press enter to end test" << std::endl;
-		if (_stop) getchar();
+		std::cerr << "deleted" << std::endl;
+		if (_stop) {
+			std::cout << "check for leaks now, press enter to end test" << std::endl;
+			getchar();
+		}
 	}
 
 	MapTesterStd& withIterators() { method = RANGE; return *this; }
@@ -33,17 +38,19 @@ public:
 	}
 
 	void execute(std::string testName) {
-		
+		printHeader("Construction");
 		construct_map();
+		printHeader("Construction completed");
+		printMap();
 		for (iterator it = cnt->begin(); it != cnt->end(); it++)
 			std::cout << "(" << it->first << ":" << it->second << ")" << std::endl;
 
-		if (testName == "" || testName == "capacity") { printHeader("capacity"); test_capacity(); }
-		if (testName == "" || testName == "element_access") { printHeader("element_access"); test_element_access(); }
-		if (testName == "" || testName == "operator=") { printHeader("operator="); test_equal_operator(); }
-		if (testName == "" || testName == "iterators") { printHeader("iterators"); test_iterators(); }
-		if (testName == "" || testName == "erase") { printHeader("erase"); test_erase(); }
-		if (testName == "" || testName == "swap") { printHeader("swap"); test_swap(); }
+		if (testName == "" || testName.find("capacity") != std::string::npos) { printHeader("capacity"); test_capacity(); }
+		if (testName == "" || testName.find("element_access") != std::string::npos) { printHeader("element_access"); test_element_access(); }
+		if (testName == "" || testName.find("operator_equal") != std::string::npos) { printHeader("operator_equal"); test_equal_operator(); }
+		if (testName == "" || testName.find("iterators") != std::string::npos) { printHeader("iterators"); test_iterators(); }
+		if (testName == "" || testName.find("erase") != std::string::npos) { printHeader("erase"); test_erase(); }
+		if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
 	}
 
 	iterator getRandomIterator(int chance = 1) {
@@ -141,7 +148,6 @@ private:
 	}
 
 	void test_iterators() {
-		printHeader("test_iterators"); //this should be called before calling the method so that we dont need this line in each test
 		iterator it = cnt->begin();
 		std::string diff = "-----";
 
@@ -170,9 +176,10 @@ private:
 	}
 
 	void test_element_access() {
+		ProgressBar *bar = new ProgressBar();
 		std::string str = "+++++";
-		printMap();
 		for (int i = 0; i < size; i++) {
+			bar->setProgress((float)i / (float)size);
 			int n = generateNumber(size);
 
 			try { (*cnt).at(n).append("foundWithAt"); }
@@ -181,6 +188,8 @@ private:
 				(*cnt).at(n).append("notFoundWithAt");
 			}
 		}
+		delete bar;
+		std::cerr << std::endl << "element access test ended" << std::endl;
 	}
 
 	//modifiers tested implicitly
