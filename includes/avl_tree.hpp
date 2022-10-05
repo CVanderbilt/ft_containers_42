@@ -106,8 +106,11 @@ public:
 	}
 
 	void clear() {
-		for (iterator it = this->begin(); it != this->end();) {
-			this->erase(it++);
+		avl *n = begin()._node;
+		while (n) {
+			if (n->l) n = n->l;
+			else if (n->r) n = n->r;
+			else n = eraseNodeWithNoChildren(n);
 		}
 	}
 

@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 		if (str == "ft") choice = "ft";
 		else if (str == "std") choice = "std";
 		else if (std::isdigit(str[0])) s = std::atoi(str.c_str());
-		else if (str == "stop") _stop = true;
+		else if (str == "s") _stop = true;
 		else if (str == "h") _headers = true;
 		else operation.append(str);
 	}
