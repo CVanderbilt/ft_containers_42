@@ -137,14 +137,19 @@ public:
 	template <class InputIterator>
 	void insert(InputIterator first, InputIterator last) {
 		for (; first != last; first++)
-			_bst.insert(first);
+			_bst.insert(*first);
 	}
 
-	iterator  erase(iterator pos) { _bst.erase(pos); }
-	size_type erase(const key_type& key) { erase(getIteratorToPair(key)); }
-	iterator  erase(const_iterator first, const_iterator last) {
-		for (iterator it = first; it != last; it++)
-			erase(it);
+	void  erase(iterator pos) { _bst.erase(pos); }
+	size_type erase(const key_type& key) { 
+		iterator it = getIteratorToPair(key);
+		size_type ret = it != end() ? 1 : 0;
+		erase(it);
+		return ret;
+	}
+	void  erase(iterator first, iterator last) {
+		while (first != last && first != end())
+			erase(first++);
 	}
 	void clear() { _bst.clear(); }
 

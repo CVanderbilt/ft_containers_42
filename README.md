@@ -15,7 +15,6 @@
 ## TODO
 
 - NextThings:
-  - continue: update tests to test agains a normal map
 - General:
   - Ordenar avl_tree.hpp
   - Create a test framework to test each feature of my container and compare its speed against the official container

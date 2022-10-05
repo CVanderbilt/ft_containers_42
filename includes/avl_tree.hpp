@@ -314,7 +314,7 @@ public:
 		_size--;
 	}
 
-	bool empty() { return this->_size == 0; }
+	bool empty() const { return this->_size == 0; }
 
 	avl *insertBehind(const T& v, avl *node, bool nodeIsRight) {
 		avl *left = NULL;
