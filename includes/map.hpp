@@ -108,10 +108,7 @@ public:
 
 	// element access:
 	mapped_type& operator[](const key_type& key) {
-		iterator it = getIteratorToPair(key);
-
-		it = it == _bst.end() ? insert(ft::make_pair(key, mapped_type())).first : it; 
-		return (*it).second;
+		return ((_bst.insertAndReturnIterator(value_type(key, mapped_type()))).first)->second;
 	}
 
 	mapped_type& at(const key_type& key) {
