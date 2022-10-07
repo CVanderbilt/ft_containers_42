@@ -50,8 +50,8 @@ public:
 		if (testName == "" || testName.find("element_access") != std::string::npos) { printHeader("element_access"); test_element_access(); }
 		if (testName == "" || testName.find("operator_equal") != std::string::npos) { printHeader("operator_equal"); test_equal_operator(); }
 		if (testName == "" || testName.find("iterators") != std::string::npos) { printHeader("iterators"); test_iterators(); }
-		if (testName == "" || testName.find("erase") != std::string::npos) { printHeader("erase"); test_erase(); }
-		if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
+		//if (testName == "" || testName.find("erase") != std::string::npos) { printHeader("erase"); test_erase(); }
+		//if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
 	}
 
 	iterator getRandomIterator(int chance = 1) {
@@ -189,7 +189,7 @@ private:
 	}
 
 	//modifiers tested implicitly
-	void test_erase() {
+	/*void test_erase() {
 		size_t n = cnt->size() / 4;
 
 		for (int i = 0; i < n; i++) { cnt->erase(getRandomIterator()); std::cout << cnt->erase(generateNumber()); } std::cout << std::endl;
@@ -208,9 +208,9 @@ private:
 		printMap();
 		cnt->erase(first, last);
 		printMap();
-	}
+	}*/
 
-	void test_swap() {
+	/*void test_swap() {
 		t_map mapa;
 		for (int i = 0; i < size / 2; i++)
 			mapa[generateNumber()] = generateWord();
@@ -222,7 +222,7 @@ private:
 			error("swap modified the memory pointer of the map somehow!!!");
 		mapa.swap(*cnt);
 		printMap();
-	}
+	}*/
 	
 	/*
 	// observers:

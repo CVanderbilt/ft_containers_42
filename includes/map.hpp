@@ -8,7 +8,7 @@
 # include <utility>
 # include "iterator.hpp"
 # include "utils.hpp"
-# include "avl_tree.hpp"
+# include "red_black_tree.hpp"
 
 namespace ft {
 
@@ -53,7 +53,7 @@ public:
 
 private:
 
-	typedef avl_tree<value_type, value_compare, allocator_type>	bst;
+	typedef _red_black_tree<value_type, value_compare, allocator_type>	bst;
 
 	value_compare	_cmp;
 	bst				_bst;
@@ -67,7 +67,7 @@ public:
 	// construct/copy/destroy:
 	map(const Compare& comp = key_compare(), const Allocator& alloc = Allocator()):
 		_cmp(comp),
-		_bst(bst(_cmp, alloc))
+		_bst(_cmp, alloc)
 	{}
 
 	template <class InputIt>
