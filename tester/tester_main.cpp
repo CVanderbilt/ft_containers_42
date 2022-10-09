@@ -29,7 +29,8 @@ int main(int argc, char *argv[]) {
 
 	std::string choice = "ft";
 	std::string operation = "";
-	size_t s = 1000;
+	//size_t s = 5000000;
+	size_t s = 150569;
 	bool _stop = false;
 	bool _headers = false;
 

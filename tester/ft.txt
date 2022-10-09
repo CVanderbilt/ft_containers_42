@@ -1,0 +1,23 @@
+range map constructor
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+kk
+Capacity test
+1, 0
+0, 10000
+test element access
+kk
+operator= test
+iterators test
+Test erase: (11000)

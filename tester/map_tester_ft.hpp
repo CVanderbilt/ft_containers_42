@@ -43,15 +43,15 @@ public:
 		construct_map();
 		printHeader("Construction completed");
 		printMap();
-		for (iterator it = cnt->begin(); it != cnt->end(); it++)
-			std::cout << "(" << it->first << ":" << it->second << ")" << std::endl;
+//		for (iterator it = cnt->begin(); it != cnt->end(); it++)
+//			std::cout << "(" << it->first << ":" << it->second << ")" << std::endl;
 
 		if (testName == "" || testName.find("capacity") != std::string::npos) { printHeader("capacity"); test_capacity(); }
 		if (testName == "" || testName.find("element_access") != std::string::npos) { printHeader("element_access"); test_element_access(); }
 		if (testName == "" || testName.find("operator_equal") != std::string::npos) { printHeader("operator_equal"); test_equal_operator(); }
 		if (testName == "" || testName.find("iterators") != std::string::npos) { printHeader("iterators"); test_iterators(); }
-		//if (testName == "" || testName.find("erase") != std::string::npos) { printHeader("erase"); test_erase(); }
-		//if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
+		if (testName == "" || testName.find("erase") != std::string::npos) { printHeader("erase"); test_erase(); }
+		if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
 	}
 
 	iterator getRandomIterator(int chance = 1) {
@@ -72,7 +72,9 @@ private:
 	bool _stop;
 	
 	void error(std::string str) { std::cout << "[ERROR]: " << str << std::endl; }
-	void printMap() { for (iterator it = cnt->begin(); it != cnt->end(); it++) std::cout << it->first << it->second; std::cout << std::endl; }
+	void printMap() { 
+		//for (iterator it = cnt->begin(); it != cnt->end(); it++) std::cout << it->first << it->second; std::cout << std::endl;
+	}
 	void printHeader(std::string testName) { if (headers) std::cout << "[TEST]: " << testName << std::endl; }
 	int generateNumber(size_t mod = 10000) const { int r = rand(); r *= r < 0 ? -1 : 1; return r % mod; }
 	std::string generateWord(size_t s = 1) const {
@@ -99,41 +101,55 @@ private:
 	}
 	
 	void construct_map_default() {
-		std::cout << "default map constructed" << std::endl;
+		std::cout << "default map constructor" << std::endl;
+		std::cerr << "default map constructor" << std::endl;
 		cnt = new t_map();
 
-		for (int i = 0; i < size; i++)
+		ProgressBar *bar = new ProgressBar();
+		for (int i = 0; i < size; i++) {
+			bar->setProgress(i, size);
 			(*cnt)[generateNumber()] = generateWord();
+		}
+		delete bar; std::cerr << std::endl;
 	}
 
 	void construct_map_iterator() {
-		std::cout << "range map constructed" << std::endl;
+		std::cout << "range map constructor" << std::endl;
+		std::cerr << "range map constructor" << std::endl;
 		std::vector<t_pair> v;
-		for (int i = 0; i < size; i++)
+		std::cerr << "filling vector" << std::endl;
+		ProgressBar *bar = new ProgressBar();
+		for (int i = 0; i < size; i++) {
+			bar->setProgress(i, size);
 			v.push_back(t_pair(generateNumber(), generateWord()));
+		}
+		delete bar; std::cerr << std::endl;
+		std::cerr << "calling range iterator (without loading bar)" << std::endl;
 		cnt = new t_map(v.begin(), v.end());
-		/*cnt = new t_map();
-		for (std::vector<t_pair>::iterator it = v.begin(); it != v.end(); it++)
-			cnt->insert(ft::make_pair(it->first, it->second));
-		//*/
 	}
 
 	void construct_map_copy() {
-		std::cout << "copy map constructed" << std::endl;
+		std::cout << "copy map constructor" << std::endl;
+		std::cerr << "copy map constructor" << std::endl;
+		std::cerr << "calling default map constructor (to be copied)" << std::endl;
 		construct_map_default();
 		t_map *aux = cnt;
+		std::cerr << "calling copy constructor" << std::endl;
 		cnt = new t_map(*aux);
+		std::cerr << "destroying temporary map (to be copied)" << std::endl;
 		delete aux;
 	}
 
 	void test_equal_operator() {
 		t_map newMap = *cnt;
 		
+		std::cout << "operator= test" << std::endl;
+		std::cerr << "operator= test" << std::endl;
 		const_iterator it1 = newMap.begin();
 		const_iterator it2 = cnt->begin();
 		for (; it1 != newMap.end(); it1++)
 		{
-			std::cout << it1->first << it2->first << "|" << std::endl;
+//			std::cout << it1->first << it2->first << "|" << std::endl;
 			if (it1->first != it2->first || it1->second != it2->second)
 				error("after using operator= iterator contents doesnt match");
 			it2++;
@@ -144,11 +160,20 @@ private:
 	}
 
 	void test_iterators() {
+		std::cout << "iterators test" << std::endl;
+		std::cerr << "iterators test" << std::endl;
 		iterator it = cnt->begin();
 		std::string diff = "-----";
+		size_t i = 0;
+		size_t s = cnt->size();
 
-		for (const_iterator cit = cnt->begin(); cit != cnt->end(); cit++)
-			std::cout << cit->first << ":" << cit->second << std::endl;
+		std::cerr << "iterating through map" << std::endl;
+		ProgressBar *bar = new ProgressBar();
+		for (const_iterator cit = cnt->begin(); cit != cnt->end(); cit++) {
+			bar->setProgress(i++, s);
+			//std::cout << cit->first << ":" << cit->second << std::endl;
+		}
+		delete bar; std::cerr << std::endl;
 		
 		it->second = diff;
 		it++;
@@ -160,18 +185,30 @@ private:
 		it--;
 		it->second = diff;
 
-		for (const_reverse_iterator rit = cnt->rbegin(); rit != cnt->rend(); rit++)
-			std::cout << rit->first << ":" << rit->second << std::endl;
+		std::cerr << "reverse iterating through map" << std::endl;
+		bar = new ProgressBar();
+		i = 0;
+		for (const_reverse_iterator rit = cnt->rbegin(); rit != cnt->rend(); rit++) {
+			bar->setProgress(i++, s);
+			//std::cout << rit->first << ":" << rit->second << std::endl;
+		}
+		delete bar; std::cerr << std::endl;
 	}
 
 	void test_capacity() {
 		t_map emptyMap;
+		std::cout << "Capacity test" << std::endl;
+		std::cerr << "Capacity test" << std::endl;
 
 		std::cout << emptyMap.empty() << ", " << emptyMap.size() << std::endl;
 		std::cout << cnt->empty() << ", " << cnt->size() << std::endl;
 	}
 
 	void test_element_access() {
+		size_t max_extra_elements = cnt->size() / 10;
+		size_t extra_elements = 0;
+		std::cout << "test element access" << std::endl;
+		std::cerr << "test element access" << std::endl;
 		ProgressBar *bar = new ProgressBar();
 		std::string str = "+++++";
 		for (int i = 0; i < size; i++) {
@@ -180,19 +217,37 @@ private:
 
 			try { (*cnt).at(n).append("foundWithAt"); }
 			catch(const std::exception& e) {
-				(*cnt)[n] = str;
-				(*cnt).at(n).append("notFoundWithAt");
+				if (extra_elements < max_extra_elements) {
+					(*cnt)[n] = str;
+					(*cnt).at(n).append("notFoundWithAt");
+					extra_elements++;
+				}
 			}
 		}
-		delete bar;
-		std::cerr << std::endl << "element access test ended" << std::endl;
+		delete bar; std::cerr << std::endl;
 	}
 
 	//modifiers tested implicitly
-	/*void test_erase() {
+	void test_erase() {
+		size_t mapSize = cnt->size();
+		std::cout << "Test erase: (" << mapSize << ")" << std::endl;
+		std::cerr << "Test erase: (" << mapSize << ")" << std::endl;
 		size_t n = cnt->size() / 4;
 
-		for (int i = 0; i < n; i++) { cnt->erase(getRandomIterator()); std::cout << cnt->erase(generateNumber()); } std::cout << std::endl;
+		std::cerr << "Erase single elements" << std::endl;
+		ProgressBar *bar = new ProgressBar();
+		for (int i = 0; i < n; i++) {
+			bar->setProgress(i, n);
+			iterator it = getRandomIterator();
+			//std::cout << "deleting iterator with value: " << it->first << std::endl;
+			cnt->erase(it);
+			int key = generateNumber();
+			//std::cout << "deleting by key: " << key << std::endl;
+			//std::cout << cnt->erase(key);
+			//if (!(i % 20))
+		}
+		delete bar; std::cerr << std::endl;
+		//std::cout << std::endl;
 
 		iterator it1 = getRandomIterator();
 		iterator it2 = getRandomIterator();
@@ -205,12 +260,18 @@ private:
 			first = it2;
 			last = it1;
 		}
+		std::cerr << "print map" << std::endl;
 		printMap();
+		std::cerr << "iterator erase" << std::endl;
 		cnt->erase(first, last);
+		std::cerr << "print map" << std::endl;
 		printMap();
-	}*/
+		std::cerr << std::endl;
+	}
 
-	/*void test_swap() {
+	void test_swap() {
+		std::cout << "Test swap" << std::endl;
+		std::cerr << "Test swap" << std::endl;
 		t_map mapa;
 		for (int i = 0; i < size / 2; i++)
 			mapa[generateNumber()] = generateWord();
@@ -222,7 +283,7 @@ private:
 			error("swap modified the memory pointer of the map somehow!!!");
 		mapa.swap(*cnt);
 		printMap();
-	}*/
+	}
 	
 	/*
 	// observers:

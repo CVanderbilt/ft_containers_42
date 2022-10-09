@@ -134,7 +134,7 @@ public:
 	template <class InputIterator>
 	void insert(InputIterator first, InputIterator last) {
 		for (; first != last; first++)
-			_bst.insert(*first);
+			insert(*first);
 	}
 
 	void  erase(iterator pos) { _bst.erase(pos); }
@@ -145,8 +145,13 @@ public:
 		return ret;
 	}
 	void  erase(iterator first, iterator last) {
-		while (first != last && first != end())
+		size_t s = 0;
+		while (first != last && first != end()) {
+			if (s == 558 || s == 559)
+				std::cerr << "AAAA" << std::endl;
+			s++;
 			erase(first++);
+		}
 	}
 	void clear() { _bst.clear(); }
 
