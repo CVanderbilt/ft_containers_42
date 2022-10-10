@@ -1,5 +1,13 @@
 #include "map_tester_ft.hpp"
 #include "map_tester_std.hpp"
+#include <fstream>
+#include <iostream>
+
+// Red Black Tree implementation in C++
+// Author: Algorithm Tutor
+// Tutorial URL: https://algorithmtutor.com/Data-Structures/Tree/Red-Black-Trees/
+
+#include <iostream>
 
 void ft_test(std::string op, size_t s, bool _headers, bool _stop) {
 	MapTesterFt mapTesterFt;
@@ -31,7 +39,7 @@ int main(int argc, char *argv[]) {
 	std::string operation = "";
 	//size_t s = 5000000;
 	//size_t s = 150569;
-	size_t s = 10;
+	size_t s = 5000000;
 	bool _stop = false;
 	bool _headers = false;
 

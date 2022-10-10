@@ -1,6 +1,8 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <string>
+#include <fstream>
 #include "progressBar.hpp"
 
 class MapTesterStd {
@@ -14,13 +16,13 @@ public:
 
 	enum constructor { DEFAULT, COPY, RANGE };
 
-	MapTesterStd(): method(DEFAULT), size(100), headers(false), _stop(false) {}
+	MapTesterStd(): method(DEFAULT), size(100), headers(false), _stop(false), __out("std.txt") {}
 	~MapTesterStd() { 
 		std::cerr << "deleting..." << std::endl;
 		delete cnt;
 		std::cerr << "deleted" << std::endl;
 		if (_stop) {
-			std::cout << "check for leaks now, press enter to end test" << std::endl;
+			__out << "check for leaks now, press enter to end test" << std::endl;
 			getchar();
 		}
 	}
@@ -32,7 +34,7 @@ public:
 	MapTesterStd& withSize(size_t s) {
 		size = s;
 		if (size < 10) {
-			std::cout << "size set to 10 (minimum)" << std::endl;
+			__out << "size set to 10 (minimum)" << std::endl;
 			size = 10; }
 		return *this;
 	}
@@ -43,7 +45,7 @@ public:
 		printHeader("Construction completed");
 		printMap();
 		for (iterator it = cnt->begin(); it != cnt->end(); it++)
-			std::cout << "(" << it->first << ":" << it->second << ")" << std::endl;
+			__out << "(" << it->first << ":" << it->second << ")" << std::endl;
 
 		if (testName == "" || testName.find("capacity") != std::string::npos) { printHeader("capacity"); test_capacity(); }
 		if (testName == "" || testName.find("element_access") != std::string::npos) { printHeader("element_access"); test_element_access(); }
@@ -69,12 +71,13 @@ private:
 	t_map *cnt;
 	bool headers;
 	bool _stop;
+	std::ofstream __out;
 	
-	void error(std::string str) { std::cout << "[ERROR]: " << str << std::endl; }
+	void error(std::string str) { __out << "[ERROR]: " << str << std::endl; }
 	void printMap() { 
-		//for (iterator it = cnt->begin(); it != cnt->end(); it++) std::cout << it->first << it->second; std::cout << std::endl;
+		for (iterator it = cnt->begin(); it != cnt->end(); it++) __out << it->first << it->second; __out << std::endl;
 	}
-	void printHeader(std::string testName) { if (headers) std::cout << "[TEST]: " << testName << std::endl; }
+	void printHeader(std::string testName) { if (headers) __out << "[TEST]: " << testName << std::endl; }
 	int generateNumber(size_t mod = 10000) const { int r = rand(); r *= r < 0 ? -1 : 1; return r % mod; }
 	std::string generateWord(size_t s = 1) const {
 		std::string abc = "abcdefghijklmnopqrstuvwxyz1234567890";
@@ -100,7 +103,7 @@ private:
 	}
 	
 	void construct_map_default() {
-		std::cout << "default map constructor" << std::endl;
+		__out << "default map constructor" << std::endl;
 		std::cerr << "default map constructor" << std::endl;
 		cnt = new t_map();
 
@@ -113,7 +116,7 @@ private:
 	}
 
 	void construct_map_iterator() {
-		std::cout << "range map constructor" << std::endl;
+		__out << "range map constructor" << std::endl;
 		std::cerr << "range map constructor" << std::endl;
 		std::vector<t_pair> v;
 		std::cerr << "filling vector" << std::endl;
@@ -128,7 +131,7 @@ private:
 	}
 
 	void construct_map_copy() {
-		std::cout << "copy map constructor" << std::endl;
+		__out << "copy map constructor" << std::endl;
 		std::cerr << "copy map constructor" << std::endl;
 		std::cerr << "calling default map constructor (to be copied)" << std::endl;
 		construct_map_default();
@@ -142,13 +145,13 @@ private:
 	void test_equal_operator() {
 		t_map newMap = *cnt;
 		
-		std::cout << "operator= test" << std::endl;
+		__out << "operator= test" << std::endl;
 		std::cerr << "operator= test" << std::endl;
 		const_iterator it1 = newMap.begin();
 		const_iterator it2 = cnt->begin();
 		for (; it1 != newMap.end(); it1++)
 		{
-//			std::cout << it1->first << it2->first << "|" << std::endl;
+			__out << it1->first << it2->first << "|" << std::endl;
 			if (it1->first != it2->first || it1->second != it2->second)
 				error("after using operator= iterator contents doesnt match");
 			it2++;
@@ -159,7 +162,7 @@ private:
 	}
 
 	void test_iterators() {
-		std::cout << "iterators test" << std::endl;
+		__out << "iterators test" << std::endl;
 		std::cerr << "iterators test" << std::endl;
 		iterator it = cnt->begin();
 		std::string diff = "-----";
@@ -170,7 +173,7 @@ private:
 		ProgressBar *bar = new ProgressBar();
 		for (const_iterator cit = cnt->begin(); cit != cnt->end(); cit++) {
 			bar->setProgress(i++, s);
-			//std::cout << cit->first << ":" << cit->second << std::endl;
+			__out << cit->first << ":" << cit->second << std::endl;
 		}
 		delete bar; std::cerr << std::endl;
 		
@@ -189,24 +192,24 @@ private:
 		i = 0;
 		for (const_reverse_iterator rit = cnt->rbegin(); rit != cnt->rend(); rit++) {
 			bar->setProgress(i++, s);
-			//std::cout << rit->first << ":" << rit->second << std::endl;
+			__out << rit->first << ":" << rit->second << std::endl;
 		}
 		delete bar; std::cerr << std::endl;
 	}
 
 	void test_capacity() {
 		t_map emptyMap;
-		std::cout << "Capacity test" << std::endl;
+		__out << "Capacity test" << std::endl;
 		std::cerr << "Capacity test" << std::endl;
 
-		std::cout << emptyMap.empty() << ", " << emptyMap.size() << std::endl;
-		std::cout << cnt->empty() << ", " << cnt->size() << std::endl;
+		__out << emptyMap.empty() << ", " << emptyMap.size() << std::endl;
+		__out << cnt->empty() << ", " << cnt->size() << std::endl;
 	}
 
 	void test_element_access() {
 		size_t max_extra_elements = cnt->size() / 10;
 		size_t extra_elements = 0;
-		std::cout << "test element access" << std::endl;
+		__out << "test element access" << std::endl;
 		std::cerr << "test element access" << std::endl;
 		ProgressBar *bar = new ProgressBar();
 		std::string str = "+++++";
@@ -229,7 +232,7 @@ private:
 	//modifiers tested implicitly
 	void test_erase() {
 		size_t mapSize = cnt->size();
-		std::cout << "Test erase: (" << mapSize << ")" << std::endl;
+		__out << "Test erase: (" << mapSize << ")" << std::endl;
 		std::cerr << "Test erase: (" << mapSize << ")" << std::endl;
 		size_t n = cnt->size() / 4;
 
@@ -238,15 +241,14 @@ private:
 		for (int i = 0; i < n; i++) {
 			bar->setProgress(i, n);
 			iterator it = getRandomIterator();
-			//std::cout << "deleting iterator with value: " << it->first << std::endl;
 			cnt->erase(it);
 			int key = generateNumber();
-			//std::cout << "deleting by key: " << key << std::endl;
-			//std::cout << cnt->erase(key);
+			//__out << "deleting by key: " << key << std::endl;
+			__out << cnt->erase(key);
 			//if (!(i % 20))
 		}
 		delete bar; std::cerr << std::endl;
-		//std::cout << std::endl;
+		__out << std::endl;
 
 		iterator it1 = getRandomIterator();
 		iterator it2 = getRandomIterator();
@@ -269,7 +271,7 @@ private:
 	}
 
 	void test_swap() {
-		std::cout << "Test swap" << std::endl;
+		__out << "Test swap" << std::endl;
 		std::cerr << "Test swap" << std::endl;
 		t_map mapa;
 		for (int i = 0; i < size / 2; i++)

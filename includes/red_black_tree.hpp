@@ -278,8 +278,13 @@ private:
 	size_t deleteNodeHelper(NodePtr z) {
 		NodePtr x, y;
 
+		NodePtr l = z->left;
+		NodePtr r = z->right;
+
 		if (z == TNULL)
 			return 0;
+		if (z->data->first == 2389)
+			std::cout << "2389..." << std::endl;
 		_size--;
 		y = z;
 		int y_original_color = y->color;
@@ -310,6 +315,9 @@ private:
 		alloc.destroy(z->data);
 		alloc.deallocate(z->data, 1);
 		delete z;
+
+		std::cout << "l: " << l->data->first << "; r: " << r->data->first << std::endl;
+
 		if (y_original_color == 0) {
 			deleteFix(x);
 		}
@@ -369,6 +377,8 @@ public:
 		TNULL->color = 0;
 		TNULL->left = nullptr;
 		TNULL->right = nullptr;
+		TNULL->data = _alloc.allocate(1);
+		_alloc.construct(TNULL->data, ft::make_pair(123, "TNULL"));
 		root = TNULL;
 	}
 
@@ -499,9 +509,7 @@ public:
 		NodePtr y = nullptr;
 		NodePtr x = root;
 
-		std::cout << "inserting: " << key.first << std::endl;
-		if (key.first == 9 || key.first == 2928)
-			std::cout << "this one fails" << std::endl;
+		//std::cout << "inserting: " << key.first << std::endl;
 		//if (x != TNULL) std::cout << "x.f: " << x->data->first << std::endl;
 		//else std::cout << "x is TNULL" << std::endl;
 		while (x != TNULL) {
@@ -526,6 +534,8 @@ public:
 		node->right = TNULL;
 		node->color = 1;
 
+		_size++;
+
 		node->parent = y;
 		if (y == nullptr) {
 			root = node;
@@ -543,7 +553,6 @@ public:
 		}
 
 		insertFix(node);
-		_size++;
 		return node;
 	}
 

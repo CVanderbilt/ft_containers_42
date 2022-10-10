@@ -8,7 +8,7 @@
 # include <utility>
 # include "iterator.hpp"
 # include "utils.hpp"
-# include "red_black_tree.hpp"
+# include "red_black_tree2.hpp"
 
 namespace ft {
 
@@ -53,7 +53,7 @@ public:
 
 private:
 
-	typedef _red_black_tree<value_type, value_compare, allocator_type>	bst;
+	typedef _red_black_tree_<value_type, value_compare, allocator_type>	bst;
 
 	value_compare	_cmp;
 	bst				_bst;
@@ -147,8 +147,6 @@ public:
 	void  erase(iterator first, iterator last) {
 		size_t s = 0;
 		while (first != last && first != end()) {
-			if (s == 558 || s == 559)
-				std::cerr << "AAAA" << std::endl;
 			s++;
 			erase(first++);
 		}
