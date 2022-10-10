@@ -12,6 +12,7 @@ public:
 	typedef ft::map<int, std::string>		t_map;
 	typedef ft::pair<int, std::string>		t_pair;
 	typedef t_map::iterator					iterator;
+	typedef ft::pair<iterator, iterator>	tt_pair;
 	typedef t_map::const_iterator			const_iterator;
 	typedef t_map::const_reverse_iterator	const_reverse_iterator;
 
@@ -55,6 +56,8 @@ public:
 		if (testName == "" || testName.find("iterators") != std::string::npos) { printHeader("iterators"); test_iterators(); }
 		if (testName == "" || testName.find("erase") != std::string::npos) { printHeader("erase"); test_erase(); }
 		if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
+		if (testName == "" || testName.find("find") != std::string::npos) { printHeader("find"); test_find(); }
+		if (testName == "" || testName.find("bound") != std::string::npos) { printHeader("bound"); test_bounds(); }
 	}
 
 	iterator getRandomIterator(int chance = 1) {
@@ -286,17 +289,44 @@ private:
 		printMap();
 	}
 	
+	void test_find() {
+		__out << "Test find/count" << std::endl;
+		std::cerr << "Test find/count" << std::endl;
+
+		ProgressBar *bar = new ProgressBar();
+		t_map::iterator it = getRandomIterator();
+
+		if (cnt->find(it->first) != it)
+			error("iterator returend doesnt match with expected iterator (operator==)");
+		for (size_t i = 0; i < cnt->size(); i++) {
+			bar->setProgress(i, cnt->size());
+			int n = generateNumber();
+			it = cnt->find(n);
+			if (it != cnt->end()) __out << '(' << it->first << ':' << it->second << ')';
+			else __out << "(-:-)";
+			__out << " -> count: " << cnt->count(n) << std::endl;
+		}
+		delete bar; std::cerr << std::endl;
+	}
+
+	void test_bounds() {
+		__out << "Test bounds" << std::endl;
+		std::cerr << "Test bounds" << std::endl;
+		ProgressBar *bar = new ProgressBar();
+		for (size_t i = 0; i < cnt->size(); i++) {
+			bar->setProgress(i, cnt->size());
+			int n = generateNumber();
+			t_map::iterator lit = cnt->lower_bound(n);
+			t_map::iterator uit = cnt->upper_bound(n);
+			tt_pair p = cnt->equal_range(n);
+			if (lit != cnt->end()) __out << "l:" << lit->first << lit->second << ';';
+			if (uit != cnt->end()) __out << "r:" << uit->first << uit->second << ';';
+			if (p.first != lit || p.second != uit) error("equal range expected to be (lower_bound, upper_bound)");
+		}
+		delete bar; std::cerr << std::endl;
+	}
 	/*
-	// observers:
-	//allocator_type get_allocator() const
-	//key_compare    key_comp() const
-	//value_compare  value_comp()    const
-
 	// map operations:
-	//iterator find(const key_type& k)
-	//const_iterator find(const key_type& k) const
-
-	//size_type      count(const key_type& k)
 	
 	//iterator lower_bound(const key_type& k)
 	//const_iterator lower_bound(const key_type& k) const

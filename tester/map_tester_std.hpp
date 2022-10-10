@@ -10,7 +10,8 @@ public:
 
 	typedef std::map<int, std::string>		t_map;
 	typedef std::pair<int, std::string>		t_pair;
-	typedef std::map<int, std::string>::iterator					iterator;
+	typedef t_map::iterator					iterator;
+	typedef std::pair<iterator, iterator>	tt_pair;
 	typedef t_map::const_iterator			const_iterator;
 	typedef t_map::const_reverse_iterator	const_reverse_iterator;
 
@@ -285,17 +286,33 @@ private:
 		printMap();
 	}
 	
+	void test_find() {
+		t_map::iterator it = getRandomIterator();
+
+		if (cnt->find(it->first) != it)
+			error("iterator returend doesnt match with expected iterator (operator==)");
+		for (size_t i = 0; i < cnt->size(); i++) {
+			int n = generateNumber();
+			it = cnt->find(n);
+			if (it != cnt->end()) __out << '(' << it->first << ':' << it->second << ')';
+			else __out << "(-:-)";
+			__out << " -> count: " << cnt->count(n) << std::endl;
+		}
+	}
+
+	void test_bounds() {
+		for (size_t i = 0; i < cnt->size(); i++) {
+			int n = generateNumber();
+			t_map::iterator lit = cnt->lower_bound(n);
+			t_map::iterator uit = cnt->upper_bound(n);
+			tt_pair p = cnt->equal_range(n);
+			if (lit != cnt->end()) __out << "l:" << lit->first << lit->second << ';';
+			if (uit != cnt->end()) __out << "r:" << uit->first << uit->second << ';';
+			if (p.first != lit || p.second != uit) error("equal range expected to be (lower_bound, upper_bound)");
+		}
+	}
 	/*
-	// observers:
-	//allocator_type get_allocator() const
-	//key_compare    key_comp() const
-	//value_compare  value_comp()    const
-
 	// map operations:
-	//iterator find(const key_type& k)
-	//const_iterator find(const key_type& k) const
-
-	//size_type      count(const key_type& k)
 	
 	//iterator lower_bound(const key_type& k)
 	//const_iterator lower_bound(const key_type& k) const

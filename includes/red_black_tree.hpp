@@ -145,6 +145,37 @@ private:
 	ValueAllocator alloc;
 	std::allocator<Node> nalloc;
 
+	//do not call with a null root
+	template <class _Key, class _Compare>
+	iterator lowerBound(const _Key& __v, NodePtr __root, NodePtr __result, _Compare __cmp) {
+		while (__root != TNULL)
+		{
+			if (!__cmp(__root->data->first, __v))
+			{
+				__result = __root;
+				__root = __root->left;
+			}
+			else
+				__root = __root->right;
+		}
+		return iterator(TNULL, __result, root);
+	}
+
+	//do not call with a null root
+	template <class _Key, class _Compare>
+	iterator upperBound(const _Key&__v, NodePtr __root, NodePtr __result, _Compare __cmp) {
+		while (__root != TNULL)
+		{
+			if (__cmp(__v, __root->data->first))
+			{
+				__result = __root;
+				__root = __root->left;
+			}
+			else
+				__root = __root->right;
+		}
+		return iterator(TNULL, __result, root);
+	}
 	// For balancing the tree after deletion
 	void deleteFix(NodePtr x) {
 		NodePtr s;
@@ -219,7 +250,7 @@ private:
 		v->parent = u->parent;
 	}
 
-	NodePtr getNode(T value) {
+	NodePtr getNode(T value) const {
 		NodePtr n = root;
 		while (n != TNULL) {
 			if (cmp(value, *n->data))
@@ -367,7 +398,7 @@ public:
 
 	size_t size() const { return _size; }
 	bool empty() const { return _size == 0; }
-	size_t max_size() const; //to implement
+	size_t max_size() const { return nalloc.max_size(); }
 
 	iterator begin() { return iterator(TNULL, root); }
 	const_iterator begin() const { return const_iterator(TNULL, root); }
@@ -375,6 +406,7 @@ public:
 	const_iterator end() const { return iterator(TNULL, TNULL, root); }
 
 	iterator get(T v) { return iterator(TNULL, getNode(v), root); }
+	const_iterator get(T v) const { return const_iterator(TNULL, getNode(v), root); }
 
 	size_t erase(iterator it) {
 		return this->deleteNodeHelper(it._node);
@@ -541,9 +573,10 @@ public:
 		return this->root;
 	}
 
-	void deleteNode(int data) {
-		deleteNodeHelper(this->root, data);
-	}
+	template <class _Key, class _Compare>
+	iterator lowerBound(const _Key& __v, _Compare __cmp) { return lowerBound(__v, root, TNULL, __cmp); }
+	template <class _Key, class _Compare>
+	iterator upperBound(const _Key&__v, _Compare __cmp) { return upperBound(__v, root, TNULL, __cmp); }
 
 };
 

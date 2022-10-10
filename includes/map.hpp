@@ -104,7 +104,7 @@ public:
 	// capacity:
 	bool      empty()    const { return _bst.empty(); }
 	size_type size()     const { return _bst.size(); }
-	size_type max_size() const { return _bst.size(); }
+	size_type max_size() const { return _bst.max_size(); }
 
 	// element access:
 	mapped_type& operator[](const key_type& key) {
@@ -167,37 +167,18 @@ public:
 	iterator find(const key_type& k) { return getIteratorToPair(k); }
 	const_iterator find(const key_type& k) const { return getIteratorToPair(k); }
 
-	size_type      count(const key_type& k) const {
-		return find(k) == end() ? 0 : 1;
-	}
+	size_type count(const key_type& k) const { return find(k) == end() ? 0 : 1; }
 	
-	iterator lower_bound(const key_type& k) { return calculateLowerBound(k); }
-	const_iterator lower_bound(const key_type& k) const { return calculateLowerBound(k); }
+	iterator lower_bound(const key_type& k) { return _bst.lowerBound(k, key_comp()); }
+	const_iterator lower_bound(const key_type& k) const { return _bst.lowerBound(k, key_comp()); }
 
-	iterator upper_bound(const key_type& k) { return calculateUpperBound(k); }
-	const_iterator upper_bound(const key_type& k) const { return calculateUpperBound(k); }
+	iterator upper_bound(const key_type& k) { return _bst.upperBound(k, key_comp()); }
+	const_iterator upper_bound(const key_type& k) const { return _bst.upperBound(k, key_comp()); }
 
 	pair<iterator,iterator>             equal_range(const key_type& k) { return ft::make_pair(lower_bound(k), upper_bound(k)); }
 	pair<const_iterator,const_iterator> equal_range(const key_type& k) const { return ft::make_pair(lower_bound(k), upper_bound(k)); }
 
 private:
-	iterator calculateLowerBound(const key_type& key) {
-		key_compare cmp = key_compare();
-		iterator it;
-		for (it = begin(); it != end(); it++)
-			if (cmp(key, it->first))
-				break ;
-		return it;
-	}
-
-	iterator calculateUpperBound(const key_type& key) {
-		key_compare cmp = key_compare();
-		reverse_iterator it;
-		for (it = rbegin(); it != begin(); it++)
-			if (cmp(it->first, key))
-				break ;
-		return it.base();
-	}
 
 	iterator getIteratorToPair(const key_type& key) {
 		value_type toSearch = ft::make_pair(key, mapped_type());
@@ -244,12 +225,14 @@ template <class Key, class T, class Compare, class Allocator>
 bool
 operator<=(const map<Key, T, Compare, Allocator>& x,
            const map<Key, T, Compare, Allocator>& y)
-{ return x._bst <= y._bst; }
+{ return x._bst <= y._bst; std::map<int, int> kk;}
 
 // specialized algorithms:
-/* TODO: template <class Key, class T, class Compare, class Allocator>
+template <class Key, class T, class Compare, class Allocator>
 void
-swap(map<Key, T, Compare, Allocator>& x, map<Key, T, Compare, Allocator>& y);*/
+swap(map<Key, T, Compare, Allocator>& x, map<Key, T, Compare, Allocator>& y) { x.swap(y); }
+/* TODO: template <class Key, class T, class Compare, class Allocator>
+*/
 
 }
 
