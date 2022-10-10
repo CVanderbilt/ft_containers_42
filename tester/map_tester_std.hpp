@@ -245,7 +245,6 @@ private:
 			int key = generateNumber();
 			//__out << "deleting by key: " << key << std::endl;
 			__out << cnt->erase(key);
-			//if (!(i % 20))
 		}
 		delete bar; std::cerr << std::endl;
 		__out << std::endl;

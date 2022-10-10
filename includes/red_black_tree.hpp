@@ -14,52 +14,6 @@
 
 namespace ft {
 
-template<class T, class Allocator = std::allocator<T> >
-class _red_black_tree_node {
-
-private:
-	Allocator _alloc;
-public:
-	T *d;
-	_red_black_tree_node *l;
-	_red_black_tree_node *r;
-	_red_black_tree_node *p;
-	bool color; // 1/true -> red, 0/false -> black
-
-	_red_black_tree_node(T v, Allocator alloc):
-		_alloc(alloc),
-		d(NULL),
-		l(NULL),
-		r(NULL),
-		p(NULL),
-		color(__RED)
-	{
-		d = _alloc.allocate(1);
-		_alloc.construct(d, v);
-	}
-	_red_black_tree_node(const _red_black_tree_node &other):
-		_alloc(other._alloc),
-		l(other.l),
-		r(other.r),
-		p(other.p),
-		color(other.color)
-	{
-		d = _alloc.allocate(1);
-		_alloc.construct(d, *other.d);
-	}
-
-	void replaceValue(T v) { 
-		_alloc.destroy(d);
-		_alloc.construct(d, v);
-	}
-
-	~_red_black_tree_node() {
-		_alloc.destroy(d);
-		_alloc.deallocate(d, 1);
-	}
-};
-
-
 template <
 	class T=int, class Compare = std::less<T>,
 	class ValueAllocator = std::allocator<T>
@@ -189,6 +143,7 @@ private:
 	Compare cmp;
 	size_t _size;
 	ValueAllocator alloc;
+	std::allocator<Node> nalloc;
 
 	// For balancing the tree after deletion
 	void deleteFix(NodePtr x) {
@@ -203,6 +158,7 @@ private:
 				s = x->parent->right;
 			}
 
+			if (!s->left || !s->right) return ;
 			if (s->left->color == 0 && s->right->color == 0) {
 				s->color = 1;
 				x = x->parent;
@@ -229,6 +185,7 @@ private:
 					s = x->parent->left;
 				}
 
+				if (!s->left || !s->right) return ;
 				if (s->right->color == 0 && s->right->color == 0) {
 					s->color = 1;
 					x = x->parent;
@@ -283,8 +240,6 @@ private:
 
 		if (z == TNULL)
 			return 0;
-		if (z->data->first == 2389)
-			std::cout << "2389..." << std::endl;
 		_size--;
 		y = z;
 		int y_original_color = y->color;
@@ -314,9 +269,7 @@ private:
 		
 		alloc.destroy(z->data);
 		alloc.deallocate(z->data, 1);
-		delete z;
-
-		std::cout << "l: " << l->data->first << "; r: " << r->data->first << std::endl;
+		nalloc.deallocate(z, 1);
 
 		if (y_original_color == 0) {
 			deleteFix(x);
@@ -373,28 +326,37 @@ public:
 	_red_black_tree(Compare _cmp = Compare(), ValueAllocator _alloc = ValueAllocator()):
 		cmp(_cmp), _size(0), alloc(_alloc)
 	{
-		TNULL = new Node; //todo change to use allocator
+		TNULL = nalloc.allocate(1);
 		TNULL->color = 0;
 		TNULL->left = nullptr;
 		TNULL->right = nullptr;
-		TNULL->data = _alloc.allocate(1);
-		_alloc.construct(TNULL->data, ft::make_pair(123, "TNULL"));
+		TNULL->data = NULL;
 		root = TNULL;
 	}
 
 	_red_black_tree(const _red_black_tree& t):
 		cmp(t.cmp), _size(0), alloc(t.alloc)
 	{
-		TNULL = new Node; //todo change to use allocator
+		TNULL = nalloc.allocate(1);
 		TNULL->color = 0;
 		TNULL->left = nullptr;
 		TNULL->right = nullptr;
+		TNULL->data = NULL;
 		root = TNULL;
-		for (const_iterator it = t.begin(); it != t.end(); it++){
-			if (it->first == 8160)
-				std::cout << "8160" << std::endl;
+		for (const_iterator it = t.begin(); it != t.end(); it++){ insert(*it); }
+	}
+
+	~_red_black_tree() {
+		clear();
+		nalloc.deallocate(TNULL, 1);
+	}
+
+	_red_black_tree& operator=(const _red_black_tree& t) {
+		clear();
+		cmp = t.cmp;
+		for (const_iterator it = t.begin(); it != t.end(); it++)
 			insert(*it);
-		}
+		return *this;
 	}
 
 	ft::pair<iterator, bool> insertAndReturnIterator(T v) {
@@ -416,6 +378,28 @@ public:
 
 	size_t erase(iterator it) {
 		return this->deleteNodeHelper(it._node);
+	}
+
+	void clear() {
+		if (_size == 0)
+			return ;
+		NodePtr n = begin()._node;
+		while (n != TNULL) {
+			if (n->left != TNULL) n = n->left;
+			else if (n->right != TNULL) n = n->right;
+			else { 
+				//delete n, its a childless node
+				alloc.destroy(n->data);
+				alloc.deallocate(n->data, 1);
+				NodePtr aux = n->parent;
+				nalloc.deallocate(n, 1);
+				if (!aux) break ;
+				if (aux->left == n) aux->left = TNULL;
+				else aux->right = TNULL;
+				n = aux;
+			}
+		}
+		_size = 0;
 	}
 
 	void swap(_red_black_tree t) {
@@ -509,9 +493,6 @@ public:
 		NodePtr y = nullptr;
 		NodePtr x = root;
 
-		//std::cout << "inserting: " << key.first << std::endl;
-		//if (x != TNULL) std::cout << "x.f: " << x->data->first << std::endl;
-		//else std::cout << "x is TNULL" << std::endl;
 		while (x != TNULL) {
 			y = x;
 			if (cmp(key, *x->data)) {
@@ -526,7 +507,7 @@ public:
 			} 
 		}
 		if (check) *check = false;
-		NodePtr node = new Node;
+		NodePtr node = nalloc.allocate(1);
 		node->parent = nullptr;
 		node->data = alloc.allocate(1);
 		alloc.construct(node->data, key);

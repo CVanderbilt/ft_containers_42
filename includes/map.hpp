@@ -8,7 +8,7 @@
 # include <utility>
 # include "iterator.hpp"
 # include "utils.hpp"
-# include "red_black_tree2.hpp"
+# include "red_black_tree.hpp"
 
 namespace ft {
 
@@ -53,7 +53,7 @@ public:
 
 private:
 
-	typedef _red_black_tree_<value_type, value_compare, allocator_type>	bst;
+	typedef _red_black_tree<value_type, value_compare, allocator_type>	bst;
 
 	value_compare	_cmp;
 	bst				_bst;
