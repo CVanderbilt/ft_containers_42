@@ -30,16 +30,35 @@ public:
 private:
 	pointer			_arr;
 	size_type		_size;
+	size_type		_cap;
 	allocator_type	_alloc;
 public:
-    vector();
-    explicit vector(const allocator_type& alloc);
-    explicit vector(size_type n, const value_type& value = T(), const allocator_type& = allocator_type());
+    vector(): _arr(NULL), _size(0), _cap(0), _alloc(allocator_type()) {}
+    explicit vector(const allocator_type& alloc): _arr(NULL), _size(0), _cap(0), _alloc(alloc) {}
+    explicit vector(size_type n, const value_type& value = T(), const allocator_type& alloc = allocator_type()):
+		_arr(NULL), _size(n), _cap(n), _alloc(alloc)
+	{
+		_arr = _alloc.allocate(_cap);
+		for (int i = 0; i < _cap; i++)
+			_alloc.construct(&arr[i], value);
+	}
     template <class InputIterator>
-    vector(InputIterator first, InputIterator last, const allocator_type& = allocator_type());
-    vector(const vector& x);
-    ~vector();
-    vector& operator=(const vector& x);
+    vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
+		_arr(NULL), _size(0), _cap(0), _alloc(alloc) {
+		assign(first, last);
+	}
+    vector(const vector& x): _arr(NULL), _size(0), _cap(x._cap), _alloc(x._alloc) {
+		_arr = _alloc.allocate(_cap);
+		assign(x.begin(), x.end());
+	}
+    ~vector() {
+		clear();
+		_alloc.deallocate(arr, i);
+	}
+    vector& operator=(const vector& x) {
+		clear();
+		assign(x.begin(), x.end());
+	}
     template <class InputIterator>
     void assign(InputIterator first, InputIterator last);
     void assign(size_type n, const value_type& u);
@@ -60,7 +79,15 @@ public:
     size_type max_size() const;
     size_type capacity() const;
     bool empty() const;
-    void reserve(size_type n);
+    void reserve(size_type n) {
+		if (_cap < n)
+			return ;
+		pointer arr = _alloc.allocate(n);
+		for (int i = 0; i < size; i++) _arr[i] = arr[i];
+		_alloc.deallocate(_arr, _cap);
+		_cap = n;
+		_arr = arr;
+	}
 
     reference       operator[](size_type n);
     const_reference operator[](size_type n) const;
@@ -86,7 +113,7 @@ public:
     iterator erase(const_iterator position);
     iterator erase(const_iterator first, const_iterator last);
 
-    void clear();
+    void clear() { for (int i = 0; i < _size; i++) _alloc.destroy(&_arr[i]); _size = 0; }
 
     void resize(size_type sz, const value_type& c = value_type());
 
