@@ -23,8 +23,8 @@ public:
     typedef typename allocator_type::difference_type	difference_type;
     typedef typename allocator_type::pointer			pointer;
     typedef typename allocator_type::const_pointer		const_pointer;
-    typedef pointer										iterator;
-    typedef const_pointer								const_iterator;
+    typedef implementation-defined						iterator;
+    typedef implementation-defined						const_iterator;
     typedef std::reverse_iterator<iterator>				reverse_iterator;
     typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
 private:
@@ -42,26 +42,31 @@ public:
 		for (int i = 0; i < _cap; i++)
 			_alloc.construct(&arr[i], value);
 	}
+
     template <class InputIterator>
     vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
 		_arr(NULL), _size(0), _cap(0), _alloc(alloc) {
 		assign(first, last);
 	}
+
     vector(const vector& x): _arr(NULL), _size(0), _cap(x._cap), _alloc(x._alloc) {
 		_arr = _alloc.allocate(_cap);
 		assign(x.begin(), x.end());
 	}
+
     ~vector() {
 		clear();
 		_alloc.deallocate(arr, i);
 	}
-    vector& operator=(const vector& x) {
-		clear();
-		assign(x.begin(), x.end());
-	}
+
+    vector& operator=(const vector& x) { assign(x.begin(), x.end()); }
+
     template <class InputIterator>
-    void assign(InputIterator first, InputIterator last);
-    void assign(size_type n, const value_type& u);
+	typename enable_if<!is_integral<InputIterator>, void>::type
+    assign(InputIterator first, InputIterator last) {
+		clear();
+	}
+    void assign(size_type n, const value_type& u) { clear(); for (int i = 0; i < n; i++) _arr[i] = _alloc.construct(u); }
 
     allocator_type get_allocator() const;
 

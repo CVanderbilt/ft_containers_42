@@ -76,6 +76,7 @@ public:
 		_bst(comp, alloc) {
 			insert(first, last);
 	}
+
 	map (const map& other):
 		_cmp(key_compare()),
 		_bst(other._bst)
@@ -114,6 +115,7 @@ public:
 	mapped_type& at(const key_type& key) {
 		iterator it = getIteratorToPair(key);
 
+		is_integral_v
 		if (it == _bst.end())
 			throw std::out_of_range("map::at:  key not found");
 
