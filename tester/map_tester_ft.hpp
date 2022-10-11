@@ -58,6 +58,8 @@ public:
 		if (testName == "" || testName.find("swap") != std::string::npos) { printHeader("swap"); test_swap(); }
 		if (testName == "" || testName.find("find") != std::string::npos) { printHeader("find"); test_find(); }
 		if (testName == "" || testName.find("bound") != std::string::npos) { printHeader("bound"); test_bounds(); }
+		if (testName == "" || testName.find("hint") != std::string::npos) { printHeader("hint"); test_hinted_insert(); }
+		if (testName == "" || testName.find("insert") != std::string::npos) { printHeader("insert"); test_insert(); }
 	}
 
 	iterator getRandomIterator(int chance = 1) {
@@ -84,7 +86,7 @@ private:
 	}
 	void printHeader(std::string testName) { if (headers) __out << "[TEST]: " << testName << std::endl; }
 	int generateNumber(size_t mod = 10000) const { int r = rand(); r *= r < 0 ? -1 : 1; return r % mod; }
-	std::string generateWord(size_t s = 50) const {
+	std::string generateWord(size_t s = 1) const {
 		std::string abc = "abcdefghijklmnopqrstuvwxyz1234567890";
 		std::string ret = "";
 		for (int i = 0; i < s; i++)
@@ -290,54 +292,71 @@ private:
 	}
 	
 	void test_find() {
-		__out << "Test find/count" << std::endl;
-		std::cerr << "Test find/count" << std::endl;
-
-		ProgressBar *bar = new ProgressBar();
-		t_map::iterator it = getRandomIterator();
+		__out << "Test find" << std::endl;
+		std::cerr << "Test find" << std::endl;
+		iterator it = getRandomIterator();
 
 		if (cnt->find(it->first) != it)
 			error("iterator returend doesnt match with expected iterator (operator==)");
 		for (size_t i = 0; i < cnt->size(); i++) {
-			bar->setProgress(i, cnt->size());
 			int n = generateNumber();
 			it = cnt->find(n);
 			if (it != cnt->end()) __out << '(' << it->first << ':' << it->second << ')';
 			else __out << "(-:-)";
 			__out << " -> count: " << cnt->count(n) << std::endl;
 		}
-		delete bar; std::cerr << std::endl;
 	}
 
 	void test_bounds() {
 		__out << "Test bounds" << std::endl;
 		std::cerr << "Test bounds" << std::endl;
-		ProgressBar *bar = new ProgressBar();
 		for (size_t i = 0; i < cnt->size(); i++) {
-			bar->setProgress(i, cnt->size());
 			int n = generateNumber();
-			t_map::iterator lit = cnt->lower_bound(n);
-			t_map::iterator uit = cnt->upper_bound(n);
+			iterator lit = cnt->lower_bound(n);
+			iterator uit = cnt->upper_bound(n);
 			tt_pair p = cnt->equal_range(n);
 			if (lit != cnt->end()) __out << "l:" << lit->first << lit->second << ';';
 			if (uit != cnt->end()) __out << "r:" << uit->first << uit->second << ';';
 			if (p.first != lit || p.second != uit) error("equal range expected to be (lower_bound, upper_bound)");
 		}
-		delete bar; std::cerr << std::endl;
 	}
-	/*
-	// map operations:
-	
-	//iterator lower_bound(const key_type& k)
-	//const_iterator lower_bound(const key_type& k) const
 
-	//iterator upper_bound(const key_type& k)
-	//const_iterator upper_bound(const key_type& k) const
+	void test_hinted_insert() {
+		__out << "Test insert with hint" << std::endl;
+		std::cerr << "Test insert with hint" << std::endl;
+		t_map newMap;
 
-	//pair<iterator,iterator>             equal_range(const key_type& k)
-	//pair<const_iterator,const_iterator> equal_range(const key_type& k) const
+		iterator hint = newMap.end();
+		ProgressBar *bar = new ProgressBar;
+		size_t i = 0;
+		size_t cntsize = cnt->size();
+		for (const_iterator cit = cnt->begin(); cit != cnt->end(); cit++) {
+			hint = newMap.insert(hint, t_pair(cit->first, cit->second));
+			bar->setProgress(i++, cntsize);
+		}
+		delete bar; std::cerr << std::endl;
+		for (const_iterator cit = newMap.begin(); cit != newMap.end(); cit++)
+			__out << cit->first << cit->second;
+		__out << std::endl;
+	}
 
-	*/
+	void test_insert() {
+		__out << "Test insert without hint" << std::endl;
+		std::cerr << "Test insert without hint" << std::endl;
+		t_map newMap;
+
+		ProgressBar *bar = new ProgressBar;
+		size_t i = 0;
+		size_t cntsize = cnt->size();
+		for (const_iterator cit = cnt->begin(); cit != cnt->end(); cit++) {
+			newMap.insert(t_pair(cit->first, cit->second));
+			bar->setProgress(i++, cntsize);
+		}
+		delete bar; std::cerr << std::endl;
+		for (const_iterator cit = newMap.begin(); cit != newMap.end(); cit++)
+			__out << cit->first << cit->second;
+		__out << std::endl;
+	}
 
 
 };

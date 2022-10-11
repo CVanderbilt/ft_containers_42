@@ -396,6 +396,25 @@ public:
 		return ft::make_pair(iterator(TNULL, n, root), check);
 	}
 
+	iterator insertAndReturnIterator(const_iterator position, T v) {
+		const_iterator e = end();
+		if (position == e) return iterator(TNULL, insert(v, NULL, root), root);
+		if (!cmp(*position, v)) {
+			if (!cmp(v, *position))
+				return iterator(TNULL, position._node, root);
+			return iterator(TNULL, insert(v, NULL, root), root);
+		}
+		const_iterator successor = position;
+		successor++;
+		while (successor != e) {
+			if (cmp(*successor, v))
+				break ;
+			position = successor;
+			successor++;
+		}
+		return iterator(TNULL, insert(v, NULL, root), root);
+	}
+
 	size_t size() const { return _size; }
 	bool empty() const { return _size == 0; }
 	size_t max_size() const { return nalloc.max_size(); }
@@ -520,11 +539,10 @@ public:
 	}
 
 	// Inserting a node
-	NodePtr insert(T key, bool *check = NULL) {
+	NodePtr insert(T key, bool *check = NULL, NodePtr x = NULL) {
 
 		NodePtr y = nullptr;
-		NodePtr x = root;
-
+		if (!x) x = root;
 		while (x != TNULL) {
 			y = x;
 			if (cmp(key, *x->data)) {
@@ -533,8 +551,6 @@ public:
 				x = x->right;
 			} else {
 				if (check) *check = true;
-				//alloc.destroy(x->data);
-				//alloc.construct(x->data, key);
 				return x;
 			} 
 		}
