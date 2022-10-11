@@ -17,7 +17,7 @@ public:
 
 	enum constructor { DEFAULT, COPY, RANGE };
 
-	MapTesterStd(): method(DEFAULT), size(100), headers(false), _stop(false), __out("std.txt") {}
+	MapTesterStd(): cnt(NULL), method(DEFAULT), size(100), headers(false), _stop(false), __out("std.txt") {}
 	~MapTesterStd() { 
 		std::cerr << "deleting..." << std::endl;
 		delete cnt;
@@ -40,7 +40,9 @@ public:
 		return *this;
 	}
 
-	void execute(std::string testName) {
+	void build() { construct_map(); }
+
+	void execute(const std::string& testName) {
 		printHeader("Construction");
 		construct_map();
 		printHeader("Construction completed");
@@ -93,6 +95,7 @@ private:
 	}
 
 	void construct_map() {
+		if (cnt != NULL) return ;
 		switch (method)
 		{
 		case COPY:
@@ -148,10 +151,10 @@ private:
 	}
 
 	void test_equal_operator() {
-		t_map newMap = *cnt;
-		
 		__out << "operator= test" << std::endl;
 		std::cerr << "operator= test" << std::endl;
+		t_map newMap = *cnt;
+		
 		const_iterator it1 = newMap.begin();
 		const_iterator it2 = cnt->begin();
 		for (; it1 != newMap.end(); it1++)
@@ -278,7 +281,7 @@ private:
 		__out << "Test swap" << std::endl;
 		std::cerr << "Test swap" << std::endl;
 		t_map mapa;
-		for (int i = 0; i < size / 2; i++)
+		for (int i = 0; i < 100; i++)
 			mapa[generateNumber()] = generateWord();
 
 		cnt->swap(mapa);

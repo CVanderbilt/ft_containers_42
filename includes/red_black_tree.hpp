@@ -374,7 +374,7 @@ public:
 		TNULL->right = nullptr;
 		TNULL->data = NULL;
 		root = TNULL;
-		for (const_iterator it = t.begin(); it != t.end(); it++){ insert(*it); }
+		for (const_iterator it = t.begin(); it != t.end(); it++) insert(*it);
 	}
 
 	~_red_black_tree() {
@@ -453,7 +453,7 @@ public:
 		_size = 0;
 	}
 
-	void swap(_red_black_tree t) {
+	void swap(_red_black_tree& t) {
 		ft::swap(t.alloc, alloc);
 		ft::swap(t.cmp, cmp);
 		ft::swap(t._size, _size);
