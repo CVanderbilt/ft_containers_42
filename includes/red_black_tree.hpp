@@ -533,8 +533,8 @@ public:
 				x = x->right;
 			} else {
 				if (check) *check = true;
-				alloc.destroy(x->data);
-				alloc.construct(x->data, key);
+				//alloc.destroy(x->data);
+				//alloc.construct(x->data, key);
 				return x;
 			} 
 		}
