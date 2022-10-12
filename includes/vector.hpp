@@ -23,10 +23,10 @@ public:
     typedef typename allocator_type::difference_type	difference_type;
     typedef typename allocator_type::pointer			pointer;
     typedef typename allocator_type::const_pointer		const_pointer;
-    typedef implementation-defined						iterator;
-    typedef implementation-defined						const_iterator;
-    typedef std::reverse_iterator<iterator>				reverse_iterator;
-    typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
+    typedef ft::iterator<pointer>						iterator;
+    typedef ft::iterator<const_pointer>					const_iterator;
+    typedef ft ::reverse_iterator<iterator>				reverse_iterator;
+    typedef ft ::reverse_iterator<const_iterator>		const_reverse_iterator;
 private:
 	pointer			_arr;
 	size_type		_size;
@@ -65,10 +65,16 @@ public:
 	typename enable_if<!is_integral<InputIterator>, void>::type
     assign(InputIterator first, InputIterator last) {
 		clear();
+		for (first != last)
+			push_back(first++);
 	}
-    void assign(size_type n, const value_type& u) { clear(); for (int i = 0; i < n; i++) _arr[i] = _alloc.construct(u); }
+    void assign(size_type n, const value_type& u) {
+		clear();
+		for (int i = 0; i < n; i++)
+			push_back(u);
+	}
 
-    allocator_type get_allocator() const;
+    allocator_type get_allocator() const { return this->_alloc; }
 
     iterator               begin();
     const_iterator         begin() const;
@@ -127,20 +133,20 @@ public:
 };
 
 template< class T, class Alloc >
-bool operator==( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+bool operator==( const ft::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 template< class T, class Alloc >
-bool operator!=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+bool operator!=( const ft ::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 template< class T, class Alloc >
-bool operator>=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+bool operator>=( const ft ::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 template< class T, class Alloc >
-bool operator>( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+bool operator>( const ft ::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 template< class T, class Alloc >
-bool operator<=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+bool operator<=( const ft ::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 template< class T, class Alloc >
-bool operator<( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs );
+bool operator<( const ft ::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 // specialized algorithms:
 template< class T, class Alloc >
-void swap(std::vector<T, Alloc>& x, std::vector<T, Alloc>& y);
+void swap(ft ::vector<T, Alloc>& x, ft ::vector<T, Alloc>& y);
 
 }
 

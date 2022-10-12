@@ -26,7 +26,7 @@ template<class T> struct iterator_traits<T*>
 	typedef T value_type;
 	typedef T* pointer;
 	typedef T& reference;
-	typedef std::random_access_iterator_tag iterator_category;
+	typedef random_access_iterator_tag iterator_category;
 };
 //and for pointers to const as
 template<class T> struct iterator_traits<const T*>
@@ -35,7 +35,7 @@ template<class T> struct iterator_traits<const T*>
 	typedef T value_type;
 	typedef const T* pointer;
 	typedef const T& reference;
-	typedef std::random_access_iterator_tag iterator_category;
+	typedef random_access_iterator_tag iterator_category;
 };
 /*
 	[Note: If there is an additional pointer type _ _far such that the difference of two _ _far is of type
