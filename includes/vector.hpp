@@ -121,7 +121,11 @@ public:
 			reserve(_cap > 2 ? _cap * _rf : _cap + 1);
 		_arr[_size++] = x;
 	}
-    void pop_back();
+
+    void pop_back() {
+		_size--;
+		_alloc.destroy(_arr[size]);
+	}
 
     iterator insert(const_iterator position, const value_type& x);
     iterator insert(const_iterator position, size_type n, const value_type& x);
