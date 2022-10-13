@@ -108,13 +108,13 @@ public:
     reference       at(size_type n) { if (n >= _size) throw std::out_of_range("vector"); return _arr[n]; }
     const_reference at(size_type n) const { if (n >= _size) throw std::out_of_range("vector"); return _arr[n]; };
 
-    reference       front();
-    const_reference front() const;
-    reference       back();
-    const_reference back() const;
+    reference       front() { return *_arr; }
+    const_reference front() const { return *_arr; }
+    reference       back() { return _arr[_size - 1]; }
+    const_reference back() const { return _arr[_size - 1]; }
 
-    value_type*       data();
-    const value_type* data() const;
+    value_type*       data() { return _arr; }
+    const value_type* data() const { return _arr }
 
     void push_back(const value_type& x) {
 		if (_size == _cap)
