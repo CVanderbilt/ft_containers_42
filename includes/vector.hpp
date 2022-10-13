@@ -15,37 +15,40 @@ template <class T, class Allocator = std::allocator<T> >
 class vector
 {
 public:
-    typedef T											value_type;
-    typedef Allocator									allocator_type;
-    typedef typename allocator_type::reference			reference;
-    typedef typename allocator_type::const_reference	const_reference;
-    typedef typename allocator_type::size_type			size_type;
-    typedef typename allocator_type::difference_type	difference_type;
-    typedef typename allocator_type::pointer			pointer;
-    typedef typename allocator_type::const_pointer		const_pointer;
-    typedef ft::iterator<pointer>						iterator;
-    typedef ft::iterator<const_pointer>					const_iterator;
-    typedef ft ::reverse_iterator<iterator>				reverse_iterator;
-    typedef ft ::reverse_iterator<const_iterator>		const_reverse_iterator;
+    typedef T																value_type;
+    typedef Allocator														allocator_type;
+    typedef typename allocator_type::reference								reference;
+    typedef typename allocator_type::const_reference						const_reference;
+    typedef typename allocator_type::size_type								size_type;
+    typedef typename allocator_type::difference_type						difference_type;
+    typedef typename allocator_type::pointer								pointer;
+    typedef typename allocator_type::const_pointer							const_pointer;
+    typedef ft::__normal_iterator<pointer, vector>							iterator;
+    typedef ft::__normal_iterator<const_pointer, vector>					const_iterator;
+	 /*typedef ft::iterator<ft::iterator_traits<pointer>, value_type>			iterator;
+    typedef ft::iterator<ft::iterator_traits<const_pointer>, value_type >	const_iterator;*/
+    typedef ft ::reverse_iterator<iterator>									reverse_iterator;
+    typedef ft ::reverse_iterator<const_iterator>							const_reverse_iterator;
 private:
 	pointer			_arr;
 	size_type		_size;
 	size_type		_cap;
 	allocator_type	_alloc;
+	const float		_rf;
 public:
-    vector(): _arr(NULL), _size(0), _cap(0), _alloc(allocator_type()) {}
-    explicit vector(const allocator_type& alloc): _arr(NULL), _size(0), _cap(0), _alloc(alloc) {}
+    vector(): _arr(NULL), _size(0), _cap(0), _alloc(allocator_type()), _rf(1.5) {}
+    explicit vector(const allocator_type& alloc): _arr(NULL), _size(0), _cap(0), _alloc(alloc), _rf(1.5) {}
     explicit vector(size_type n, const value_type& value = T(), const allocator_type& alloc = allocator_type()):
-		_arr(NULL), _size(n), _cap(n), _alloc(alloc)
+		_arr(NULL), _size(n), _cap(n), _alloc(alloc), _rf(1.5)
 	{
 		_arr = _alloc.allocate(_cap);
 		for (int i = 0; i < _cap; i++)
-			_alloc.construct(&arr[i], value);
+			_alloc.construct(&_arr[i], value);
 	}
 
     template <class InputIterator>
     vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
-		_arr(NULL), _size(0), _cap(0), _alloc(alloc) {
+		_arr(NULL), _size(0), _cap(0), _alloc(alloc), _rf(1.5) {
 		assign(first, last);
 	}
 
@@ -56,16 +59,16 @@ public:
 
     ~vector() {
 		clear();
-		_alloc.deallocate(arr, i);
+		_alloc.deallocate(_arr, _cap);
 	}
 
     vector& operator=(const vector& x) { assign(x.begin(), x.end()); }
 
     template <class InputIterator>
-	typename enable_if<!is_integral<InputIterator>, void>::type
+	typename enable_if<!is_integral<InputIterator>::value, void>::type
     assign(InputIterator first, InputIterator last) {
 		clear();
-		for (first != last)
+		while (first != last)
 			push_back(first++);
 	}
     void assign(size_type n, const value_type& u) {
@@ -76,25 +79,25 @@ public:
 
     allocator_type get_allocator() const { return this->_alloc; }
 
-    iterator               begin();
-    const_iterator         begin() const;
-    iterator               end();
-    const_iterator         end() const;
+    iterator               begin() { return iterator(_arr); }
+    const_iterator         begin() const { return iterator(_arr); }
+    iterator               end() { return iterator(&_arr[_size]); }
+    const_iterator         end() const { return iterator(&_arr[_size]); }
 
-    reverse_iterator       rbegin();
-    const_reverse_iterator rbegin() const;
-    reverse_iterator       rend();
-    const_reverse_iterator rend() const;
+    reverse_iterator       rbegin() { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    reverse_iterator       rend() { return reverse_iterator(begin()); };
+    const_reverse_iterator rend() const { return reverse_iterator(begin()); }
 
-    size_type size() const;
-    size_type max_size() const;
-    size_type capacity() const;
-    bool empty() const;
+    size_type size() const { return _size; }
+    size_type max_size() const { return _alloc.max_size(); }
+    size_type capacity() const { return _cap; }
+    bool empty() const { return _size == 0; }
     void reserve(size_type n) {
-		if (_cap < n)
+		if (_cap >= n)
 			return ;
 		pointer arr = _alloc.allocate(n);
-		for (int i = 0; i < size; i++) _arr[i] = arr[i];
+		for (int i = 0; i < _size; i++) _alloc.construct(&arr[i], _arr[i]);
 		_alloc.deallocate(_arr, _cap);
 		_cap = n;
 		_arr = arr;
@@ -113,7 +116,11 @@ public:
     value_type*       data();
     const value_type* data() const;
 
-    void push_back(const value_type& x);
+    void push_back(const value_type& x) {
+		if (_size == _cap)
+			reserve(_cap > 2 ? _cap * _rf : _cap + 1);
+		_arr[_size++] = x;
+	}
     void pop_back();
 
     iterator insert(const_iterator position, const value_type& x);
@@ -126,7 +133,14 @@ public:
 
     void clear() { for (int i = 0; i < _size; i++) _alloc.destroy(&_arr[i]); _size = 0; }
 
-    void resize(size_type sz, const value_type& c = value_type());
+    void resize(size_type sz, const value_type& c = value_type()) {
+		size_type i = sz;
+		if (_size >= i)
+			while (i != _size) _alloc.destroy(&_arr[i++]);
+		else
+			while (i != _size) push_back(c);
+		_size = sz;
+	}
 
     void swap(vector& x);
 

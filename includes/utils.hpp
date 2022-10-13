@@ -88,6 +88,24 @@ template <> struct is_integral<long long> { const static bool value = true; };
 //bool, char, char8_t (since C++20), char16_t, char32_t, wchar_t, short, int, long, long long
 
 //is_integral<_Tp>::value
+// Compare for equality of types.
+struct __false_type {};
+struct __true_type {};
+
+  template<typename, typename>
+    struct __are_same
+    {
+      enum { __value = 0 };
+      typedef __false_type __type;
+    };
+
+  template<typename _Tp>
+    struct __are_same<_Tp, _Tp>
+    {
+      enum { __value = 1 };
+      typedef __true_type __type;
+    };
+
 
 template <class T>
 void swap (T & a, T & b)
