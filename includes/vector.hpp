@@ -69,7 +69,7 @@ public:
     assign(InputIterator first, InputIterator last) {
 		clear();
 		while (first != last)
-			push_back(first++);
+			push_back(*first++);
 	}
     void assign(size_type n, const value_type& u) {
 		clear();
@@ -103,10 +103,10 @@ public:
 		_arr = arr;
 	}
 
-    reference       operator[](size_type n);
-    const_reference operator[](size_type n) const;
-    reference       at(size_type n);
-    const_reference at(size_type n) const;
+    reference       operator[](size_type n) { return _arr[n]; }
+    const_reference operator[](size_type n) const { return _arr[n]; }
+    reference       at(size_type n) { if (n >= _size) throw std::out_of_range("vector"); return _arr[n]; }
+    const_reference at(size_type n) const { if (n >= _size) throw std::out_of_range("vector"); return _arr[n]; };
 
     reference       front();
     const_reference front() const;
