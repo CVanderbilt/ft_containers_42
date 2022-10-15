@@ -115,7 +115,6 @@ public:
 	mapped_type& at(const key_type& key) {
 		iterator it = getIteratorToPair(key);
 
-		is_integral_v
 		if (it == _bst.end())
 			throw std::out_of_range("map::at:  key not found");
 

@@ -23,19 +23,63 @@ public:
     typedef typename allocator_type::difference_type						difference_type;
     typedef typename allocator_type::pointer								pointer;
     typedef typename allocator_type::const_pointer							const_pointer;
-    typedef ft::__normal_iterator<pointer, vector>							iterator;
-    typedef ft::__normal_iterator<const_pointer, vector>					const_iterator;
-	 /*typedef ft::iterator<ft::iterator_traits<pointer>, value_type>			iterator;
-    typedef ft::iterator<ft::iterator_traits<const_pointer>, value_type >	const_iterator;*/
-    typedef ft ::reverse_iterator<iterator>									reverse_iterator;
-    typedef ft ::reverse_iterator<const_iterator>							const_reverse_iterator;
 private:
 	pointer			_arr;
 	size_type		_size;
 	size_type		_cap;
 	allocator_type	_alloc;
 	const float		_rf;
+
+	template <bool Const = false>
+	class Iterator:
+	public ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type > {
+	public:
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type>::value_type	value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category									iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type										difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer												pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference											reference;
+
+		pointer _M_current;
+
+		Iterator(): _M_current(NULL) {}
+		Iterator(pointer m): _M_current(m) {}
+		Iterator(const Iterator<Const>& x): _M_current(x._M_current) {}
+		
+		template <bool B>
+		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _M_current(x._M_current) {}
+
+		Iterator& operator=(const Iterator& x) { _M_current = x._M_current; }
+
+		// Forward iterator requirements
+		template <bool B> bool operator== (const Iterator<B>& x) const { return _M_current == x._M_current; }
+		template <bool B> bool operator!= (const Iterator<B>& x) const { return _M_current != x._M_current; }
+
+		value_type& operator* () { return *_M_current; }
+		value_type* operator-> () { return _M_current; }
+
+		Iterator& operator++() { ++_M_current; return *this; }
+		Iterator operator++(int) { return Iterator(_M_current++); }
+
+		// Bidirectional iterator requirements
+		Iterator& operator--() { --_M_current; return *this; }
+		Iterator operator--(int) { return Iterator(_M_current--); }
+
+		// Random access iterator requirements
+		reference operator[](difference_type __n) const { return _M_current[__n]; }
+
+		Iterator& operator+=(difference_type __n) { _M_current += __n; return *this; }
+		Iterator operator+(difference_type __n) const { return Iterator(_M_current + __n); }
+		Iterator& operator-=(difference_type __n) { _M_current -= __n; return *this; }
+		Iterator operator-(difference_type __n) const { return Iterator(_M_current - __n); }
+	};
 public:
+
+	typedef Iterator<false>							iterator;
+	typedef Iterator<true>							const_iterator;
+	typedef ft::reverse_iterator<iterator>			reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+
     vector(): _arr(NULL), _size(0), _cap(0), _alloc(allocator_type()), _rf(1.5) {}
     explicit vector(const allocator_type& alloc): _arr(NULL), _size(0), _cap(0), _alloc(alloc), _rf(1.5) {}
     explicit vector(size_type n, const value_type& value = T(), const allocator_type& alloc = allocator_type()):
@@ -113,8 +157,8 @@ public:
     reference       back() { return _arr[_size - 1]; }
     const_reference back() const { return _arr[_size - 1]; }
 
-    value_type*       data() { return _arr; }
-    const value_type* data() const { return _arr }
+    pointer			data() { return _arr; }
+    const_pointer	data() const { return _arr; }
 
     void push_back(const value_type& x) {
 		if (_size == _cap)
@@ -124,7 +168,7 @@ public:
 
     void pop_back() {
 		_size--;
-		_alloc.destroy(_arr[size]);
+		_alloc.destroy(_arr[_size]);
 	}
 
     iterator insert(const_iterator position, const value_type& x);

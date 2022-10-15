@@ -70,8 +70,8 @@ public:
 		template <bool B> bool operator== (const Iterator<B>& x) const { return _node == x._node; }
 		template <bool B> bool operator!= (const Iterator<B>& x) const { return _node != x._node; }
 
-		value_type& operator* () { return (*_node->data); }
-		value_type* operator-> () { return (_node->data); }
+		value_type& operator* () const { return (*_node->data); }
+		value_type* operator-> () const { return (_node->data); }
 
 		// prefix
 		Iterator& operator++ () { _node = getNextNode(_node); return *this; }
@@ -132,10 +132,6 @@ public:
 
 	typedef Iterator<false> iterator;
 	typedef Iterator<true> const_iterator;
-
-	friend bool operator== (const iterator& a, const iterator& b) { return a._node == b._node; }
-	friend bool operator!= (const iterator& a, const iterator& b) { return !(a == b); }
-
 
 private:
 	NodePtr root;
