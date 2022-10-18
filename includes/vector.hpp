@@ -11,18 +11,78 @@
 
 namespace ft {
 
+template <typename T, bool Const = false>
+class VectorIterator:
+public ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type > {
+public:
+	typedef typename ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type>::value_type	value_type;
+	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category									iterator_category;
+	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type										difference_type;
+	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer												pointer;
+	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference											reference;
+
+	pointer _M_current;
+
+	VectorIterator(): _M_current(NULL) {}
+	VectorIterator(pointer m): _M_current(m) {}
+	VectorIterator(const VectorIterator<value_type, Const>& x): _M_current(x._M_current) {}
+	
+	// todo: check if this constructor would be enough for both cases (cit(cit) and cit(it)) and it(it) only
+	template <bool B>
+	VectorIterator(const VectorIterator<T, B>& x, typename ft::enable_if<!B>::type* = 0): _M_current(x._M_current) {}
+
+	VectorIterator& operator=(const VectorIterator& x) { _M_current = x._M_current; return *this; }
+
+	// Forward iterator requirements
+	template <bool B> bool operator== (const VectorIterator<value_type, B>& x) const { return _M_current == x._M_current; }
+	template <bool B> bool operator!= (const VectorIterator<value_type, B>& x) const { return _M_current != x._M_current; }
+
+	value_type& operator* () { return *_M_current; }
+	value_type* operator-> () { return _M_current; }
+
+	VectorIterator& operator++() { ++_M_current; return *this; }
+	VectorIterator operator++(int) { return VectorIterator(_M_current++); }
+
+	// Bidirectional iterator requirements
+	VectorIterator& operator--() { --_M_current; return *this; }
+	VectorIterator operator--(int) { return VectorIterator(_M_current--); }
+
+	// Random access iterator requirements
+	reference operator[](difference_type __n) const { return _M_current[__n]; }
+
+	VectorIterator& operator+=(difference_type __n) { _M_current += __n; return *this; }
+	VectorIterator operator+(difference_type __n) const { return VectorIterator(_M_current + __n); }
+	VectorIterator& operator-=(difference_type __n) { _M_current -= __n; return *this; }
+	VectorIterator operator-(difference_type __n) const { return VectorIterator(_M_current - __n); }
+
+	template <bool B>
+	difference_type operator-(const VectorIterator<T, B>& x) const { return _M_current - x._M_current; }
+
+	reference operator[](difference_type __n) { return _M_current[__n]; }
+
+	template <bool B> bool operator< (const VectorIterator<value_type, B>& x) const { return _M_current < x._M_current; }
+	template <bool B> bool operator<= (const VectorIterator<value_type, B>& x) const { return _M_current <= x._M_current; }
+	template <bool B> bool operator> (const VectorIterator<value_type, B>& x) const { return _M_current > x._M_current; }
+	template <bool B> bool operator>= (const VectorIterator<value_type, B>& x) const { return _M_current >= x._M_current; }
+
+};
+
 template <class T, class Allocator = std::allocator<T> >
 class vector
 {
 public:
-    typedef T																value_type;
-    typedef Allocator														allocator_type;
-    typedef typename allocator_type::reference								reference;
-    typedef typename allocator_type::const_reference						const_reference;
-    typedef typename allocator_type::size_type								size_type;
-    typedef typename allocator_type::difference_type						difference_type;
-    typedef typename allocator_type::pointer								pointer;
-    typedef typename allocator_type::const_pointer							const_pointer;
+    typedef T											value_type;
+    typedef Allocator									allocator_type;
+    typedef typename allocator_type::reference			reference;
+    typedef typename allocator_type::const_reference	const_reference;
+    typedef typename allocator_type::size_type			size_type;
+    typedef typename allocator_type::difference_type	difference_type;
+    typedef typename allocator_type::pointer			pointer;
+    typedef typename allocator_type::const_pointer		const_pointer;
+	typedef VectorIterator<value_type, false>			iterator;
+	typedef VectorIterator<value_type, true>			const_iterator;
+	typedef ft::reverse_iterator<iterator>				reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 private:
 	pointer			_arr;
 	size_type		_size;
@@ -30,55 +90,8 @@ private:
 	allocator_type	_alloc;
 	const float		_rf;
 
-	template <bool Const = false>
-	class Iterator:
-	public ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type > {
-	public:
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type>::value_type	value_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category									iterator_category;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type										difference_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer												pointer;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference											reference;
-
-		pointer _M_current;
-
-		Iterator(): _M_current(NULL) {}
-		Iterator(pointer m): _M_current(m) {}
-		Iterator(const Iterator<Const>& x): _M_current(x._M_current) {}
-		
-		template <bool B>
-		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _M_current(x._M_current) {}
-
-		Iterator& operator=(const Iterator& x) { _M_current = x._M_current; }
-
-		// Forward iterator requirements
-		template <bool B> bool operator== (const Iterator<B>& x) const { return _M_current == x._M_current; }
-		template <bool B> bool operator!= (const Iterator<B>& x) const { return _M_current != x._M_current; }
-
-		value_type& operator* () { return *_M_current; }
-		value_type* operator-> () { return _M_current; }
-
-		Iterator& operator++() { ++_M_current; return *this; }
-		Iterator operator++(int) { return Iterator(_M_current++); }
-
-		// Bidirectional iterator requirements
-		Iterator& operator--() { --_M_current; return *this; }
-		Iterator operator--(int) { return Iterator(_M_current--); }
-
-		// Random access iterator requirements
-		reference operator[](difference_type __n) const { return _M_current[__n]; }
-
-		Iterator& operator+=(difference_type __n) { _M_current += __n; return *this; }
-		Iterator operator+(difference_type __n) const { return Iterator(_M_current + __n); }
-		Iterator& operator-=(difference_type __n) { _M_current -= __n; return *this; }
-		Iterator operator-(difference_type __n) const { return Iterator(_M_current - __n); }
-	};
 public:
 
-	typedef Iterator<false>							iterator;
-	typedef Iterator<true>							const_iterator;
-	typedef ft::reverse_iterator<iterator>			reverse_iterator;
-	typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
     vector(): _arr(NULL), _size(0), _cap(0), _alloc(allocator_type()), _rf(1.5) {}
     explicit vector(const allocator_type& alloc): _arr(NULL), _size(0), _cap(0), _alloc(alloc), _rf(1.5) {}
@@ -171,10 +184,28 @@ public:
 		_alloc.destroy(_arr[_size]);
 	}
 
-    iterator insert(const_iterator position, const value_type& x);
-    iterator insert(const_iterator position, size_type n, const value_type& x);
-    template <class InputIterator>
-    iterator insert(const_iterator position, InputIterator first, InputIterator last);
+    iterator insert(const_iterator position, const value_type& x) { return insert(position, 1, x); }
+
+    iterator insert(const_iterator position, size_type n, const value_type& x) {
+		iterator it = move_right(position, n);
+		for (int i = 0; i < n; i++)
+			*it++ = x;
+		return it;
+	}
+
+	template <class InputIterator>
+	typename enable_if<!is_integral<InputIterator>::value, iterator>::type
+    insert(const_iterator position, InputIterator first, InputIterator last) {
+		iterator ret = const_cast<value_type*>(position._M_current);
+		while (first != last) {
+			//todo: instead of this calculate index once and use index internally 
+			difference_type diff = position - begin();
+			ret = insert(position, 1, *(first++));
+			position = _arr + diff;
+			position++;
+		}
+		return ret;
+	}
 
     iterator erase(const_iterator position);
     iterator erase(const_iterator first, const_iterator last);
@@ -192,6 +223,32 @@ public:
 
     void swap(vector& x);
 
+private:
+	iterator move_right(const_iterator pos, size_type n) {
+		size_type s = _size + n;
+		difference_type diff = pos._M_current - _arr;
+		reserve(s);
+
+		pos = begin() + diff;
+		iterator ret = _arr + diff;
+		iterator e = end() - 1;
+
+		//todo updte to use reverse iterator
+		//start from end and reaching until pos
+		//            v                              
+		//1 2 3 5 5 5 5 5 5 5 5 5 5 88 4 5 6 7 8 9 
+		//1 2 3 5 5 5 5 5 5 5 5 5 5 5 5 5 88 4 5 6 7 8 9
+		//
+
+		while (e >= pos) {
+			int e0 = e[0];
+			int en = e[n];
+			e[n] = *e;
+			e--;
+		}
+		_size = s;
+		return ret;
+	}
 };
 
 template< class T, class Alloc >
