@@ -25,7 +25,7 @@ public:
 
 	VectorIterator(): _M_current(NULL) {}
 	VectorIterator(pointer m): _M_current(m) {}
-	VectorIterator(const VectorIterator<value_type, Const>& x): _M_current(x._M_current) {}
+	VectorIterator(const VectorIterator<T, Const>& x): _M_current(x._M_current) {}
 	
 	// todo: check if this constructor would be enough for both cases (cit(cit) and cit(it)) and it(it) only
 	template <bool B>
@@ -34,8 +34,8 @@ public:
 	VectorIterator& operator=(const VectorIterator& x) { _M_current = x._M_current; return *this; }
 
 	// Forward iterator requirements
-	template <bool B> bool operator== (const VectorIterator<value_type, B>& x) const { return _M_current == x._M_current; }
-	template <bool B> bool operator!= (const VectorIterator<value_type, B>& x) const { return _M_current != x._M_current; }
+	template <bool B> bool operator== (const VectorIterator<T, B>& x) const { return _M_current == x._M_current; }
+	template <bool B> bool operator!= (const VectorIterator<T, B>& x) const { return _M_current != x._M_current; }
 
 	value_type& operator* () { return *_M_current; }
 	value_type* operator-> () { return _M_current; }
@@ -60,10 +60,10 @@ public:
 
 	reference operator[](difference_type __n) { return _M_current[__n]; }
 
-	template <bool B> bool operator< (const VectorIterator<value_type, B>& x) const { return _M_current < x._M_current; }
-	template <bool B> bool operator<= (const VectorIterator<value_type, B>& x) const { return _M_current <= x._M_current; }
-	template <bool B> bool operator> (const VectorIterator<value_type, B>& x) const { return _M_current > x._M_current; }
-	template <bool B> bool operator>= (const VectorIterator<value_type, B>& x) const { return _M_current >= x._M_current; }
+	template <bool B> bool operator< (const VectorIterator<T, B>& x) const { return _M_current < x._M_current; }
+	template <bool B> bool operator<= (const VectorIterator<T, B>& x) const { return _M_current <= x._M_current; }
+	template <bool B> bool operator> (const VectorIterator<T, B>& x) const { return _M_current > x._M_current; }
+	template <bool B> bool operator>= (const VectorIterator<T, B>& x) const { return _M_current >= x._M_current; }
 
 };
 
@@ -207,8 +207,38 @@ public:
 		return ret;
 	}
 
-    iterator erase(const_iterator position);
-    iterator erase(const_iterator first, const_iterator last);
+    iterator erase(const_iterator position) {
+		if (position >= end() || _size == 0)
+			return end();
+
+		iterator ret = const_cast<value_type*>(position._M_current);
+
+		iterator next = ret;
+		iterator it = next++;
+
+		_alloc.destroy(it._M_current);
+
+		while (next != end())
+			*it++ = *next++;
+		
+		_size--;
+		return ret;
+	}
+
+    iterator erase(const_iterator first, const_iterator last) {
+		iterator ret = const_cast<value_type*>(first._M_current);
+		iterator l = const_cast<value_type*>(last._M_current);
+		iterator e = end();
+		size_type i = 0;
+		while (&l[i] < e._M_current) {
+			_alloc.destroy(&ret[i]);
+			_alloc.construct(&ret[i], l[i]);
+			_alloc.destroy(&l[i]);
+			i++;
+		}
+		_size -= last - first;
+		return ret;
+	}
 
     void clear() { for (int i = 0; i < _size; i++) _alloc.destroy(&_arr[i]); _size = 0; }
 
@@ -232,13 +262,6 @@ private:
 		pos = begin() + diff;
 		iterator ret = _arr + diff;
 		iterator e = end() - 1;
-
-		//todo updte to use reverse iterator
-		//start from end and reaching until pos
-		//            v                              
-		//1 2 3 5 5 5 5 5 5 5 5 5 5 88 4 5 6 7 8 9 
-		//1 2 3 5 5 5 5 5 5 5 5 5 5 5 5 5 88 4 5 6 7 8 9
-		//
 
 		while (e >= pos) {
 			int e0 = e[0];
