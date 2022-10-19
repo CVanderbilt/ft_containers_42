@@ -592,5 +592,44 @@ public:
 
 };
 
+template <class T, class Compare, class Allocator>
+bool
+operator==(const _red_black_tree<T, Compare, Allocator>& x,
+           const _red_black_tree<T, Compare, Allocator>& y)
+{
+	if (x.size() != y.size()) return false;
+	return ft::equal(x.begin(), x.end(), y.begin());
+}
+
+template <class T, class Compare, class Allocator>
+bool
+operator!=(const _red_black_tree<T, Compare, Allocator>& x,
+           const _red_black_tree<T, Compare, Allocator>& y)
+{ return !(x == b); }
+
+template <class T, class Compare, class Allocator>
+bool
+operator<(const _red_black_tree<T, Compare, Allocator>& x,
+           const _red_black_tree<T, Compare, Allocator>& y)
+{ return ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end()); }
+
+template <class T, class Compare, class Allocator>
+bool
+operator>(const _red_black_tree<T, Compare, Allocator>& x,
+           const _red_black_tree<T, Compare, Allocator>& y)
+{ return ft::lexicographical_compare(y.begin(), y.end(), x.begin(), x.end()); }
+
+template <class T, class Compare, class Allocator>
+bool
+operator>=(const _red_black_tree<T, Compare, Allocator>& x,
+           const _red_black_tree<T, Compare, Allocator>& y)
+{ return !(x < y); }
+
+template <class T, class Compare, class Allocator>
+bool
+operator<=(const _red_black_tree<T, Compare, Allocator>& x,
+           const _red_black_tree<T, Compare, Allocator>& y)
+{ return !(y < x); }
+
 }
 #endif
