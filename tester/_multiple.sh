@@ -1,4 +1,4 @@
-clang++ -g -fsanitize=address tester_main.cpp -o multiple.out
+clang++ -g -fsanitize=address *.cpp -o multiple.out
 
 # echo "MULTIPLE TEST" > multiple_results.txt
 
