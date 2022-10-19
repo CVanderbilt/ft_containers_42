@@ -251,7 +251,12 @@ public:
 		_size = sz;
 	}
 
-    void swap(vector& x);
+    void swap(vector& x) {
+		ft::swap(_size, x._size);
+		ft::swap(_cap, x._cap);
+		ft::swap(_arr, x._arr);
+		ft::swap(_alloc, x._alloc);
+	}
 
 private:
 	iterator move_right(const_iterator pos, size_type n) {
@@ -288,7 +293,7 @@ template< class T, class Alloc >
 bool operator<( const ft ::vector<T,Alloc>& lhs, const ft ::vector<T,Alloc>& rhs );
 // specialized algorithms:
 template< class T, class Alloc >
-void swap(ft ::vector<T, Alloc>& x, ft ::vector<T, Alloc>& y);
+void swap(ft ::vector<T, Alloc>& x, ft ::vector<T, Alloc>& y) { x.swap(y); }
 
 }
 
