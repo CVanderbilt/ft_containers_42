@@ -196,44 +196,46 @@ template <class Key, class T, class Compare, class Allocator>
 bool
 operator==(const map<Key, T, Compare, Allocator>& x,
            const map<Key, T, Compare, Allocator>& y)
-{ return x._bst == y._bst; }
-
-template <class Key, class T, class Compare, class Allocator>
-bool
-operator< (const map<Key, T, Compare, Allocator>& x,
-           const map<Key, T, Compare, Allocator>& y)
-{ return x._bst < y._bst; }
+{
+	if (x.size() != y.size()) return false; 
+	return ft::equal(x.begin(), x.end(), y.begin());
+}
 
 template <class Key, class T, class Compare, class Allocator>
 bool
 operator!=(const map<Key, T, Compare, Allocator>& x,
            const map<Key, T, Compare, Allocator>& y)
-{ return x._bst != y._bst; }
+{ return !(x == y); }
+
+template <class Key, class T, class Compare, class Allocator>
+bool
+operator< (const map<Key, T, Compare, Allocator>& x,
+           const map<Key, T, Compare, Allocator>& y)
+{ return ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end()); }
+
 
 template <class Key, class T, class Compare, class Allocator>
 bool
 operator> (const map<Key, T, Compare, Allocator>& x,
            const map<Key, T, Compare, Allocator>& y)
-{ return x._bst > y._bst; }
+{ return ft::lexicographical_compare(y.begin(), y.end(), x.begin(), x.end()); }
 
 template <class Key, class T, class Compare, class Allocator>
 bool
 operator>=(const map<Key, T, Compare, Allocator>& x,
            const map<Key, T, Compare, Allocator>& y)
-{ return x._bst >= y._bst; }
+{ return !(x < y); }
 
 template <class Key, class T, class Compare, class Allocator>
 bool
 operator<=(const map<Key, T, Compare, Allocator>& x,
            const map<Key, T, Compare, Allocator>& y)
-{ return x._bst <= y._bst; std::map<int, int> kk;}
+{ return !(y < x); }
 
 // specialized algorithms:
 template <class Key, class T, class Compare, class Allocator>
 void
 swap(map<Key, T, Compare, Allocator>& x, map<Key, T, Compare, Allocator>& y) { x.swap(y); }
-/* TODO: template <class Key, class T, class Compare, class Allocator>
-*/
 
 }
 

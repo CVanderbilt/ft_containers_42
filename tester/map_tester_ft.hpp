@@ -63,6 +63,7 @@ public:
 		if (testName == "" || testName.find("bound") != std::string::npos) { printHeader("bound"); test_bounds(); }
 		if (testName == "" || testName.find("hint") != std::string::npos) { printHeader("hint"); test_hinted_insert(); }
 		if (testName == "" || testName.find("insert") != std::string::npos) { printHeader("insert"); test_insert(); }
+		if (testName == "" || testName.find("relational") != std::string::npos) { printHeader("relational"); test_relational(); }
 	}
 
 	iterator getRandomIterator(int chance = 1) {
@@ -362,5 +363,28 @@ private:
 		__out << std::endl;
 	}
 
+	void test_relational() {
+		__out << "Test relational" << std::endl;
+		std::cerr << "Test relational" << std::endl;
+		t_map map1;
+		map1 = *cnt;
+
+		__out << (map1 == *cnt)
+		<< (map1 < *cnt)
+		<< (map1 > *cnt)
+		<< (map1 <= *cnt)
+		<< (map1 >= *cnt) << std::endl;
+
+		int i = 0;
+		while (i < cnt->size())
+			i++;
+		map1[i].append("42");
+
+		__out << (map1 == *cnt)
+		<< (map1 < *cnt)
+		<< (map1 > *cnt)
+		<< (map1 <= *cnt)
+		<< (map1 >= *cnt) << std::endl;
+	}
 
 };

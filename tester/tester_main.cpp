@@ -69,7 +69,8 @@ void interactive_test(MapTesterFt& mapTesterFt, MapTesterStd& mapTesterStd, int 
 		std::cout << "7.bound" << std::endl;
 		std::cout << "8.hint" << std::endl;
 		std::cout << "9.insert" << std::endl;
-		std::cout << "10.exit" << std::endl;
+		std::cout << "10.relational" << std::endl;
+		std::cout << "11.exit" << std::endl;
 		std::cout << "Enter your Choice: ";
 		std::cin >> c;
 		switch (c) {
@@ -83,7 +84,8 @@ void interactive_test(MapTesterFt& mapTesterFt, MapTesterStd& mapTesterStd, int 
 			case 7: { exec(mapTesterFt, mapTesterStd, "bound", seed); break ; }
 			case 8: { exec(mapTesterFt, mapTesterStd, "hint", seed); break ; }
 			case 9: { exec(mapTesterFt, mapTesterStd, "insert", seed); break ; }
-			case 10: { return ; }
+			case 10: { exec(mapTesterFt, mapTesterStd, "relational", seed); break ; }
+			case 11: { return ; }
 		}
 	}
 }

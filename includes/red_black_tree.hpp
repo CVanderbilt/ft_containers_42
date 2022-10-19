@@ -605,7 +605,7 @@ template <class T, class Compare, class Allocator>
 bool
 operator!=(const _red_black_tree<T, Compare, Allocator>& x,
            const _red_black_tree<T, Compare, Allocator>& y)
-{ return !(x == b); }
+{ return !(x == y); }
 
 template <class T, class Compare, class Allocator>
 bool
