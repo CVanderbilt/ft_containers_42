@@ -1,6 +1,5 @@
-#ifndef MAP_TESTER_STD_HPP
-# define MAP_TESTER_STD_HPP
-
+#ifndef VECTOR_TESTER_STD
+# define VECTOR_TESTER_STD
 # include <map>
 # include <vector>
 # include <iostream>
@@ -8,29 +7,27 @@
 # include <fstream>
 # include "progressBar.hpp"
 
-class MapTesterStd {
+class VectorTesterStd {
 public:
+//todo to continue: implement vector tester cpp files, update tester_main to have a new field to select container to be tested
 
-	typedef std::map<int, std::string>		t_map;
-	typedef std::pair<int, std::string>		t_pair;
-	typedef t_map::iterator					iterator;
-	typedef std::pair<iterator, iterator>	tt_pair;
-	typedef t_map::const_iterator			const_iterator;
-	typedef t_map::const_reverse_iterator	const_reverse_iterator;
+	typedef ft::vector<int, std::string>		t_vector;
+	typedef t_vector::iterator					iterator;
+	typedef t_vector::const_iterator			const_iterator;
+	typedef t_vector::const_reverse_iterator	const_reverse_iterator;
 
 	enum constructor { DEFAULT, COPY, RANGE };
 
-	MapTesterStd();
-	~MapTesterStd();
+	VectorTesterStd();
+	~VectorTesterStd();
 
-	MapTesterStd& withIterators();
-	MapTesterStd& withHeaders();
-	MapTesterStd& withStop();
-	MapTesterStd& withCopy();
-	MapTesterStd& withSize(size_t s);
+	VectorTesterStd& withIterators();
+	VectorTesterStd& withHeaders();
+	VectorTesterStd& withStop();
+	VectorTesterStd& withCopy();
+	VectorTesterStd& withSize(size_t s);
 
 	void build();
-
 	void execute(const std::string& testName);
 
 
@@ -38,7 +35,7 @@ private:
 
 	constructor method;
 	size_t size;
-	t_map *cnt;
+	t_vector *cnt;
 	bool headers;
 	bool _stop;
 	std::ofstream __out;
@@ -51,21 +48,17 @@ private:
 	std::string generateWord(size_t s) const;
 
 	void construct_map();
-
+	
 	void construct_map_default();
 	void construct_map_iterator();
 	void construct_map_copy();
 
 	void test_equal_operator();
-
 	void test_iterators();
 	void test_capacity();
 	void test_element_access();
 	void test_erase();
 	void test_swap();
-	void test_find();
-	void test_bounds();
-	void test_hinted_insert();
 	void test_insert();
 	void test_relational();
 

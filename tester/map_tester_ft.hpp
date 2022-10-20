@@ -1,10 +1,13 @@
-#include <map>
-#include <vector>
-#include <iostream>
-#include <string>
-#include <fstream>
-#include "../includes/map.hpp"
-#include "progressBar.hpp"
+#ifndef MAP_TESTER_FT_HPP
+# define MAP_TESTER_FT_HPP
+
+# include <map>
+# include <vector>
+# include <iostream>
+# include <string>
+# include <fstream>
+# include "../includes/map.hpp"
+# include "progressBar.hpp"
 
 class MapTesterFt {
 public:
@@ -66,3 +69,5 @@ private:
 	void test_relational();
 
 };
+
+#endif
