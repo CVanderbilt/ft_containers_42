@@ -1,6 +1,8 @@
 #ifndef STACK_HPP
 # define STACK_HPP
 
+# include "vector.hpp"
+
 namespace ft {
 
 template<typename _Tp, typename _Sequence = vector<_Tp> >
@@ -24,10 +26,7 @@ protected:
 
 public:
 
-	/*template<typename _Seq = _Sequence, typename _Requires = typename
-		enable_if<std::is_default_constructible<_Seq>::value>::type>*/
-	stack(): c() {}
-	explicit stack(const container_type& cont = container_type()): c(container_type) {}
+	stack(const container_type& cont = container_type()): c(cont) {}
 	stack(const stack& other): c(other.c) {}
 
 	stack& operator=(const stack& other) { c = other.c; return *this; }
@@ -46,11 +45,6 @@ template<typename _Tp, typename _Seq>
 inline bool
 operator==(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
 { return __x.c == __y.c; }
-
-template<typename _Tp, typename _Seq>
-inline bool
-operator<(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-{ return __x.c < __y.c; }
 
 template<typename _Tp, typename _Seq>
 inline bool
