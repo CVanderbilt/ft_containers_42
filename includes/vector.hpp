@@ -109,7 +109,7 @@ public:
 		assign(first, last);
 	}
 
-    vector(const vector& x): _arr(NULL), _size(0), _cap(x._cap), _alloc(x._alloc) {
+    vector(const vector& x): _arr(NULL), _size(0), _cap(x._cap), _alloc(x._alloc), _rf(1.5) {
 		_arr = _alloc.allocate(_cap);
 		assign(x.begin(), x.end());
 	}
@@ -119,7 +119,7 @@ public:
 		_alloc.deallocate(_arr, _cap);
 	}
 
-    vector& operator=(const vector& x) { assign(x.begin(), x.end()); }
+    vector& operator=(const vector& x) { assign(x.begin(), x.end()); return *this; }
 
     template <class InputIterator>
 	typename enable_if<!is_integral<InputIterator>::value, void>::type
@@ -176,7 +176,8 @@ public:
     void push_back(const value_type& x) {
 		if (_size == _cap)
 			reserve(_cap > 2 ? _cap * _rf : _cap + 1);
-		_arr[_size++] = x;
+		_alloc.construct(&_arr[_size], x);
+		_size++;
 	}
 
     void pop_back() {
@@ -269,8 +270,6 @@ private:
 		iterator e = end() - 1;
 
 		while (e >= pos) {
-			int e0 = e[0];
-			int en = e[n];
 			e[n] = *e;
 			e--;
 		}
@@ -291,7 +290,7 @@ bool operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs 
 template< class T, class Alloc >
 bool operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) { return ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()); }
 template< class T, class Alloc >
-bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) { return !(rhs > lhs); }
+bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) { return !(lhs > rhs); }
 template< class T, class Alloc >
 bool operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) { return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
 // specialized algorithms:

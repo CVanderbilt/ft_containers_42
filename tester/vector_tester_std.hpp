@@ -11,7 +11,7 @@ class VectorTesterStd {
 public:
 //todo to continue: implement vector tester cpp files, update tester_main to have a new field to select container to be tested
 
-	typedef ft::vector<int, std::string>		t_vector;
+	typedef std::vector<std::string>				t_vector;
 	typedef t_vector::iterator					iterator;
 	typedef t_vector::const_iterator			const_iterator;
 	typedef t_vector::const_reverse_iterator	const_reverse_iterator;
@@ -49,9 +49,9 @@ private:
 
 	void construct_map();
 	
-	void construct_map_default();
-	void construct_map_iterator();
-	void construct_map_copy();
+	void construct_default();
+	void construct_iterator();
+	void construct_copy();
 
 	void test_equal_operator();
 	void test_iterators();

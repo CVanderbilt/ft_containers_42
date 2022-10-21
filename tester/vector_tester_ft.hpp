@@ -1,5 +1,6 @@
 #ifndef VECTOR_TESTER_FT
 # define VECTOR_TESTER_FT
+
 # include <map>
 # include <vector>
 # include <iostream>
@@ -11,7 +12,7 @@
 class VectorTesterFt {
 public:
 
-	typedef ft::vector<int, std::string>		t_vector;
+	typedef ft::vector<std::string>				t_vector;
 	typedef t_vector::iterator					iterator;
 	typedef t_vector::const_iterator			const_iterator;
 	typedef t_vector::const_reverse_iterator	const_reverse_iterator;
@@ -49,9 +50,9 @@ private:
 
 	void construct_map();
 	
-	void construct_map_default();
-	void construct_map_iterator();
-	void construct_map_copy();
+	void construct_default();
+	void construct_iterator();
+	void construct_copy();
 
 	void test_equal_operator();
 	void test_iterators();
