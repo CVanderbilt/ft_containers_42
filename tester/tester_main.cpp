@@ -7,7 +7,7 @@
 #include <fstream>
 #include <iostream>
 
-#define TIME_CHECK
+//#define TIME_CHECK
 #ifdef TIME_CHECK
 # include <chrono>
 #endif

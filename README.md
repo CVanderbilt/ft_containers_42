@@ -59,7 +59,6 @@ Easy, just go to the ```/tester``` folder and compile *.cpp, it is important to 
 | map         | hint                 |
 | map         | insert               |
 | map         | relational           |
-| ----------- | -------------------- |
 | vector      | capacity             |
 | vector      | element_access       |
 | vector      | operator_equal       |
@@ -68,15 +67,13 @@ Easy, just go to the ```/tester``` folder and compile *.cpp, it is important to 
 | vector      | swap                 |
 | vector      | insert               |
 | vector      | relational           |
-| ----------- | -------------------- |
 | stack       | push_pop             |
 | stack       | capacity             |
 | stack       | relational           |
 | ----------- | -------------------- |
 
-todo: warnings
-todo: output and check
-todo: checkout the loading bars
+When compiling it there is a commented line in ```tester_main.cpp```, if uncommented it will define ```TIME_CHECK``` and this will enable time checks in the tests, compiling this code will result in 12 warnings because using c++11 but ignore them.  
+The tests are usefull not only to compare the speed but also to compare the outputs, since they are exactly alike and the randomness is not actually random we can test if our containers is working propperly by calling ```diff ft.txt std.txt```, there should be no differences.  
 
 ## Resources
 
