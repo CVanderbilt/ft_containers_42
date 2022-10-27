@@ -5,7 +5,7 @@
 This project goal is to learn about the STL library, how are the containers implemented, how iterators work and some of the useful wierd structures like std::enable_if and so on.
 In order to do so we had to implement some of the containers, specifically std::vector, std::map and std::stack.  
 
-### map
+### MAP
 
 This is the hardest one, so I started with this one first. The map class stores the contents in a private container which is a tree. From my experience diving deep in the code, it usually is a red_black_tree, which is a kind of balancing tree similar to the AVL tree but have in mind **IT IS NOT THE AVL TREE*, at first I implemented the tree as AVL tree and it was working fine, however one of the requirements for this project is not to be 10 times slower than the real container. The AVL tree is great but it is not fast, and if implemented with this kind of tree your map will be way slower than 10 times the normal map.  
 
@@ -22,13 +22,13 @@ operator(const ft::pair<key, value>& lhs, const ft::pair<key, value>& rhs) {
 Thats it, this class will be used by the tree to be able to properly compare the values inserted in the tree.  
 The last hard thing was the method ```insert_hint``` it takes a value value to be inserted and an itertor that when properly selected it speeds up the process of finding where to insert the value. It may not make much sense but basically that pointer can be found using the methods ```lower_bound```or ```upper_bound```.
 
-### vector
+### VECTOR
 
 This one is much more simpler, it is just an array inside a class, items can be added in the las position with the method ```push_back``` (super important method used by the stack, I will ellaborate).
 The complexity of this class is of course the space, once we fill all the space allocated for this array we have to allocate more space and move the content of the old array to the new one, sounds easy because it is easy. Honestly the hardest part to implement was methods like delte or insert, this is because when doing such operations we have to move part of the array to the left or to the right, but this also sounds easy.  
 About iterators, this is actually interesting, the pointer of the array is obviously the iterator, but we have to implent a wrapper class around it in order to be able for the struct ```ft::is_integral``` to be able to identify if a template variable is an iterator or not (a pointer by itself shouldnt be, but I may be wrong on this one).
 
-### stack
+### STACK
 
 Stack, the easiest of them all, thats why it was the last one implented. Basically a wrapper function aroud a container, it will use the ```push_back``` method of that container to add elements to the top of the stack and the ```pop_back``` to remove the elemnt in the top of the stack.
 Thas about it ¯\_(ツ)_/¯.
@@ -77,7 +77,7 @@ The tests are usefull not only to compare the speed but also to compare the outp
 
 ## Resources
 
-- To check what everything does [cppreference](https://en.cppreference.com/w/) and [cppreference](https://cplusplus.com/)
+- To check what everything does [cppreference](https://en.cppreference.com/w/) and [cplusplus](https://cplusplus.com/)
 - When I was a little bit lost I checked this other students repos [repo1](https://github.com/Glagan/42-ft_containers) and [repo2](https://github.com/rchallie/ft_containers)
 - To test things about the red_black_tree, this [simulator](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html) it is visual and can be slowed down up to step by step, pretty useful.
 - Explanation of [red black trees with code examples](https://www.programiz.com/dsa/red-black-tree) (avoid copying but if you do notice that there is something wrong which I don't remember, but if you have patiente you can compare the python version with the c++ version to spot the error, probably the error was introduced when translating from python to c++)
