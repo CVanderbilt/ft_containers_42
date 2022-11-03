@@ -7,14 +7,11 @@
 #include <fstream>
 #include <iostream>
 
-//#define TIME_CHECK
-#ifdef TIME_CHECK
-# include <chrono>
-#endif
+//#include <chrono>
 
 void s_exec(StackTesterFt& ft, StackTesterStd& std, const std::string& test, int seed)
 {
-#ifdef TIME_CHECK
+																						/*
 	using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::duration;
@@ -25,40 +22,40 @@ void s_exec(StackTesterFt& ft, StackTesterStd& std, const std::string& test, int
 	auto t4 = t1;
 	duration<double, std::milli> ms_double1;
 	duration<double, std::milli> ms_double2;
-#endif
-		std::cerr << "_____________________FT___________________________" << std::endl;
-		srand(seed);
-		ft.execute(test);
-#ifdef TIME_CHECK
-		t2 = high_resolution_clock::now();
-		ms_double1 = t2 - t1;
-		std::cerr << "Duration: " << ms_double1.count() << " ms" << std::endl;					
-		t3 = high_resolution_clock::now();													
-#endif
-		std::cerr << "__________________________________________________" << std::endl;
-		std::cerr << "_____________________STD__________________________" << std::endl;
-		srand(seed);
-		std.execute(test);
-#ifdef TIME_CHECK
-		t4 = high_resolution_clock::now();
-		ms_double2 = t4 - t3;
-		std::cerr << "Duration: " << ms_double2.count() << " ms" << std::endl;
-#endif
-		std::cerr << "__________________________________________________" << std::endl;
-#ifdef TIME_CHECK
-			std::cerr << std::endl << "Time difference: " << (ms_double1 - ms_double2).count() << " ms" << std::endl;
-			if (ms_double1 > ms_double2) {
-				ms_double1.operator/=(ms_double2.count());
-				std::cerr << "FT is " << ms_double1.count() << " times faster" << std::endl << std::endl;
-			} else {
-				ms_double2.operator/=(ms_double1.count());
-				std::cerr << "FT is " << ms_double2.count() << " times slower" << std::endl << std::endl;
-			}
-#endif
+																						//*/
+	std::cerr << "_____________________FT___________________________" << std::endl;
+	srand(seed);
+	ft.execute(test);
+																						/*
+	t2 = high_resolution_clock::now();
+	ms_double1 = t2 - t1;
+	std::cerr << "Duration: " << ms_double1.count() << " ms" << std::endl;					
+	t3 = high_resolution_clock::now();
+																						//*/											
+	std::cerr << "__________________________________________________" << std::endl;
+	std::cerr << "_____________________STD__________________________" << std::endl;
+	srand(seed);
+	std.execute(test);
+																						/*
+	t4 = high_resolution_clock::now();
+	ms_double2 = t4 - t3;
+	std::cerr << "Duration: " << ms_double2.count() << " ms" << std::endl;
+																						//*/
+	std::cerr << "__________________________________________________" << std::endl;
+																						/*
+	std::cerr << std::endl << "Time difference: " << (ms_double1 - ms_double2).count() << " ms" << std::endl;
+	if (ms_double1 > ms_double2) {
+		ms_double1.operator/=(ms_double2.count());
+		std::cerr << "FT is " << ms_double1.count() << " times faster" << std::endl << std::endl;
+	} else {
+		ms_double2.operator/=(ms_double1.count());
+		std::cerr << "FT is " << ms_double2.count() << " times slower" << std::endl << std::endl;
+	}
+																						//*/
 }
 
 void s_interactive_test(StackTesterFt& mapTesterFt, StackTesterStd& mapTesterStd, int seed) {
-	int i, c;
+	int c;
 	std::cout << "Available tests:" << std::endl;
 	//capacity element_access operator_equal iterators erase swap find bound hint
 
@@ -124,7 +121,7 @@ void v_exec(VectorTesterFt& ft, VectorTesterStd& std, const std::string& test, i
 }
 
 void v_interactive_test(VectorTesterFt& mapTesterFt, VectorTesterStd& mapTesterStd, int seed) {
-	int i, c;
+	int c;
 	std::cout << "Available tests:" << std::endl;
 	//capacity element_access operator_equal iterators erase swap find bound hint
 
@@ -200,7 +197,7 @@ void m_exec(MapTesterFt& ft, MapTesterStd& std, const std::string& test, int see
 }
 
 void m_interactive_test(MapTesterFt& mapTesterFt, MapTesterStd& mapTesterStd, int seed) {
-	int i, c;
+	int c;
 	std::cout << "Available tests:" << std::endl;
 	//capacity element_access operator_equal iterators erase swap find bound hint
 

@@ -7,7 +7,7 @@
 #include "progressBar.hpp"
 #include "map_tester_std.hpp"
 
-MapTesterStd::MapTesterStd(): cnt(NULL), method(DEFAULT), size(100), headers(false), _stop(false), __out("std.txt") {}
+MapTesterStd::MapTesterStd(): method(DEFAULT), size(100), cnt(NULL), headers(false), _stop(false), __out("std.txt") {}
 MapTesterStd::~MapTesterStd() { 
 	std::cerr << "deleting..." << std::endl;
 	delete cnt;
@@ -55,11 +55,11 @@ void MapTesterStd::execute(const std::string& testName) {
 	if (testName == "" || testName.find("relational") != std::string::npos) { printHeader("relational"); test_relational(); }
 }
 
-MapTesterStd::iterator MapTesterStd::getRandomIterator(int chance = 1) {
+MapTesterStd::iterator MapTesterStd::getRandomIterator() {
 	size_t pos = generateNumber(cnt->size());
 	iterator ret = cnt->begin();
 
-	for (int i = 0; i < pos; i++)
+	for (size_t i = 0; i < pos; i++)
 		ret++;
 	return ret;
 }
@@ -73,7 +73,7 @@ int MapTesterStd::generateNumber(size_t mod = 10000) const { int r = rand(); r *
 std::string MapTesterStd::generateWord(size_t s = 1) const {
 	std::string abc = "abcdefghijklmnopqrstuvwxyz1234567890";
 	std::string ret = "";
-	for (int i = 0; i < s; i++)
+	for (size_t i = 0; i < s; i++)
 		ret += abc.c_str()[generateNumber(abc.length())];
 	return ret;
 }
@@ -100,7 +100,7 @@ void MapTesterStd::construct_map_default() {
 	cnt = new t_map();
 
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress(i, size);
 		(*cnt)[generateNumber()] = generateWord();
 	}
@@ -113,7 +113,7 @@ void MapTesterStd::construct_map_iterator() {
 	std::vector<t_pair> v;
 	std::cerr << "filling vector" << std::endl;
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress(i, size);
 		v.push_back(t_pair(generateNumber(), generateWord()));
 	}
@@ -205,7 +205,7 @@ void MapTesterStd::test_element_access() {
 	std::cerr << "test element access" << std::endl;
 	ProgressBar *bar = new ProgressBar();
 	std::string str = "+++++";
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress((float)i / (float)size);
 		int n = generateNumber(size);
 
@@ -229,7 +229,7 @@ void MapTesterStd::test_erase() {
 
 	std::cerr << "Erase single elements" << std::endl;
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < n; i++) {
+	for (size_t i = 0; i < n; i++) {
 		bar->setProgress(i, n);
 		iterator it = getRandomIterator();
 		cnt->erase(it);
@@ -354,7 +354,7 @@ void MapTesterStd::test_relational() {
 	<< (map1 <= *cnt)
 	<< (map1 >= *cnt) << std::endl;
 
-	int i = 0;
+	size_t i = 0;
 	while (i < cnt->size())
 		i++;
 	map1[i].append("42");

@@ -40,7 +40,7 @@ private:
 	bool _stop;
 	std::ofstream __out;
 	
-	iterator getRandomIterator(int chance);
+	iterator getRandomIterator();
 	void error(std::string str);
 	void printMap();
 	void printHeader(std::string testName);

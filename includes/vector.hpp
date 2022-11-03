@@ -154,7 +154,7 @@ public:
 		if (_cap >= n)
 			return ;
 		pointer arr = _alloc.allocate(n);
-		for (int i = 0; i < _size; i++) _alloc.construct(&arr[i], _arr[i]);
+		for (size_type i = 0; i < _size; i++) _alloc.construct(&arr[i], _arr[i]);
 		_alloc.deallocate(_arr, _cap);
 		_cap = n;
 		_arr = arr;
@@ -189,7 +189,7 @@ public:
 
     iterator insert(const_iterator position, size_type n, const value_type& x) {
 		iterator it = move_right(position, n);
-		for (int i = 0; i < n; i++)
+		for (size_type i = 0; i < n; i++)
 			*it++ = x;
 		return it;
 	}
@@ -241,7 +241,7 @@ public:
 		return ret;
 	}
 
-    void clear() { for (int i = 0; i < _size; i++) _alloc.destroy(&_arr[i]); _size = 0; }
+    void clear() { for (size_type i = 0; i < _size; i++) _alloc.destroy(&_arr[i]); _size = 0; }
 
     void resize(size_type sz, const value_type& c = value_type()) {
 		size_type i = sz;

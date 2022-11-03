@@ -18,7 +18,7 @@
 	void ProgressBar::printBar() {
 		std::cerr << " %\r" << "[";
 		//int pos = barWidth * progress;
-		for (int i = 0; i < width; ++i) {
+		for (size_t i = 0; i < width; ++i) {
 			if (i < pos) std::cerr << "=";
 			else if (i == pos) std::cerr << ">";
 			else std::cerr << " ";

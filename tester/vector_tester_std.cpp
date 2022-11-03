@@ -7,7 +7,7 @@
 #include "vector_tester_std.hpp"
 #include"../includes/vector.hpp"
 
-VectorTesterStd::VectorTesterStd(): cnt(NULL), method(DEFAULT), size(100), headers(false), _stop(false), __out("std.txt") {}
+VectorTesterStd::VectorTesterStd(): method(DEFAULT), size(100), cnt(NULL), headers(false), _stop(false), __out("std.txt") {}
 VectorTesterStd::~VectorTesterStd() { 
 	std::cerr << "deleting..." << std::endl;
 	delete cnt;
@@ -52,11 +52,11 @@ void VectorTesterStd::execute(const std::string& testName) {
 	if (testName == "" || testName.find("relational") != std::string::npos) { printHeader("relational"); test_relational(); }
 }
 
-VectorTesterStd::iterator VectorTesterStd::getRandomIterator(int chance = 1) {
+VectorTesterStd::iterator VectorTesterStd::getRandomIterator() {
 	size_t pos = generateNumber(cnt->size());
 	iterator ret = cnt->begin();
 
-	for (int i = 0; i < pos; i++)
+	for (size_t i = 0; i < pos; i++)
 		ret++;
 	return ret;
 }
@@ -70,7 +70,7 @@ int VectorTesterStd::generateNumber(size_t mod = 10000) const { int r = rand(); 
 std::string VectorTesterStd::generateWord(size_t s = 1) const {
 	std::string abc = "abcdefghijklmnopqrstuvwxyz1234567890";
 	std::string ret = "";
-	for (int i = 0; i < s; i++)
+	for (size_t i = 0; i < s; i++)
 		ret += abc.c_str()[generateNumber(abc.length())];
 	return ret;
 }
@@ -97,7 +97,7 @@ void VectorTesterStd::construct_default() {
 	cnt = new t_vector();
 
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress(i, size);
 		cnt->push_back(generateWord());
 	}
@@ -110,7 +110,7 @@ void VectorTesterStd::construct_iterator() {
 	std::cerr << "filling vector" << std::endl;
 	std::vector<std::string> v;
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress(i, size);
 		v.push_back(generateWord());
 	}
@@ -200,7 +200,7 @@ void VectorTesterStd::test_element_access() {
 	std::cerr << "test element access" << std::endl;
 	ProgressBar *bar = new ProgressBar();
 	size_t iterations = cnt->size() / 4;
-	for (int i = 0; i < iterations; i++) {
+	for (size_t i = 0; i < iterations; i++) {
 		bar->setProgress((float)i / (float)size);
 		try
 		{
@@ -225,7 +225,7 @@ void VectorTesterStd::test_erase() {
 
 	std::cerr << "Erase single elements" << std::endl;
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < n; i++) {
+	for (size_t i = 0; i < n; i++) {
 		bar->setProgress(i, n);
 		iterator it = getRandomIterator();
 		cnt->erase(it);

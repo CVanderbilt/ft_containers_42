@@ -8,7 +8,7 @@
 #include "../includes/vector.hpp"
 #include "stack_tester_std.hpp"
 
-StackTesterStd::StackTesterStd(): cnt(NULL), method(DEFAULT), size(100), headers(false), _stop(false), __out("std.txt") {}
+StackTesterStd::StackTesterStd(): method(DEFAULT), size(100), cnt(NULL), headers(false), _stop(false), __out("std.txt") {}
 StackTesterStd::~StackTesterStd() { 
 	std::cerr << "deleting..." << std::endl;
 	delete cnt;
@@ -51,7 +51,7 @@ int StackTesterStd::generateNumber(size_t mod = 10000) const { int r = rand(); r
 std::string StackTesterStd::generateWord(size_t s = 1) const {
 	std::string abc = "abcdefghijklmnopqrstuvwxyz1234567890";
 	std::string ret = "";
-	for (int i = 0; i < s; i++)
+	for (size_t i = 0; i < s; i++)
 		ret += abc.c_str()[generateNumber(abc.length())];
 	return ret;
 }
@@ -78,7 +78,7 @@ void StackTesterStd::construct_default() {
 	cnt = new t_stack();
 
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress(i, size);
 		cnt->push(generateWord());
 	}
@@ -91,7 +91,7 @@ void StackTesterStd::construct_container() {
 	std::cerr << "filling vector" << std::endl;
 	std::vector<std::string> v;
 	ProgressBar *bar = new ProgressBar();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		bar->setProgress(i, size);
 		v.push_back(generateWord());
 	}
@@ -155,7 +155,6 @@ void StackTesterStd::test_relational() {
 void StackTesterStd::test_push_pop() {
 	__out << "Test push pop" << std::endl;
 	std::cerr << "Test push pop" << std::endl;
-	size_t s = cnt->size();
 
 	while (cnt->size() > 2)
 	{

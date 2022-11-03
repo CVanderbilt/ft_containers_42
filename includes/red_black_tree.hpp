@@ -48,9 +48,9 @@ public:
 		NodePtr _root;
 		//constructors/destructor
 		Iterator(NodePtr tnull = NULL, NodePtr root = NULL):
-			_tnull(tnull), _root(root), _node(getLeftMost(root)) {}
+			_tnull(tnull), _node(getLeftMost(root)), _root(root) {}
 		Iterator(NodePtr tnull, NodePtr node, NodePtr root)
-			: _tnull(tnull), _root(root), _node(node)
+			: _tnull(tnull),  _node(node), _root(root)
 		{
 			if (!_root && _node) {
 				_root = _node;
@@ -61,9 +61,9 @@ public:
 				}
 			}
 		}
-		Iterator(const Iterator<Const>& x): _tnull(x._tnull), _root(x._root), _node(x._node) {}
+		Iterator(const Iterator<Const>& x): _tnull(x._tnull), _node(x._node), _root(x._root) {}
 		template <bool B>
-		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _tnull(x._tnull), _root(x._root), _node(x._node) {}
+		Iterator(const Iterator<B>& x, typename ft::enable_if<!B>::type* = 0): _tnull(x._tnull), _node(x._node), _root(x._root) {}
 
 		Iterator& operator=(const Iterator& x) { _tnull = x._tnull; _node = x._node; _root = x._root; return *this; }
 
@@ -261,9 +261,6 @@ private:
 
 	size_t deleteNodeHelper(NodePtr z) {
 		NodePtr x, y;
-
-		NodePtr l = z->left;
-		NodePtr r = z->right;
 
 		if (z == TNULL)
 			return 0;
