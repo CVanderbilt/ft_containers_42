@@ -201,7 +201,7 @@ void VectorTesterFt::test_element_access() {
 	ProgressBar *bar = new ProgressBar();
 	size_t iterations = cnt->size() / 4;
 	for (size_t i = 0; i < iterations; i++) {
-		bar->setProgress((float)i / (float)size);
+		bar->setProgress((float)i / iterations);
 		try
 		{
 			std::string& foundStr = cnt->at(generateNumber(cnt->size() + cnt->size() / 10));
