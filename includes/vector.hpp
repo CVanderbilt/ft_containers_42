@@ -13,7 +13,7 @@ namespace ft {
 
 template <typename T, bool Const = false>
 class VectorIterator:
-public ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type > {
+public ft::iterator<ft::random_access_iterator_tag, typename std::conditional<Const, const T, T>::type > {
 public:
 	typedef typename ft::iterator<ft::bidirectional_iterator_tag, typename std::conditional<Const, const T, T>::type>::value_type	value_type;
 	typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category									iterator_category;
